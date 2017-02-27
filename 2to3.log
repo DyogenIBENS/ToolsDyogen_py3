@@ -1,0 +1,2515 @@
+
+WARNING: --write-unchanged-files/-W implies -w.
+lib2to3.main: Output in 'ToolsDyogen/' will mirror the input directory 'ToolsDyogen_py2.7' layout.
+RefactoringTool: Skipping optional fixer: buffer
+RefactoringTool: Skipping optional fixer: idioms
+RefactoringTool: Skipping optional fixer: set_literal
+RefactoringTool: Skipping optional fixer: ws_comma
+RefactoringTool: Refactored ToolsDyogen_py2.7/ancGenesTools/ALL.extractStrongFamiliesFromAncGenes.py
+RefactoringTool: Refactored ToolsDyogen_py2.7/bin/ALL.convertNewickTree.py
+--- ToolsDyogen_py2.7/ancGenesTools/ALL.extractStrongFamiliesFromAncGenes.py    (original)
++++ ToolsDyogen_py2.7/ancGenesTools/ALL.extractStrongFamiliesFromAncGenes.py    (refactored)
+@@ -26,9 +26,9 @@
+     lstModernGenomes=[x for x in phylTree.listSpecies if phylTree.dicParents[x][target] == target]
+
+
+-print >> sys.stderr, "loading ancestral genomes", lstAncGenomes
++print("loading ancestral genomes", lstAncGenomes, file=sys.stderr)
+ phylTree.loadSpeciesFromList([x for x in lstAncGenomes], arguments["IN.ancGenesFiles"])
+-print >> sys.stderr, "loading Modern genomes", lstModernGenomes
++print("loading Modern genomes", lstModernGenomes, file=sys.stderr)
+ phylTree.loadSpeciesFromList([x for x in lstModernGenomes], arguments["IN.ancGenesFiles"])
+
+ #loading gene->genome dictionnary
+@@ -50,7 +50,7 @@
+         if len(lstDescSpecies) > 0:
+             f= utils.myFile.openFile(arguments["OUT.ancGenesFiles"] % phylTree.fileName[x], "w")
+
+-            print >> sys.stdout, x, lstDescSpecies
++            print(x, lstDescSpecies, file=sys.stdout)
+             for ancGene in phylTree.dicGenomes[x]:
+                 #print >> sys.stderr, ancGene
+                 nbDesc={}
+@@ -65,11 +65,11 @@
+                        else:
+                            next
+                 #print >> sys.stderr, nbDesc
+-                a=nbDesc.values()
++                a=list(nbDesc.values())
+                 #print a, max(a), min(a)
+                 if  max(a)>1 or min(a)==0:
+-                    print >> f , ancGenename
++                    print(ancGenename, file=f)
+                 else:
+-                    print >> f, " ".join(x for x in ancGene.names )
++                    print(" ".join(x for x in ancGene.names ), file=f)
+
+             f.close()
+--- ToolsDyogen_py2.7/bin/ALL.convertNewickTree.py      (original)
++++ ToolsDyogen_py2.7/bin/ALL.convertNewickTree.py      (refactored)
+@@ -22,7 +22,7 @@
+         node = node.replace("*", "")
+         names = utils.myFile.myTSV.printLine(
+             [node] + [x for x in phylTree.commonNames.get(node, "") if isinstance(x, str) and (x != node)], delim="|")
+-        print ("\t" * indent) + "%s" % names
++        print(("\t" * indent) + "%s" % names)
+         if node in phylTree.items:
+             for (f, _) in phylTree.items[node]:
+                 do(f, indent + 1)
+@@ -43,4 +43,4 @@
+                 a, phylTree.ages[anc])
+
+
+-    print convertToFlatFile(phylTree.root), ";"
++    print(convertToFlatFile(phylTree.root), ";")
+RefactoringTool: Writing converted ToolsDyogen_py2.7/ancGenesTools/ALL.extractStrongFamiliesFromAncGenes.py to ToolsDyogen/ancGenesTools/ALL.extractStrongFamiliesFromAncGenes.py.
+RefactoringTool: Refactored ToolsDyogen_py2.7/bin/ALL.cutTree.py
+RefactoringTool: Writing converted ToolsDyogen_py2.7/bin/ALL.convertNewickTree.py to ToolsDyogen/bin/ALL.convertNewickTree.py.
+--- ToolsDyogen_py2.7/bin/ALL.cutTree.py        (original)
++++ ToolsDyogen_py2.7/bin/ALL.cutTree.py        (refactored)
+@@ -45,4 +45,4 @@
+                                                                                                              True)
+             utils.myProteinTree.printTree(sys.stdout, tree.data, tree.info, r)
+
+-print >> sys.stderr, nb, "extracted trees"
++print(nb, "extracted trees", file=sys.stderr)
+RefactoringTool: Writing converted ToolsDyogen_py2.7/bin/ALL.cutTree.py to ToolsDyogen/bin/ALL.cutTree.py.
+RefactoringTool: Refactored ToolsDyogen_py2.7/bin/ALL.extractNewickTrees.py
+--- ToolsDyogen_py2.7/bin/ALL.extractNewickTrees.py     (original)
++++ ToolsDyogen_py2.7/bin/ALL.extractNewickTrees.py     (refactored)
+@@ -16,10 +16,10 @@
+ # Arguments
+ arguments = utils.myTools.checkArgs( [("proteinTree",file)], [("withDist",bool,False), ("withNHXTags",bool,False), ("withAncSpeciesNames",bool,False), ("withAncGenesNames",bool,False)], __doc__ )
+
+-print >> sys.stderr, "Mise en forme des arbres ...",
++print("Mise en forme des arbres ...", end=' ', file=sys.stderr)
+ nb = 0
+ for tree in utils.myProteinTree.loadTree(arguments["proteinTree"]):
+        tree.printNewick(sys.stdout, withDist=arguments["withDist"], withTags=arguments["withNHXTags"], withAncSpeciesNames=arguments["withAncSpeciesNames"], withAncGenesNames=arguments["withAncGenesNames"])
+        nb += 1
+-print >> sys.stderr, "%d arbres OK" % nb
++print("%d arbres OK" % nb, file=sys.stderr)
+
+RefactoringTool: Writing converted ToolsDyogen_py2.7/bin/ALL.extractNewickTrees.py to ToolsDyogen/bin/ALL.extractNewickTrees.py.
+RefactoringTool: Refactored ToolsDyogen_py2.7/bin/ALL.extractOneGeneTree.py
+--- ToolsDyogen_py2.7/bin/ALL.extractOneGeneTree.py     (original)
++++ ToolsDyogen_py2.7/bin/ALL.extractOneGeneTree.py     (refactored)
+@@ -35,7 +35,7 @@
+     def filtertest(nodeinfo):
+         return nodeinfo["family_name"].startswith(arguments["filter"])
+ else:
+-    print >> sys.stderr, "Invalid '-field' option"
++    print("Invalid '-field' option", file=sys.stderr)
+     sys.exit(1)
+
+
+@@ -53,7 +53,7 @@
+ for tree in myProteinTree.loadTree(arguments["proteinTree"]):
+     if do(tree.root):
+         if arguments['toNewick']:
+-            print >>sys.stderr, "Output to newick format"
++            print("Output to newick format", file=sys.stderr)
+             tree.printNewick(sys.stdout, withDist=True, withTags=False,
+                              withAncSpeciesNames=arguments['withAncSpeciesNames'],
+                              withAncGenesNames=True)
+RefactoringTool: Writing converted ToolsDyogen_py2.7/bin/ALL.extractOneGeneTree.py to ToolsDyogen/bin/ALL.extractOneGeneTree.py.
+RefactoringTool: No changes to ToolsDyogen_py2.7/bin/ALL.infoProtTree.py
+RefactoringTool: Refactored ToolsDyogen_py2.7/bin/ALL.extractGeneFamilies.py
+RefactoringTool: Writing converted ToolsDyogen_py2.7/bin/ALL.infoProtTree.py to ToolsDyogen/bin/ALL.infoProtTree.py.
+--- ToolsDyogen_py2.7/bin/ALL.extractGeneFamilies.py    (original)
++++ ToolsDyogen_py2.7/bin/ALL.extractGeneFamilies.py    (refactored)
+@@ -97,10 +97,10 @@
+     extractGeneFamilies(tree.root, tree.info[tree.root]["tree_name"], None, None)
+     utils.myProteinTree.printTree(sys.stdout, tree.data, tree.info, tree.root)
+
+-for (anc, lst) in geneFamilies.iteritems():
+-    print >> sys.stderr, "Ecriture des familles de %s ..." % anc,
++for (anc, lst) in geneFamilies.items():
++    print("Ecriture des familles de %s ..." % anc, end=' ', file=sys.stderr)
+     f = utils.myFile.openFile(arguments["out:ancGenesFiles"] % phylTree.fileName[anc], "w")
+     for gg in lst:
+-        print >> f, " ".join(gg)
++        print(" ".join(gg), file=f)
+     f.close()
+-    print >> sys.stderr, len(lst), "OK"
++    print(len(lst), "OK", file=sys.stderr)
+RefactoringTool: Writing converted ToolsDyogen_py2.7/bin/ALL.extractGeneFamilies.py to ToolsDyogen/bin/ALL.extractGeneFamilies.py.
+RefactoringTool: Refactored ToolsDyogen_py2.7/bin/ALL.getGeneHistory.py
+--- ToolsDyogen_py2.7/bin/ALL.getGeneHistory.py (original)
++++ ToolsDyogen_py2.7/bin/ALL.getGeneHistory.py (refactored)
+@@ -35,7 +35,7 @@
+     txt.append(tree.info[node].pop("family_name", None))
+     txt.append(tree.info[node].pop("Bootstrap", None))
+     txt.append(tree.info[node].pop("duplication_confidence_score", None))
+-    print utils.myFile.myTSV.printLine(txt)
++    print(utils.myFile.myTSV.printLine(txt))
+
+
+ # Information on Gene
+@@ -44,7 +44,7 @@
+     txt.append("GENE")
+     txt.append(tree.info[node].pop("taxon_name", None))
+     txt.append(tree.info[node].pop("gene_name", None))
+-    print utils.myFile.myTSV.printLine(txt)
++    print(utils.myFile.myTSV.printLine(txt))
+
+
+ # Recursive loop on the gene family
+RefactoringTool: Writing converted ToolsDyogen_py2.7/bin/ALL.getGeneHistory.py to ToolsDyogen/bin/ALL.getGeneHistory.py.
+RefactoringTool: Refactored ToolsDyogen_py2.7/bin/ALL.statsKaryotype.py
+--- ToolsDyogen_py2.7/bin/ALL.statsKaryotype.py (original)
++++ ToolsDyogen_py2.7/bin/ALL.statsKaryotype.py (refactored)
+@@ -18,6 +18,6 @@
+
+ # print >> sys.stderr, genome
+ # print >> sys.stdout, "Chr","Length"
+-for (chrom, l) in genome.lstGenes.iteritems():
++for (chrom, l) in genome.lstGenes.items():
+     if len(l) >= arguments["minChrSize"]:
+-        print >> sys.stdout, chrom, len(l)
++        print(chrom, len(l), file=sys.stdout)
+RefactoringTool: Writing converted ToolsDyogen_py2.7/bin/ALL.statsKaryotype.py to ToolsDyogen/bin/ALL.statsKaryotype.py.
+RefactoringTool: Refactored ToolsDyogen_py2.7/bin/getInfoOnSpeciesTree.py
+--- ToolsDyogen_py2.7/bin/getInfoOnSpeciesTree.py       (original)
++++ ToolsDyogen_py2.7/bin/getInfoOnSpeciesTree.py       (refactored)
+@@ -20,10 +20,10 @@
+ phylTree = utils.myPhylTree.PhylogeneticTree(arguments["phylTree.conf"])
+
+ if arguments["speciesList"]:
+-    print >> sys.stdout, "Extant Species:", ",".join(x for x in phylTree.listSpecies)
++    print("Extant Species:", ",".join(x for x in phylTree.listSpecies), file=sys.stdout)
+ if arguments["ancList"]:
+-    print >> sys.stdout
+-    print >> sys.stdout, "Ancestral Species:", ",".join(x for x in phylTree.listAncestr)
+-print >> sys.stdout
+-print >> sys.stdout, "Extant Species:", len(phylTree.listSpecies)
+-print >> sys.stdout, "Ancetral Species:", len(phylTree.listAncestr)
++    print(file=sys.stdout)
++    print("Ancestral Species:", ",".join(x for x in phylTree.listAncestr), file=sys.stdout)
++print(file=sys.stdout)
++print("Extant Species:", len(phylTree.listSpecies), file=sys.stdout)
++print("Ancetral Species:", len(phylTree.listAncestr), file=sys.stdout)
+RefactoringTool: Writing converted ToolsDyogen_py2.7/bin/getInfoOnSpeciesTree.py to ToolsDyogen/bin/getInfoOnSpeciesTree.py.
+RefactoringTool: Refactored ToolsDyogen_py2.7/bin/formatTabularAncGenome.py
+--- ToolsDyogen_py2.7/bin/formatTabularAncGenome.py     (original)
++++ ToolsDyogen_py2.7/bin/formatTabularAncGenome.py     (refactored)
+@@ -28,8 +28,8 @@
+ listSpecies = phylTree.getTargetsSpec(arguments["target"])
+ newlistSpecies = sorted(listSpecies)
+
+-print >> sys.stdout, utils.myFile.myTSV.printLine(
+-    ["Anc_chr", "Begin", "End", "Strand", "AncGene", '\t'.join(x for x in newlistSpecies)])
++print(utils.myFile.myTSV.printLine(
++    ["Anc_chr", "Begin", "End", "Strand", "AncGene", '\t'.join(x for x in newlistSpecies)]), file=sys.stdout)
+
+ ancGenome = utils.myGenomes.Genome(arguments["ancGenome"])
+
+@@ -64,5 +64,5 @@
+     #print >> sys.stderr, strModern
+ #     print >> sys.stdout, utils.myFile.myTSV.printLine([genes[0], genes[1], genes[2], genes[3], ancGene1[0], "\t".join(
+  #       str(x[1][1:])[1:-1] for x in sorted(strModern.iteritems(), reverse=False))])
+-    print >> sys.stdout, utils.myFile.myTSV.printLine([genes[0], genes[1], genes[2], genes[3], ancGene1[0], "\t".join(
+-        str(x[1])[1:-1] for x in sorted(strModern.iteritems(), reverse=False))])
++    print(utils.myFile.myTSV.printLine([genes[0], genes[1], genes[2], genes[3], ancGene1[0], "\t".join(
++        str(x[1])[1:-1] for x in sorted(iter(strModern.items()), reverse=False))]), file=sys.stdout)
+RefactoringTool: Writing converted ToolsDyogen_py2.7/bin/formatTabularAncGenome.py to ToolsDyogen/bin/formatTabularAncGenome.py.
+RefactoringTool: Refactored ToolsDyogen_py2.7/bin/getSpeciesList.py
+--- ToolsDyogen_py2.7/bin/getSpeciesList.py     (original)
++++ ToolsDyogen_py2.7/bin/getSpeciesList.py     (refactored)
+@@ -22,4 +22,4 @@
+
+ for (x, _) in phylTree.items[arguments["anc"]]:
+     for y in phylTree.species[x]:
+-        print y
++        print(y)
+RefactoringTool: Writing converted ToolsDyogen_py2.7/bin/getSpeciesList.py to ToolsDyogen/bin/getSpeciesList.py.
+RefactoringTool: No changes to ToolsDyogen_py2.7/bin/misc.convertContigsToGenome.py
+RefactoringTool: Writing converted ToolsDyogen_py2.7/bin/misc.convertContigsToGenome.py to ToolsDyogen/bin/misc.convertContigsToGenome.py.
+RefactoringTool: Refactored ToolsDyogen_py2.7/bin/misc.convertGffToGenesST.py
+--- ToolsDyogen_py2.7/bin/misc.convertGffToGenesST.py   (original)
++++ ToolsDyogen_py2.7/bin/misc.convertGffToGenesST.py   (refactored)
+@@ -27,4 +27,4 @@
+         gene['strand'] = '1'
+     else:
+         gene['strand'] = '-1'
+-    print >> sys.stdout, utils.myFile.myTSV.printLine([gene['seqid'], gene['start'], gene['end'], gene['strand'], gene['attributes']['ID']])
++    print(utils.myFile.myTSV.printLine([gene['seqid'], gene['start'], gene['end'], gene['strand'], gene['attributes']['ID']]), file=sys.stdout)
+RefactoringTool: Writing converted ToolsDyogen_py2.7/bin/misc.convertGffToGenesST.py to ToolsDyogen/bin/misc.convertGffToGenesST.py.
+RefactoringTool: Refactored ToolsDyogen_py2.7/bin/cmpIntervals.py
+--- ToolsDyogen_py2.7/bin/cmpIntervals.py       (original)
++++ ToolsDyogen_py2.7/bin/cmpIntervals.py       (refactored)
+@@ -32,10 +32,10 @@
+
+
+ newGenome = rewriteGenome(genome)
+-print >> sys.stderr, "modernGenome", sum([len(x) for x in newGenome.itervalues()])
++print("modernGenome", sum([len(x) for x in newGenome.values()]), file=sys.stderr)
+
+ newAncGenome = rewriteGenome(ancGenome)
+-print >> sys.stderr, "ancGenome", sum([len(x) for x in newAncGenome.itervalues()])
++print("ancGenome", sum([len(x) for x in newAncGenome.values()]), file=sys.stderr)
+
+
+ # convertion tab between gene names (ancestral and modern)
+@@ -51,17 +51,17 @@
+
+
+ translateMA = {}
+-for (x, y) in translate(genome, newGenome, ancGenome, newAncGenome).iteritems():
++for (x, y) in translate(genome, newGenome, ancGenome, newAncGenome).items():
+     assert len(y) == 1
+     translateMA[x] = y[0]
+-print >> sys.stderr, "M->A", len(translateMA), translateMA.items()[0] if len(translateMA) > 0 else None
++print("M->A", len(translateMA), list(translateMA.items())[0] if len(translateMA) > 0 else None, file=sys.stderr)
+
+ translateAM = translate(ancGenome, newAncGenome, genome, newGenome)
+-print >> sys.stderr, "A->M", len(translateAM), translateAM.items()[0] if len(translateAM) > 0 else None
++print("A->M", len(translateAM), list(translateAM.items())[0] if len(translateAM) > 0 else None, file=sys.stderr)
+
+ # assuming the two sets of genes are equivalents
+-assert set(translateMA.itervalues()) == set(translateAM)
+-assert set(translateMA) == set(itertools.chain(*translateAM.itervalues()))
++assert set(translateMA.values()) == set(translateAM)
++assert set(translateMA) == set(itertools.chain(*iter(translateAM.values())))
+
+
+ def removeNewSingletons(genome, translate):
+@@ -75,28 +75,28 @@
+
+ while arguments["minimalLength"] < -1:
+     (n1, n2) = (len(newGenome), len(newAncGenome))
+-    print >> sys.stderr, "iter"
++    print("iter", file=sys.stderr)
+     newGenome = removeNewSingletons(newGenome, translateMA)
+-    print >> sys.stderr, "modernGenome", sum([len(x) for x in newGenome.itervalues()])
++    print("modernGenome", sum([len(x) for x in newGenome.values()]), file=sys.stderr)
+     newAncGenome = removeNewSingletons(newAncGenome, translateAM)
+-    print >> sys.stderr, "ancGenome", sum([len(x) for x in newAncGenome.itervalues()])
++    print("ancGenome", sum([len(x) for x in newAncGenome.values()]), file=sys.stderr)
+
+     if (n1, n2) == (len(newGenome), len(newAncGenome)):
+-        print >> sys.stderr, "stop"
++        print("stop", file=sys.stderr)
+         break
+
+     translateMA = {}
+-    for (x, y) in translate(genome, newGenome, ancGenome, newAncGenome).iteritems():
++    for (x, y) in translate(genome, newGenome, ancGenome, newAncGenome).items():
+         assert len(y) == 1
+         translateMA[x] = y[0]
+-    print >> sys.stderr, "M->A", len(translateMA), translateMA.items()[0] if len(translateMA) > 0 else None
++    print("M->A", len(translateMA), list(translateMA.items())[0] if len(translateMA) > 0 else None, file=sys.stderr)
+
+     translateAM = translate(ancGenome, newAncGenome, genome, newGenome)
+-    print >> sys.stderr, "A->M", len(translateAM), translateAM.items()[0] if len(translateAM) > 0 else None
++    print("A->M", len(translateAM), list(translateAM.items())[0] if len(translateAM) > 0 else None, file=sys.stderr)
+
+     # assuming the two sets of genes are equals
+-    assert set(translateMA.itervalues()) == set(translateAM)
+-    assert set(translateMA) == set(itertools.chain(*translateAM.itervalues()))
++    assert set(translateMA.values()) == set(translateAM)
++    assert set(translateMA) == set(itertools.chain(*iter(translateAM.values())))
+
+
+ # Intervals list
+@@ -114,15 +114,15 @@
+             dicPos[g] = (chrom, i, s)
+         dicLengths[chrom] = len(tmp)
+         listIntFilt.extend(utils.myTools.myIterator.slidingTuple(tmp))
+-    print >> sys.stderr, len(listIntAll), len(listIntFilt), list(listIntAll)[0] if len(listIntAll) > 0 else None, \
+-    listIntFilt[0] if len(listIntFilt) > 0 else None
++    print(len(listIntAll), len(listIntFilt), list(listIntAll)[0] if len(listIntAll) > 0 else None, \
++    listIntFilt[0] if len(listIntFilt) > 0 else None, file=sys.stderr)
+     return (listIntAll, listIntFilt, dicPos, dicLengths)
+
+
+-print >> sys.stderr, "intMod",
++print("intMod", end=' ', file=sys.stderr)
+ (listIntMall, listIntMfilt, dicPosMod, dicModLengths) = listInterv(newGenome, translateMA)
+
+-print >> sys.stderr, "intAnc",
++print("intAnc", end=' ', file=sys.stderr)
+ (listIntAall, listIntAfilt, dicPosAnc, dicAncLengths) = listInterv(newAncGenome, translateAM)
+ listIntAfilt = set(listIntAfilt)
+ listIntAalls = set((g1, g2) for ((g1, s1), (g2, s2)) in listIntAall)
+@@ -182,7 +182,7 @@
+         room2 = getRoom(dicAncLengths[ac2], ai2, as2 != s2)
+         flags.append(allendsT[room1 + room2])
+
+-    print "\t".join([status, "%s/%d" % (g1, s1), "%s/%d" % (g2, s2), tg1, tg2] + flags)
++    print("\t".join([status, "%s/%d" % (g1, s1), "%s/%d" % (g2, s2), tg1, tg2] + flags))
+
+ # Browsing from ancestral genome (unconserved intervals)
+ for ((g1, s1), (g2, s2)) in listIntAfilt:
+@@ -200,8 +200,8 @@
+         room2 = getRoom(dicModLengths[ac2], ai2, as2 != s2)
+         allends.append((room1 + room2, tg1, tg2))
+     if len(allends) == 0:
+-        print >> sys.stderr, ((g1, s1), (g2, s2)), translateAM[g1], translateAM[g2]
++        print(((g1, s1), (g2, s2)), translateAM[g1], translateAM[g2], file=sys.stderr)
+     (i, tg1, tg2) = max(allends)
+     flags.append(allendsT[i])
+
+-    print "\t".join([status, "%s/%d" % (g1, s1), "%s/%d" % (g2, s2), tg1, tg2] + flags)
++    print("\t".join([status, "%s/%d" % (g1, s1), "%s/%d" % (g2, s2), tg1, tg2] + flags))
+RefactoringTool: Writing converted ToolsDyogen_py2.7/bin/cmpIntervals.py to ToolsDyogen/bin/cmpIntervals.py.
+RefactoringTool: Refactored ToolsDyogen_py2.7/bin/misc.printAllDescendants.py
+--- ToolsDyogen_py2.7/bin/misc.printAllDescendants.py   (original)
++++ ToolsDyogen_py2.7/bin/misc.printAllDescendants.py   (refactored)
+@@ -31,12 +31,12 @@
+ if ( arguments["withExtantSpecies"]):
+
+     for anc in descendantAnc:
+-        print >> sys.stdout, anc
++        print(anc, file=sys.stdout)
+
+-    print >> sys.stdout, "----------------------"
++    print("----------------------", file=sys.stdout)
+     for esp in extantSpecies:
+-        print >> sys.stdout, esp
++        print(esp, file=sys.stdout)
+
+ else:
+     for anc in descendantAnc:
+-        print >> sys.stdout, anc
++        print(anc, file=sys.stdout)
+RefactoringTool: Writing converted ToolsDyogen_py2.7/bin/misc.printAllDescendants.py to ToolsDyogen/bin/misc.printAllDescendants.py.
+RefactoringTool: Refactored ToolsDyogen_py2.7/bin/misc.printLastCommonAncestors.py
+--- ToolsDyogen_py2.7/bin/misc.printLastCommonAncestors.py      (original)
++++ ToolsDyogen_py2.7/bin/misc.printLastCommonAncestors.py      (refactored)
+@@ -22,4 +22,4 @@
+         l1 = [e for e in phylTree.species[f1]]
+         l2 = [e for e in phylTree.species[f2]]
+         for (e1, e2) in itertools.product(l1, l2):
+-            print >> sys.stdout, "%s\t%s\t%s" % (e1, e2, a)
++            print("%s\t%s\t%s" % (e1, e2, a), file=sys.stdout)
+RefactoringTool: Writing converted ToolsDyogen_py2.7/bin/misc.printLastCommonAncestors.py to ToolsDyogen/bin/misc.printLastCommonAncestors.py.
+RefactoringTool: Refactored ToolsDyogen_py2.7/bin/printStats.py
+--- ToolsDyogen_py2.7/bin/printStats.py (original)
++++ ToolsDyogen_py2.7/bin/printStats.py (refactored)
+@@ -34,13 +34,13 @@
+
+ if arguments["long"]:
+     if arguments["colNames"]:
+-        print " ".join(("%s" % x) for x in
++        print(" ".join(("%s" % x) for x in
+                        ["Min", "Q25", "Q50", "Q75", "N75", "N50", "N25", "WeightedAverage", "Max", "Mean", "Stddev",
+-                        "Length"])
++                        "Length"]))
+
+-    print " ".join(("%s" % x) for x in utils.myMaths.myStats.valSummary2(lst))
++    print(" ".join(("%s" % x) for x in utils.myMaths.myStats.valSummary2(lst)))
+
+
+ else:
+
+-    print utils.myMaths.myStats.syntheticTxtSummary(lst)
++    print(utils.myMaths.myStats.syntheticTxtSummary(lst))
+RefactoringTool: Writing converted ToolsDyogen_py2.7/bin/printStats.py to ToolsDyogen/bin/printStats.py.
+RefactoringTool: Refactored ToolsDyogen_py2.7/bin/stats.getNbComparisons.py
+RefactoringTool: Refactored ToolsDyogen_py2.7/bin/misc.compareGenomes.py
+--- ToolsDyogen_py2.7/bin/stats.getNbComparisons.py     (original)
++++ ToolsDyogen_py2.7/bin/stats.getNbComparisons.py     (refactored)
+@@ -30,8 +30,8 @@
+ phylTree = utils.myPhylTree.PhylogeneticTree(arguments["phylTree.conf"])
+
+ if (arguments["colNames"]):
+-    print >> sys.stdout, utils.myFile.myTSV.printLine(
+-        ["Ancestor", "NbComp", "Nb(In/Out)Comp", "Nb(In/In)Comp", "Age", "MeanSize_OfBlocks","N50Size_OfBlocks", "WASize_OfBlocks", "NbComp/Age"])
++    print(utils.myFile.myTSV.printLine(
++        ["Ancestor", "NbComp", "Nb(In/Out)Comp", "Nb(In/In)Comp", "Age", "MeanSize_OfBlocks","N50Size_OfBlocks", "WASize_OfBlocks", "NbComp/Age"]), file=sys.stdout)
+
+ for anc in phylTree.listAncestr:
+     # print >> sys.stderr, anc
+@@ -87,5 +87,5 @@
+
+
+
+-    print utils.myFile.myTSV.printLine(
+-        [anc, nbc, compInOut, compInIn, phylTree.ages[anc], totalStat[9], totalStat[6], int(totalStat[7]), float(nbc) / phylTree.ages[anc]])
++    print(utils.myFile.myTSV.printLine(
++        [anc, nbc, compInOut, compInIn, phylTree.ages[anc], totalStat[9], totalStat[6], int(totalStat[7]), float(nbc) / phylTree.ages[anc]]))
+RefactoringTool: Writing converted ToolsDyogen_py2.7/bin/stats.getNbComparisons.py to ToolsDyogen/bin/stats.getNbComparisons.py.
+--- ToolsDyogen_py2.7/bin/misc.compareGenomes.py        (original)
++++ ToolsDyogen_py2.7/bin/misc.compareGenomes.py        (refactored)
+@@ -63,7 +63,7 @@
+ if arguments["includeNones"]:
+     chr1.extend(genome1.chrList[utils.myGenomes.ContigType.None])
+     chr2.extend(genome2.chrList[utils.myGenomes.ContigType.None])
+-print >> sys.stderr, len(chr1), len(chr2)
++print(len(chr1), len(chr2), file=sys.stderr)
+
+ chr1 = [c for c in chr1 if len(genome1.lstGenes[c]) >= arguments["minChrSize"]]
+ chr2 = [c for c in chr2 if len(genome2.lstGenes[c]) >= arguments["minChrSize"]]
+@@ -78,7 +78,7 @@
+ def drawMatrix():
+     # Matrix
+
+-    print >> sys.stderr, "Display ",
++    print("Display ", end=' ', file=sys.stderr)
+
+     if arguments["sortBySize"]:
+         chr1.sort(key=lambda c: len(genome1.lstGenes[c]), reverse=True)
+@@ -120,16 +120,16 @@
+     def line2(c, x, l):
+         utils.myPsOutput.drawLine(1, 1 + x * scaleY, 19, 0, arguments["matrix:penColor"])
+         if c:
+-            print "90 rotate"
++            print("90 rotate")
+             utils.myPsOutput.drawText(1 + (x + l / 2) * scaleY, -0.9, c, arguments["matrix:penColor"])
+-            print "-90 rotate"
++            print("-90 rotate")
+
+     lstNum1 = prepareGenome(table12, chr1, line1)
+     sys.stderr.write('.')
+     lstNum2 = prepareGenome(table21, chr2, line2)
+     sys.stderr.write('.')
+
+-    print "0 setlinewidth"
++    print("0 setlinewidth")
+
+     for c1 in table12:
+         for (i1, t) in table12[c1]:
+@@ -150,13 +150,13 @@
+     utils.myPsOutput.drawText(4, 0.3,
+                               arguments["referenceGenome"] if arguments["reverse"] else arguments["studiedGenome"],
+                               arguments["matrix:penColor"])
+-    print "90 rotate"
++    print("90 rotate")
+     utils.myPsOutput.drawText(4, -0.5,
+                               arguments["studiedGenome"] if arguments["reverse"] else arguments["referenceGenome"],
+                               arguments["matrix:penColor"])
+-    print "-90 rotate"
++    print("-90 rotate")
+     utils.myPsOutput.printPsFooter()
+-    print >> sys.stderr, " OK"
++    print(" OK", file=sys.stderr)
+
+
+ #
+@@ -177,23 +177,23 @@
+                 newl.append(val[0][0])
+         data.append((c, newl))
+
+-    print >> sys.stderr, "Display ...",
++    print("Display ...", end=' ', file=sys.stderr)
+     utils.myKaryoDrawer.drawKaryo(data, arguments, x0=1, y0=1, lx=lx - 2, ly=ly - 2, bysize=arguments["sortBySize"])
+     utils.myPsOutput.printPsFooter()
+-    print >> sys.stderr, "OK"
++    print("OK", file=sys.stderr)
+
+
+ #
+ # displays a tabular text with the number of orthologs for each pair of chromosomes
+ ###################################################################################
+ def printOrthologuesCount():
+-    print utils.myFile.myTSV.printLine([""] + chr2)
++    print(utils.myFile.myTSV.printLine([""] + chr2))
+     for c1 in chr1:
+         count = collections.defaultdict(int)
+         for (i1, t) in table12[c1]:
+             for (c2, i2) in t:
+                 count[c2] += 1
+-        print utils.myFile.myTSV.printLine([c1] + [count[c2] for c2 in chr2])
++        print(utils.myFile.myTSV.printLine([c1] + [count[c2] for c2 in chr2]))
+
+
+ #
+@@ -209,7 +209,7 @@
+         for (i1, t) in sorted(table12[c1]):
+             g1 = genome1.lstGenes[c1][i1]
+             for (c2, i2) in sorted(t):
+-                print utils.myFile.myTSV.printLine(printGene(g1) + printGene(genome2.lstGenes[c2][i2]))
++                print(utils.myFile.myTSV.printLine(printGene(g1) + printGene(genome2.lstGenes[c2][i2])))
+
+
+ #
+@@ -232,19 +232,19 @@
+         e2 = [getGeneTxt(genome2.lstGenes[c][i]) for (x, c, i) in g if x == 2]
+         if len(e1) == 0:
+             assert len(e2) == 1
+-            print "+",
++            print("+", end=' ')
+         elif len(e2) == 0:
+             assert len(e1) == 1
+-            print "-",
++            print("-", end=' ')
+         elif (len(e1) == 1) and (len(e2) == 1):
+-            print "=",
++            print("=", end=' ')
+         elif (len(e1) > 1) and (len(e2) == 1):
+-            print "--",
++            print("--", end=' ')
+         elif (len(e1) == 1) and (len(e2) > 1):
+-            print "++",
++            print("++", end=' ')
+         else:
+-            print "**",
+-        print " ".join(e1 + e2)
++            print("**", end=' ')
++        print(" ".join(e1 + e2))
+
+
+ #
+@@ -257,13 +257,13 @@
+             for (c2, i2) in t:
+                 count[c2] += 1
+         res = [c1]
+-        t = sorted(count.iteritems(), key=operator.itemgetter(1))
+-        n = (sum(count.itervalues()) * arguments["orthoschr:minHomology"]) / 100
++        t = sorted(iter(count.items()), key=operator.itemgetter(1))
++        n = (sum(count.values()) * arguments["orthoschr:minHomology"]) / 100
+         while n > 0:
+             x = t.pop()
+             res.append("%s (%d)" % x)
+             n -= x[1]
+-        print utils.myFile.myTSV.printLine(res)
++        print(utils.myFile.myTSV.printLine(res))
+
+
+ eval(str(arguments["mode"]))()
+RefactoringTool: Writing converted ToolsDyogen_py2.7/bin/misc.compareGenomes.py to ToolsDyogen/bin/misc.compareGenomes.py.
+RefactoringTool: Refactored ToolsDyogen_py2.7/bin/stats.mkODS.py
+--- ToolsDyogen_py2.7/bin/stats.mkODS.py        (original)
++++ ToolsDyogen_py2.7/bin/stats.mkODS.py        (refactored)
+@@ -63,7 +63,7 @@
+
+ for cutoff in allCutoff:
+
+-    print >> sys.stderr, cutoff, "...",
++    print(cutoff, "...", end=' ', file=sys.stderr)
+
+     # Recuperation des donnees de longueur de blocs
+     alldata[cutoff] = data = {}
+@@ -97,17 +97,17 @@
+         newdata = [(x - ref[e][i] if i >= 2 else x) for (i, x) in enumerate(data[e])]
+         newdata.insert(2, 100 * (1. - float(newdata[4]) / newdata[2]) if newdata[2] != 0 else None)
+         diff[e] = newdata
+-    print >> sys.stderr, "OK"
++    print("OK", file=sys.stderr)
+
+ if arguments["outputODS"] == "":
+     for cutoff in allCutoff:
+-        print utils.myFile.myTSV.printLine(["Ancestor", "Age (My)"] + titles)
++        print(utils.myFile.myTSV.printLine(["Ancestor", "Age (My)"] + titles))
+         for e in lstEspeces:
+-            print utils.myFile.myTSV.printLine(alldata[cutoff][e])
++            print(utils.myFile.myTSV.printLine(alldata[cutoff][e]))
+     if cutoff in alldiff:
+-        print utils.myFile.myTSV.printLine(["Ancestor", "Age (My)", "%Useful Gene Loss"] + titles)
++        print(utils.myFile.myTSV.printLine(["Ancestor", "Age (My)", "%Useful Gene Loss"] + titles))
+         for e in lstEspeces:
+-            print utils.myFile.myTSV.printLine(alldiff[cutoff][e])
++            print(utils.myFile.myTSV.printLine(alldiff[cutoff][e]))
+
+ else:
+     import odf.opendocument
+RefactoringTool: Writing converted ToolsDyogen_py2.7/bin/stats.mkODS.py to ToolsDyogen/bin/stats.mkODS.py.
+RefactoringTool: Refactored ToolsDyogen_py2.7/bin/statsEvents.mkODS.py
+--- ToolsDyogen_py2.7/bin/statsEvents.mkODS.py  (original)
++++ ToolsDyogen_py2.7/bin/statsEvents.mkODS.py  (refactored)
+@@ -41,7 +41,7 @@
+     allEvents.append(cutoff)
+ for events in allEvents:
+
+-    print >> sys.stderr, events, "...",
++    print(events, "...", end=' ', file=sys.stderr)
+
+     # Recuperation des donnees de longueur de blocs
+     alldata[events] = data = {}
+@@ -80,22 +80,22 @@
+             nbBlock += 1
+
+         data[e].append(nbBlock)
+-        print >> sys.stderr, e, "...", nbBlock, "...",
++        print(e, "...", nbBlock, "...", end=' ', file=sys.stderr)
+     if events == allEvents[0]:
+         ref = data
+
+-    print >> sys.stderr, "OK"
++    print("OK", file=sys.stderr)
+
+ if arguments["outputODS"] == "":
+     for events in allEvents:
+-        print >> sys.stdout, events
+-        print utils.myFile.myTSV.printLine(["Ancestor", "Age (My)"] + titles)
++        print(events, file=sys.stdout)
++        print(utils.myFile.myTSV.printLine(["Ancestor", "Age (My)"] + titles))
+         for e in lstEspeces:
+-            print utils.myFile.myTSV.printLine(alldata[events][e])
++            print(utils.myFile.myTSV.printLine(alldata[events][e]))
+     if events in alldiff:
+-        print utils.myFile.myTSV.printLine(["Ancestor", "Age (My)", "%Useful Gene Loss"] + titles)
++        print(utils.myFile.myTSV.printLine(["Ancestor", "Age (My)", "%Useful Gene Loss"] + titles))
+         for e in lstEspeces:
+-            print utils.myFile.myTSV.printLine(alldiff[events][e])
++            print(utils.myFile.myTSV.printLine(alldiff[events][e]))
+
+ else:
+     import odf.opendocument
+RefactoringTool: Writing converted ToolsDyogen_py2.7/bin/statsEvents.mkODS.py to ToolsDyogen/bin/statsEvents.mkODS.py.
+RefactoringTool: Refactored ToolsDyogen_py2.7/bin/stats.mkODS_withSummary.py
+--- ToolsDyogen_py2.7/bin/stats.mkODS_withSummary.py    (original)
++++ ToolsDyogen_py2.7/bin/stats.mkODS_withSummary.py    (refactored)
+@@ -69,7 +69,7 @@
+     allEvents.append(cutoff)
+ for events in allEvents:
+
+-    print >> sys.stderr, events, "...",
++    print(events, "...", end=' ', file=sys.stderr)
+
+     # Recuperation des donnees de longueur de blocs
+     alldata[events] = data = {}
+@@ -108,7 +108,7 @@
+             nbBlock += 1
+
+         data[e].append(nbBlock)
+-        print >> sys.stderr, e, "...", nbBlock, "...",
++        print(e, "...", nbBlock, "...", end=' ', file=sys.stderr)
+     if events == allEvents[0]:
+         ref = data
+     # else:
+@@ -118,18 +118,18 @@
+     #          newdata = [(x-ref[e][i] if i >= 2 else x) for (i,x) in enumerate(data[e])]
+     #          newdata.insert(2, 100*(1.-float(newdata[4])/newdata[2]) if newdata[2] != 0 else None)
+     #          diff[e] = newdata
+-    print >> sys.stderr, "OK"
++    print("OK", file=sys.stderr)
+
+ if arguments["outputODS"] == "":
+     for events in allEvents:
+-        print >> sys.stdout, events
+-        print utils.myFile.myTSV.printLine(["Ancestor", "Age (My)"] + titles)
++        print(events, file=sys.stdout)
++        print(utils.myFile.myTSV.printLine(["Ancestor", "Age (My)"] + titles))
+         for e in lstEspeces:
+-            print utils.myFile.myTSV.printLine(alldata[events][e])
++            print(utils.myFile.myTSV.printLine(alldata[events][e]))
+     if events in alldiff:
+-        print utils.myFile.myTSV.printLine(["Ancestor", "Age (My)", "%Useful Gene Loss"] + titles)
++        print(utils.myFile.myTSV.printLine(["Ancestor", "Age (My)", "%Useful Gene Loss"] + titles))
+         for e in lstEspeces:
+-            print utils.myFile.myTSV.printLine(alldiff[events][e])
++            print(utils.myFile.myTSV.printLine(alldiff[events][e]))
+
+ else:
+     import odf.opendocument
+RefactoringTool: Writing converted ToolsDyogen_py2.7/bin/stats.mkODS_withSummary.py to ToolsDyogen/bin/stats.mkODS_withSummary.py.
+RefactoringTool: Refactored ToolsDyogen_py2.7/ensemblTools/ENSEMBL.biomartQuery.py
+--- ToolsDyogen_py2.7/ensemblTools/ENSEMBL.biomartQuery.py      (original)
++++ ToolsDyogen_py2.7/ensemblTools/ENSEMBL.biomartQuery.py      (refactored)
+@@ -9,7 +9,7 @@
+ """
+
+ import sys
+-import urllib
++import urllib.request, urllib.parse, urllib.error
+
+ import utils.myFile
+ import utils.myTools
+@@ -26,7 +26,7 @@
+ request = f.read()
+ f.close()
+
+-print >> sys.stderr, "Downloading XML Query",
+-urllib.urlretrieve(arguments["biomartServer"], filename=arguments["outputFileName"],
+-                   data=urllib.urlencode({"query": request}))
+-print >> sys.stderr, "OK"
++print("Downloading XML Query", end=' ', file=sys.stderr)
++urllib.request.urlretrieve(arguments["biomartServer"], filename=arguments["outputFileName"],
++                   data=urllib.parse.urlencode({"query": request}))
++print("OK", file=sys.stderr)
+RefactoringTool: Writing converted ToolsDyogen_py2.7/ensemblTools/ENSEMBL.biomartQuery.py to ToolsDyogen/ensemblTools/ENSEMBL.biomartQuery.py.
+RefactoringTool: Refactored ToolsDyogen_py2.7/ensemblTools/ENSEMBL.biomartQueryAll.py
+--- ToolsDyogen_py2.7/ensemblTools/ENSEMBL.biomartQueryAll.py   (original)
++++ ToolsDyogen_py2.7/ensemblTools/ENSEMBL.biomartQueryAll.py   (refactored)
+@@ -10,7 +10,7 @@
+
+ import sys
+ import time
+-import urllib
++import urllib.request, urllib.parse, urllib.error
+
+ import utils.myFile
+ import utils.myPhylTree
+@@ -36,9 +36,9 @@
+     tmp = esp.lower().split()
+     tmp = tmp[0][0] + tmp[1]
+
+-    print >> sys.stderr, "Downloading %s (%s) ..." % (esp, tmp),
+-    urllib.urlretrieve(arguments["biomartServer"], filename=arguments["outputFileName"] % phylTree.fileName[esp],
+-                       data=urllib.urlencode({"query": request % tmp}))
+-    print >> sys.stderr, "OK"
++    print("Downloading %s (%s) ..." % (esp, tmp), end=' ', file=sys.stderr)
++    urllib.request.urlretrieve(arguments["biomartServer"], filename=arguments["outputFileName"] % phylTree.fileName[esp],
++                       data=urllib.parse.urlencode({"query": request % tmp}))
++    print("OK", file=sys.stderr)
+
+     time.sleep(10)
+RefactoringTool: Writing converted ToolsDyogen_py2.7/ensemblTools/ENSEMBL.biomartQueryAll.py to ToolsDyogen/ensemblTools/ENSEMBL.biomartQueryAll.py.
+RefactoringTool: Refactored ToolsDyogen_py2.7/drawTools/drawPhylTreeRearrang.py
+--- ToolsDyogen_py2.7/drawTools/drawPhylTreeRearrang.py (original)
++++ ToolsDyogen_py2.7/drawTools/drawPhylTreeRearrang.py (refactored)
+@@ -47,14 +47,14 @@
+                for l in f:
+                        #print >> sys.stderr, "the line", l
+                        t = l.replace('\n','').split("\t")
+-                       s1 = intern(t[0])
+-                       s2 = intern(t[1])
++                       s1 = sys.intern(t[0])
++                       s2 = sys.intern(t[1])
+                        assert (s1 == phylTree.parent[s2][0]) or (s2 == phylTree.parent[s1][0]), (s1,s2)
+                        #x = func(float(t[2]) / (3. if s2 in ["Sus scrofa", "Meleagris gallopavo"] else 1.) , float(abs(phylTree.ages[s1] - phylTree.ages[s2])))
+                        x = func(float(t[2]), float(abs(phylTree.ages[s1] - phylTree.ages[s2])))
+                        vals[(s1,s2)] = x
+                        vals[(s2,s1)] = x
+-                       print >> sys.stderr, '%s/%s (%s)' % (s1, s2, t[2])
++                       print('%s/%s (%s)' % (s1, s2, t[2]), file=sys.stderr)
+                f.close()
+        return vals
+
+@@ -65,7 +65,7 @@
+ #colors = loadVals(arguments["colorFile"], funcColor)
+
+ refcolors = [(0,0,127), (0,192,192), (0,192,0), (255,255,0), (242,148,0), (255,0,0)]
+-inter = utils.myMaths.myInterpolator.getMultDim(utils.myMaths.myInterpolator.oneDimCubic, range(len(refcolors)), refcolors)
++inter = utils.myMaths.myInterpolator.getMultDim(utils.myMaths.myInterpolator.oneDimCubic, list(range(len(refcolors))), refcolors)
+
+ y = 0
+ dy = hauteur / (len(phylTree.species[root])+1.)
+@@ -81,7 +81,7 @@
+ newAge = {}
+ #val = []
+ def calcNewAge(node, a):
+-       print >> sys.stderr, node, a
++       print(node, a, file=sys.stderr)
+        newAge[node] = a
+        if node in phylTree.items:
+                for (e,_) in phylTree.items[node]:
+@@ -92,7 +92,7 @@
+ m = max(newAge.values())
+ for a in newAge:
+        newAge[a] = m-newAge[a]
+-print >> sys.stderr, newAge
++print(newAge, file=sys.stderr)
+
+ #minV = float(min(val))
+ #maxV = float(max(val))
+@@ -143,10 +143,10 @@
+
+        for (tmpY,a,color) in todo:
+                if color == None:
+-                       print "0.001 cm setlinewidth"
++                       print("0.001 cm setlinewidth")
+                        color = "black"
+                else:
+-                       print "0.1 cm setlinewidth"
++                       print("0.1 cm setlinewidth")
+                utils.myPsOutput.drawLine(x, tmpY, a*dx, 0, color)
+                utils.myPsOutput.drawLine(x, tmpY, 0, (mi+ma)/2.-tmpY, color)
+
+RefactoringTool: Writing converted ToolsDyogen_py2.7/drawTools/drawPhylTreeRearrang.py to ToolsDyogen/drawTools/drawPhylTreeRearrang.py.
+RefactoringTool: Refactored ToolsDyogen_py2.7/compareTools/misc.compareGenomes.py
+--- ToolsDyogen_py2.7/compareTools/misc.compareGenomes.py       (original)
++++ ToolsDyogen_py2.7/compareTools/misc.compareGenomes.py       (refactored)
+@@ -63,7 +63,7 @@
+ if arguments["includeNones"]:
+     chr1.extend(genome1.chrList[utils.myGenomes.ContigType.None])
+     chr2.extend(genome2.chrList[utils.myGenomes.ContigType.None])
+-print >> sys.stderr, len(chr1), len(chr2)
++print(len(chr1), len(chr2), file=sys.stderr)
+
+ chr1 = [c for c in chr1 if len(genome1.lstGenes[c]) >= arguments["minChrSize"]]
+ chr2 = [c for c in chr2 if len(genome2.lstGenes[c]) >= arguments["minChrSize"]]
+@@ -78,7 +78,7 @@
+ def drawMatrix():
+     # Matrix
+
+-    print >> sys.stderr, "Display ",
++    print("Display ", end=' ', file=sys.stderr)
+
+     if arguments["sortBySize"]:
+         chr1.sort(key=lambda c: len(genome1.lstGenes[c]), reverse=True)
+@@ -120,16 +120,16 @@
+     def line2(c, x, l):
+         utils.myPsOutput.drawLine(1, 1 + x * scaleY, 19, 0, arguments["matrix:penColor"])
+         if c:
+-            print "90 rotate"
++            print("90 rotate")
+             utils.myPsOutput.drawText(1 + (x + l / 2) * scaleY, -0.9, c, arguments["matrix:penColor"])
+-            print "-90 rotate"
++            print("-90 rotate")
+
+     lstNum1 = prepareGenome(table12, chr1, line1)
+     sys.stderr.write('.')
+     lstNum2 = prepareGenome(table21, chr2, line2)
+     sys.stderr.write('.')
+
+-    print "0 setlinewidth"
++    print("0 setlinewidth")
+
+     for c1 in table12:
+         for (i1, t) in table12[c1]:
+@@ -150,13 +150,13 @@
+     utils.myPsOutput.drawText(4, 0.3,
+                               arguments["referenceGenome"] if arguments["reverse"] else arguments["studiedGenome"],
+                               arguments["matrix:penColor"])
+-    print "90 rotate"
++    print("90 rotate")
+     utils.myPsOutput.drawText(4, -0.5,
+                               arguments["studiedGenome"] if arguments["reverse"] else arguments["referenceGenome"],
+                               arguments["matrix:penColor"])
+-    print "-90 rotate"
++    print("-90 rotate")
+     utils.myPsOutput.printPsFooter()
+-    print >> sys.stderr, " OK"
++    print(" OK", file=sys.stderr)
+
+
+ #
+@@ -177,23 +177,23 @@
+                 newl.append(val[0][0])
+         data.append((c, newl))
+
+-    print >> sys.stderr, "Display ...",
++    print("Display ...", end=' ', file=sys.stderr)
+     utils.myKaryoDrawer.drawKaryo(data, arguments, x0=1, y0=1, lx=lx - 2, ly=ly - 2, bysize=arguments["sortBySize"])
+     utils.myPsOutput.printPsFooter()
+-    print >> sys.stderr, "OK"
++    print("OK", file=sys.stderr)
+
+
+ #
+ # displays a tabular text with the number of orthologs for each pair of chromosomes
+ ###################################################################################
+ def printOrthologuesCount():
+-    print utils.myFile.myTSV.printLine([""] + chr2)
++    print(utils.myFile.myTSV.printLine([""] + chr2))
+     for c1 in chr1:
+         count = collections.defaultdict(int)
+         for (i1, t) in table12[c1]:
+             for (c2, i2) in t:
+                 count[c2] += 1
+-        print utils.myFile.myTSV.printLine([c1] + [count[c2] for c2 in chr2])
++        print(utils.myFile.myTSV.printLine([c1] + [count[c2] for c2 in chr2]))
+
+
+ #
+@@ -209,7 +209,7 @@
+         for (i1, t) in sorted(table12[c1]):
+             g1 = genome1.lstGenes[c1][i1]
+             for (c2, i2) in sorted(t):
+-                print utils.myFile.myTSV.printLine(printGene(g1) + printGene(genome2.lstGenes[c2][i2]))
++                print(utils.myFile.myTSV.printLine(printGene(g1) + printGene(genome2.lstGenes[c2][i2])))
+
+
+ #
+@@ -232,19 +232,19 @@
+         e2 = [getGeneTxt(genome2.lstGenes[c][i]) for (x, c, i) in g if x == 2]
+         if len(e1) == 0:
+             assert len(e2) == 1
+-            print "+",
++            print("+", end=' ')
+         elif len(e2) == 0:
+             assert len(e1) == 1
+-            print "-",
++            print("-", end=' ')
+         elif (len(e1) == 1) and (len(e2) == 1):
+-            print "=",
++            print("=", end=' ')
+         elif (len(e1) > 1) and (len(e2) == 1):
+-            print "--",
++            print("--", end=' ')
+         elif (len(e1) == 1) and (len(e2) > 1):
+-            print "++",
++            print("++", end=' ')
+         else:
+-            print "**",
+-        print " ".join(e1 + e2)
++            print("**", end=' ')
++        print(" ".join(e1 + e2))
+
+
+ #
+@@ -257,13 +257,13 @@
+             for (c2, i2) in t:
+                 count[c2] += 1
+         res = [c1]
+-        t = sorted(count.iteritems(), key=operator.itemgetter(1))
+-        n = (sum(count.itervalues()) * arguments["orthoschr:minHomology"]) / 100
++        t = sorted(iter(count.items()), key=operator.itemgetter(1))
++        n = (sum(count.values()) * arguments["orthoschr:minHomology"]) / 100
+         while n > 0:
+             x = t.pop()
+             res.append("%s (%d)" % x)
+             n -= x[1]
+-        print utils.myFile.myTSV.printLine(res)
++        print(utils.myFile.myTSV.printLine(res))
+
+
+ eval(str(arguments["mode"]))()
+RefactoringTool: Writing converted ToolsDyogen_py2.7/compareTools/misc.compareGenomes.py to ToolsDyogen/compareTools/misc.compareGenomes.py.
+RefactoringTool: Refactored ToolsDyogen_py2.7/ensemblTools/ENSEMBL.downloadNcgeneTrees.py
+--- ToolsDyogen_py2.7/ensemblTools/ENSEMBL.downloadNcgeneTrees.py       (original)
++++ ToolsDyogen_py2.7/ensemblTools/ENSEMBL.downloadNcgeneTrees.py       (refactored)
+@@ -39,19 +39,19 @@
+
+ # On charge les liens taxon_id -> species name
+ ###############################################
+-print >> sys.stderr, "Chargement des liens taxon_id -> species_name ...",
++print("Chargement des liens taxon_id -> species_name ...", end=' ', file=sys.stderr)
+ taxonName = {}
+ f = utils.myFile.openFile(os.path.join(arguments["IN.EnsemblURL"], arguments["IN.genome_db"]), "r")
+ for ligne in utils.myFile.myTSV.MySQLFileLoader(f):
+        t = ligne.split("\t")
+        taxonName[t[1]] = t[2]
+ f.close()
+-print >> sys.stderr, len(taxonName), "especes OK"
++print(len(taxonName), "especes OK", file=sys.stderr)
+
+
+ # On charge les liens member_id -> protein name
+ ################################################
+-print >> sys.stderr, "Chargement des liens member_id -> protein_name ...",
++print("Chargement des liens member_id -> protein_name ...", end=' ', file=sys.stderr)
+ tmpLinks = {}
+ f = utils.myFile.openFile(os.path.join(arguments["IN.EnsemblURL"], arguments["IN.member"]), "r")
+ for ligne in utils.myFile.myTSV.MySQLFileLoader(f):
+@@ -62,12 +62,12 @@
+                tmpLinks[t[0]] = ((x[1].split(':')[1], x[0].split(':')[1], t[1]), taxonName[t[4]])
+ f.close()
+ del taxonName
+-print >> sys.stderr, len(tmpLinks), "membres OK"
++print(len(tmpLinks), "membres OK", file=sys.stderr)
+
+
+ # On charge les liens node_id -> member_id
+ ###########################################
+-print >> sys.stderr, "Chargement des liens node_id -> member_id ...",
++print("Chargement des liens node_id -> member_id ...", end=' ', file=sys.stderr)
+ x = 0
+ info = collections.defaultdict(dict)
+ f = utils.myFile.openFile(os.path.join(arguments["IN.EnsemblURL"], arguments["IN.nc_tree_member"]), "r")
+@@ -76,17 +76,17 @@
+        t = ligne.split("\t")
+        data = tmpLinks[t[2]]
+        info[int(t[0])] = {'gene_name': data[0][0], 'taxon_name': data[1]}
+-       print >> fi, utils.myFile.myTSV.printLine([t[0], data[1], data[0][0], data[0][1], data[0][2], t[4]])
++       print(utils.myFile.myTSV.printLine([t[0], data[1], data[0][0], data[0][1], data[0][2], t[4]]), file=fi)
+        x += 1
+ f.close()
+ fi.close()
+-print >> sys.stderr, x, "nc OK"
++print(x, "nc OK", file=sys.stderr)
+ del tmpLinks
+
+
+ # On charge les liens node_id -> tree_name
+ ###########################################
+-print >> sys.stderr, "Chargement des node_id -> tree_name ...",
++print("Chargement des node_id -> tree_name ...", end=' ', file=sys.stderr)
+ x = 0
+ f = utils.myFile.openFile(os.path.join(arguments["IN.EnsemblURL"], arguments["IN.protein_tree_stable_id"]), "r")
+ for ligne in utils.myFile.myTSV.MySQLFileLoader(f):
+@@ -94,12 +94,12 @@
+        info[int(t[0])]["tree_name"] = t[1]
+        x += 1
+ f.close()
+-print >> sys.stderr, x, "noms OK"
++print(x, "noms OK", file=sys.stderr)
+
+
+ # On charge les liens node_id -> infos
+ #######################################
+-print >> sys.stderr, "Chargement des liens node_id -> infos ...",
++print("Chargement des liens node_id -> infos ...", end=' ', file=sys.stderr)
+ f = utils.myFile.openFile(os.path.join(arguments["IN.EnsemblURL"], arguments["IN.nc_tree_tag"]), "r")
+ for ligne in utils.myFile.myTSV.MySQLFileLoader(f):
+        t = ligne.split("\t")
+@@ -116,12 +116,12 @@
+        info[ int(t[0]) ][t[1]] = t[2]
+
+ f.close()
+-print >> sys.stderr, len(info), "infos OK"
++print(len(info), "infos OK", file=sys.stderr)
+
+
+ # On charge les liens node_id_father -> node_id_son
+ ####################################################
+-print >> sys.stderr, "Chargement des arbres (node_id_father -> node_id_son) ...",
++print("Chargement des arbres (node_id_father -> node_id_son) ...", end=' ', file=sys.stderr)
+ data = collections.defaultdict(list)
+ f = utils.myFile.openFile(os.path.join(arguments["IN.EnsemblURL"], arguments["IN.nc_tree_node"]), "r")
+ for ligne in utils.myFile.myTSV.MySQLFileLoader(f):
+@@ -131,31 +131,31 @@
+        data[ node ].append( (int(t[0]), float(t[6])) )
+ f.close()
+ allroots = set(root for (root,_) in data[1])
+-print >> sys.stderr, len(data), "branches OK"
++print(len(data), "branches OK", file=sys.stderr)
+
+
+ # On regle les parametres de info
+ ##################################
+ acceptedTagNames = set(["Bootstrap", "Duplication", "duplication_confidence_score", "dubious_duplication", "taxon_name", "gene_name"])
+-for (node,inf) in info.iteritems():
++for (node,inf) in info.items():
+        #print >> sys.stderr, node
+        if 'taxon_name' in inf:
+                # Pour passer des '/' et ' ' a '-' et '_', et enlever le 'Silurana'
+                inf['taxon_name'] = phylTree.officialName[inf['taxon_name']]
+ #      if node not in allroots:
+-       for tagname in inf.keys():
++       for tagname in list(inf.keys()):
+                if tagname not in acceptedTagNames:
+                        del inf[tagname]
+
+-for dat in data.itervalues():
++for dat in data.values():
+        dat.sort()
+
+ # On a besoin des genomes modernes pour reconnaitre les genes
+-print >> sys.stderr, "Mise en forme des arbres ...",
++print("Mise en forme des arbres ...", end=' ', file=sys.stderr)
+ ft = utils.myFile.openFile(arguments["OUT.tree"], "w")
+ for root in allroots:
+        if 'taxon_name' in info[root]:
+                utils.myProteinTree.ProteinTree(data, info, root).printTree(ft)
+ ft.close()
+-print >> sys.stderr, len(data[1]), "arbres OK"
++print(len(data[1]), "arbres OK", file=sys.stderr)
+
+RefactoringTool: Writing converted ToolsDyogen_py2.7/ensemblTools/ENSEMBL.downloadNcgeneTrees.py to ToolsDyogen/ensemblTools/ENSEMBL.downloadNcgeneTrees.py.
+RefactoringTool: Refactored ToolsDyogen_py2.7/ensemblTools/ENSEMBL.downloadProteinTrees.py
+--- ToolsDyogen_py2.7/ensemblTools/ENSEMBL.downloadProteinTrees.py      (original)
++++ ToolsDyogen_py2.7/ensemblTools/ENSEMBL.downloadProteinTrees.py      (refactored)
+@@ -40,19 +40,19 @@
+
+ # On charge les liens taxon_id -> species name
+ ###############################################
+-print >> sys.stderr, "Chargement des liens taxon_id -> species_name ...",
++print("Chargement des liens taxon_id -> species_name ...", end=' ', file=sys.stderr)
+ taxonName = {}
+ f = utils.myFile.openFile(os.path.join(arguments["IN.EnsemblURL"], arguments["IN.genome_db"]), "r")
+ for ligne in utils.myFile.myTSV.MySQLFileLoader(f):
+        t = ligne.split("\t")
+        taxonName[t[1]] = t[2]
+ f.close()
+-print >> sys.stderr, len(taxonName), "especes OK"
++print(len(taxonName), "especes OK", file=sys.stderr)
+
+
+ # On charge les liens member_id -> protein name
+ ################################################
+-print >> sys.stderr, "Chargement des liens member_id -> protein_name ...",
++print("Chargement des liens member_id -> protein_name ...", end=' ', file=sys.stderr)
+ tmpLinks = {}
+ f = utils.myFile.openFile(os.path.join(arguments["IN.EnsemblURL"], arguments["IN.member"]), "r")
+ for ligne in utils.myFile.myTSV.MySQLFileLoader(f):
+@@ -63,12 +63,12 @@
+                tmpLinks[t[0]] = ((x[1].split(':')[1], x[0].split(':')[1], t[1]), taxonName[t[4]])
+ f.close()
+ del taxonName
+-print >> sys.stderr, len(tmpLinks), "membres OK"
++print(len(tmpLinks), "membres OK", file=sys.stderr)
+
+
+ # On charge les liens node_id -> member_id
+ ###########################################
+-print >> sys.stderr, "Chargement des liens node_id -> member_id ...",
++print("Chargement des liens node_id -> member_id ...", end=' ', file=sys.stderr)
+ x = 0
+ info = collections.defaultdict(dict)
+ f = utils.myFile.openFile(os.path.join(arguments["IN.EnsemblURL"], arguments["IN.protein_tree_member"]), "r")
+@@ -77,17 +77,17 @@
+        t = ligne.split("\t")
+        data = tmpLinks[t[2]]
+        info[int(t[0])] = {'gene_name': data[0][0], 'taxon_name': data[1]}
+-       print >> fi, utils.myFile.myTSV.printLine([t[0], data[1], data[0][0], data[0][1], data[0][2], t[4]])
++       print(utils.myFile.myTSV.printLine([t[0], data[1], data[0][0], data[0][1], data[0][2], t[4]]), file=fi)
+        x += 1
+ f.close()
+ fi.close()
+-print >> sys.stderr, x, "proteines OK"
++print(x, "proteines OK", file=sys.stderr)
+ del tmpLinks
+
+
+ # On charge les liens node_id -> tree_name
+ ###########################################
+-print >> sys.stderr, "Chargement des node_id -> tree_name ...",
++print("Chargement des node_id -> tree_name ...", end=' ', file=sys.stderr)
+ x = 0
+ f = utils.myFile.openFile(os.path.join(arguments["IN.EnsemblURL"], arguments["IN.protein_tree_stable_id"]), "r")
+ for ligne in utils.myFile.myTSV.MySQLFileLoader(f):
+@@ -95,12 +95,12 @@
+        info[int(t[0])]["tree_name"] = t[1]
+        x += 1
+ f.close()
+-print >> sys.stderr, x, "noms OK"
++print(x, "noms OK", file=sys.stderr)
+
+
+ # On charge les liens node_id -> infos
+ #######################################
+-print >> sys.stderr, "Chargement des liens node_id -> infos ...",
++print("Chargement des liens node_id -> infos ...", end=' ', file=sys.stderr)
+ f = utils.myFile.openFile(os.path.join(arguments["IN.EnsemblURL"], arguments["IN.protein_tree_tag"]), "r")
+ for ligne in utils.myFile.myTSV.MySQLFileLoader(f):
+        t = ligne.split("\t")
+@@ -117,12 +117,12 @@
+        info[ int(t[0]) ][t[1]] = t[2]
+
+ f.close()
+-print >> sys.stderr, len(info), "infos OK"
++print(len(info), "infos OK", file=sys.stderr)
+
+
+ # On charge les liens node_id_father -> node_id_son
+ ####################################################
+-print >> sys.stderr, "Chargement des arbres (node_id_father -> node_id_son) ...",
++print("Chargement des arbres (node_id_father -> node_id_son) ...", end=' ', file=sys.stderr)
+ data = collections.defaultdict(list)
+ f = utils.myFile.openFile(os.path.join(arguments["IN.EnsemblURL"], arguments["IN.protein_tree_node"]), "r")
+ for ligne in utils.myFile.myTSV.MySQLFileLoader(f):
+@@ -132,30 +132,30 @@
+        data[ node ].append( (int(t[0]), float(t[6])) )
+ f.close()
+ allroots = set(root for (root,_) in data[1])
+-print >> sys.stderr, len(data), "branches OK"
++print(len(data), "branches OK", file=sys.stderr)
+
+
+ # On regle les parametres de info
+ ##################################
+ acceptedTagNames = set(["Bootstrap", "Duplication", "duplication_confidence_score", "dubious_duplication", "taxon_name", "gene_name"])
+-for (node,inf) in info.iteritems():
++for (node,inf) in info.items():
+        if 'taxon_name' in inf:
+                # Pour passer des '/' et ' ' a '-' et '_', et enlever le 'Silurana'
+                inf['taxon_name'] = phylTree.officialName[inf['taxon_name']]
+        if node not in allroots:
+-               for tagname in inf.keys():
++               for tagname in list(inf.keys()):
+                        if tagname not in acceptedTagNames:
+                                del inf[tagname]
+
+-for dat in data.itervalues():
++for dat in data.values():
+        dat.sort()
+
+ # On a besoin des genomes modernes pour reconnaitre les genes
+-print >> sys.stderr, "Mise en forme des arbres ...",
++print("Mise en forme des arbres ...", end=' ', file=sys.stderr)
+ ft = utils.myFile.openFile(arguments["OUT.tree"], "w")
+ for root in allroots:
+        if 'taxon_name' in info[root]:
+                utils.myProteinTree.ProteinTree(data, info, root).printTree(ft)
+ ft.close()
+-print >> sys.stderr, len(data[1]), "arbres OK"
++print(len(data[1]), "arbres OK", file=sys.stderr)
+
+RefactoringTool: Writing converted ToolsDyogen_py2.7/ensemblTools/ENSEMBL.downloadProteinTrees.py to ToolsDyogen/ensemblTools/ENSEMBL.downloadProteinTrees.py.
+RefactoringTool: Refactored ToolsDyogen_py2.7/ensemblTools/ENSEMBL.extractRefPhylTree.py
+--- ToolsDyogen_py2.7/ensemblTools/ENSEMBL.extractRefPhylTree.py        (original)
++++ ToolsDyogen_py2.7/ensemblTools/ENSEMBL.extractRefPhylTree.py        (refactored)
+@@ -5,7 +5,7 @@
+ """
+
+ import sys
+-import cStringIO
++import io
+
+ import utils.myFile
+ import utils.myTools
+@@ -18,7 +18,7 @@
+ dicTaxonAlias = {}
+
+ # Chargement des donnees
+-print >> sys.stderr, "Chargement des tags ...",
++print("Chargement des tags ...", end=' ', file=sys.stderr)
+ f = utils.myFile.openFile(arguments["IN.protein_tree_tag"], "r")
+ for ligne in f:
+        t = ligne[:-1].split("\t")
+@@ -32,7 +32,7 @@
+                dicTaxonAlias[t[0]] = t[2]
+        elif t[1] == "species_tree_string":
+                tree = t[2]
+-print >> sys.stderr, "OK (lengths:", len(dicTaxonName), len(dicTaxonID), len(dicTaxonAlias), ")"
++print("OK (lengths:", len(dicTaxonName), len(dicTaxonID), len(dicTaxonAlias), ")", file=sys.stderr)
+
+ # Recoupement des infos
+ resTaxon = {}
+@@ -45,14 +45,14 @@
+                assert resTaxon[i] == (s,a)
+        else:
+                resTaxon[i] = (s,a)
+-print >> sys.stderr, len(resTaxon), "taxa named"
++print(len(resTaxon), "taxa named", file=sys.stderr)
+
+-phylTree = utils.myPhylTree.PhylogeneticTree(cStringIO.StringIO(tree))
++phylTree = utils.myPhylTree.PhylogeneticTree(io.StringIO(tree))
+
+ # Impression sous mon format, avec des indentations
+ def do(node, indent):
+        node = node.replace("*", "")
+-       print ("\t" * indent) + "|".join(resTaxon[node])
++       print(("\t" * indent) + "|".join(resTaxon[node]))
+        if node in phylTree.items:
+                for (f,_) in phylTree.items[node]:
+                        do(f, indent+1)
+RefactoringTool: Writing converted ToolsDyogen_py2.7/ensemblTools/ENSEMBL.extractRefPhylTree.py to ToolsDyogen/ensemblTools/ENSEMBL.extractRefPhylTree.py.
+RefactoringTool: Refactored ToolsDyogen_py2.7/ensemblTools/ENSEMBL.removeNestedGenes.py
+--- ToolsDyogen_py2.7/ensemblTools/ENSEMBL.removeNestedGenes.py (original)
++++ ToolsDyogen_py2.7/ensemblTools/ENSEMBL.removeNestedGenes.py (refactored)
+@@ -28,7 +28,7 @@
+        lnew.sort(key=operator.attrgetter("end"))
+
+        comb = utils.myTools.myCombinator()
+-       for (g1,g2) in itertools.izip(lref, lnew):
++       for (g1,g2) in zip(lref, lnew):
+                if g1 != g2:
+                        comb.addLink([g1,g2])
+
+@@ -43,5 +43,5 @@
+
+        for gene in lref:
+                if gene not in removed:
+-                       print utils.myFile.myTSV.printLine([c, gene.beginning, gene.end, gene.strand, " ".join(gene.names)])
++                       print(utils.myFile.myTSV.printLine([c, gene.beginning, gene.end, gene.strand, " ".join(gene.names)]))
+
+RefactoringTool: Writing converted ToolsDyogen_py2.7/ensemblTools/ENSEMBL.removeNestedGenes.py to ToolsDyogen/ensemblTools/ENSEMBL.removeNestedGenes.py.
+RefactoringTool: Refactored ToolsDyogen_py2.7/ensemblTools/ENSEMBL.reorderShortestTranscript.py
+--- ToolsDyogen_py2.7/ensemblTools/ENSEMBL.reorderShortestTranscript.py (original)
++++ ToolsDyogen_py2.7/ensemblTools/ENSEMBL.reorderShortestTranscript.py (refactored)
+@@ -46,7 +46,7 @@
+                 else:
+                     tmp.append(best[1:3] + (gene, best[3]))
+             else:
+-                print >> sys.stderr, "missing gene:", gene.names[0]
++                print("missing gene:", gene.names[0], file=sys.stderr)
+         else:
+             tmp.append((gene.beginning, gene.end, gene, None))
+
+@@ -65,4 +65,4 @@
+         res = [gene.chromosome, x, y, gene.strand, " ".join(gene.names)]
+         if name is not None:
+             res.append(name)
+-        print utils.myFile.myTSV.printLine(res)
++        print(utils.myFile.myTSV.printLine(res))
+RefactoringTool: Writing converted ToolsDyogen_py2.7/ensemblTools/ENSEMBL.reorderShortestTranscript.py to ToolsDyogen/ensemblTools/ENSEMBL.reorderShortestTranscript.py.
+RefactoringTool: Refactored ToolsDyogen_py2.7/ensemblTools/ENSEMBL.reorderShortestTranscriptV1.py
+--- ToolsDyogen_py2.7/ensemblTools/ENSEMBL.reorderShortestTranscriptV1.py       (original)
++++ ToolsDyogen_py2.7/ensemblTools/ENSEMBL.reorderShortestTranscriptV1.py       (refactored)
+@@ -35,7 +35,7 @@
+                                best = min(l)
+                                tmp.append(best[1:3] + (gene,best[3]))
+                        else:
+-                               print >> sys.stderr, "missing gene:", gene.names[0]
++                               print("missing gene:", gene.names[0], file=sys.stderr)
+                else:
+                        tmp.append((gene.beginning,gene.end,gene,None))
+
+@@ -51,5 +51,5 @@
+                res = [gene.chromosome, x, y, gene.strand, " ".join(gene.names)]
+                if name is not None:
+                        res.append(name)
+-               print utils.myFile.myTSV.printLine(res)
++               print(utils.myFile.myTSV.printLine(res))
+
+RefactoringTool: Writing converted ToolsDyogen_py2.7/ensemblTools/ENSEMBL.reorderShortestTranscriptV1.py to ToolsDyogen/ensemblTools/ENSEMBL.reorderShortestTranscriptV1.py.
+RefactoringTool: Refactored ToolsDyogen_py2.7/evolTools/ALL.extractBranchLength.py
+--- ToolsDyogen_py2.7/evolTools/ALL.extractBranchLength.py      (original)
++++ ToolsDyogen_py2.7/evolTools/ALL.extractBranchLength.py      (refactored)
+@@ -20,7 +20,7 @@
+
+ # Parcours recursif de la famille de genes
+ def do(node):
+-    print >> sys.stderr, "NEW TREE"
++    print("NEW TREE", file=sys.stderr)
+     if node in tree.data:
+         t1 = tree.info[node]['taxon_name']
+         for (g, d) in tree.data[node]:
+@@ -30,7 +30,7 @@
+                 # Les deux noeuds doivent etre strictement consecutifs
+                 if (phylTree.parent[t2].name == t1) and (d != 0):
+                     lengths[(t1, t2)].append(d)
+-                    print >> sys.stderr, utils.myFile.myTSV.printLine([t1, t2, d])
++                    print(utils.myFile.myTSV.printLine([t1, t2, d]), file=sys.stderr)
+             do(g)
+
+
+@@ -38,7 +38,7 @@
+     do(tree.root)
+
+ # On trie les listes des longueurs
+-for l in lengths.itervalues():
++for l in lengths.values():
+     l.sort()
+
+
+@@ -64,4 +64,4 @@
+         a, phylTree.ages[anc])
+
+
+-print >> sys.stdout, convertToFlatFile(phylTree.root), ";"
++print(convertToFlatFile(phylTree.root), ";", file=sys.stdout)
+RefactoringTool: Writing converted ToolsDyogen_py2.7/evolTools/ALL.extractBranchLength.py to ToolsDyogen/evolTools/ALL.extractBranchLength.py.
+RefactoringTool: Refactored ToolsDyogen_py2.7/evolTools/calcDiagEvolution.py
+--- ToolsDyogen_py2.7/evolTools/calcDiagEvolution.py    (original)
++++ ToolsDyogen_py2.7/evolTools/calcDiagEvolution.py    (refactored)
+@@ -34,7 +34,7 @@
+ for e in phylTree.listSpecies:
+     # Les genes des especes modernes
+     genes[e] = utils.myGenomes.Genome(arguments["IN.genesFile"] % phylTree.fileName[e])
+-    diags[e] = [[g] for g in xrange(len(list(genes[e])))]
++    diags[e] = [[g] for g in range(len(list(genes[e])))]
+
+ for a in phylTree.listAncestr:
+     # Les genes ancestraux
+@@ -42,7 +42,7 @@
+     # Les diagonales
+     tmp = utils.myDiags.loadDiagsFile(arguments["IN.diagsFile"] % phylTree.fileName[a], [a], phylTree.officialName)[a]
+     # On en profite pour lister les diagonales et les genes seuls
+-    notseen = set(xrange(len(genes[a].lstGenes[None])))
++    notseen = set(range(len(genes[a].lstGenes[None])))
+     diags[a] = []
+     for (d, _, _, _, _) in tmp:
+         notseen.difference_update(d)
+@@ -50,13 +50,13 @@
+     diags[a].extend([g] for g in notseen)
+
+ # Creation des dictionnaires genes -> diags
+-for (esp, lst) in diags.iteritems():
++for (esp, lst) in diags.items():
+     dic = {}
+     for (i, d) in enumerate(lst):
+         for (j, g) in enumerate(d):
+             dic[g] = (i, j)
+     dicDiags[esp] = dic
+-    print (esp, lst)
++    print((esp, lst))
+
+
+ # Les tables de conversion de diagonales entre ancetres successifs
+@@ -64,7 +64,7 @@
+     # Les branches descendantes
+     for (e, _) in phylTree.items.get(node, []):
+
+-        print >> sys.stderr, "Stating branch %s -> %s ..." % (node, e),
++        print("Stating branch %s -> %s ..." % (node, e), end=' ', file=sys.stderr)
+
+         # Les correspondances de genes entre les deux noeuds
+         corresp = [[j for (_, j) in genes[node].getPosition(g.names)] for g in genes[e]]
+@@ -76,9 +76,9 @@
+                 for gg in corresp[g]:
+                     if gg in dicDiags[node]:
+                         count[dicDiags[node][gg][0]] += 1
+-            res.append(count.items())
+-        print res
+-        print >> sys.stderr, "OK"
++            res.append(list(count.items()))
++        print(res)
++        print("OK", file=sys.stderr)
+         do(e)
+
+
+RefactoringTool: Writing converted ToolsDyogen_py2.7/evolTools/calcDiagEvolution.py to ToolsDyogen/evolTools/calcDiagEvolution.py.
+RefactoringTool: Refactored ToolsDyogen_py2.7/evolTools/calcGeneEvolution.py
+--- ToolsDyogen_py2.7/evolTools/calcGeneEvolution.py    (original)
++++ ToolsDyogen_py2.7/evolTools/calcGeneEvolution.py    (refactored)
+@@ -21,22 +21,23 @@
+     genes[a] = utils.myGenomes.Genome(arguments["ancGenesFile"] % phylTree.fileName[a])
+
+
+-def transformName(esp, (c, i)):
++def transformName(esp, xxx_todo_changeme):
++    (c, i) = xxx_todo_changeme
+     return genes[esp].lstGenes[c][i].names[0]
+
+
+ def do(node):
+     for (e, _) in phylTree.items.get(node, []):
+         res = {}
+-        seen = set([transformName(e, (c, i)) for (c, l) in genes[e].lstGenes.iteritems() for i in xrange(len(l))])
++        seen = set([transformName(e, (c, i)) for (c, l) in genes[e].lstGenes.items() for i in range(len(l))])
+         for g in genes[node].lstGenes[None]:
+             lnewg = [transformName(e, x) for x in genes[e].getPositions(g.names)]
+             seen.difference_update(lnewg)
+             res[g.names[0]] = lnewg
+-        print (res, seen)
++        print((res, seen))
+         do(e)
+
+
+-print [gene.names[0] for gene in genes[arguments["rootSpecies"]]]
++print([gene.names[0] for gene in genes[arguments["rootSpecies"]]])
+
+ do(arguments["rootSpecies"])
+RefactoringTool: Writing converted ToolsDyogen_py2.7/evolTools/calcGeneEvolution.py to ToolsDyogen/evolTools/calcGeneEvolution.py.
+RefactoringTool: Refactored ToolsDyogen_py2.7/evolTools/ALL.calcRearrangRates.py
+--- ToolsDyogen_py2.7/evolTools/ALL.calcRearrangRates.py        (original)
++++ ToolsDyogen_py2.7/evolTools/ALL.calcRearrangRates.py        (refactored)
+@@ -33,8 +33,8 @@
+     # Les genes des especes modernes
+     genes[e] = utils.myGenomes.Genome(arguments["in:genesFiles"] % phylTree.fileName[e])
+     diags[e] = []
+-    for (c, l) in genes[e].lstGenes.iteritems():
+-        diags[e].append([((c, i), l[i].strand) for i in xrange(len(l))])
++    for (c, l) in genes[e].lstGenes.items():
++        diags[e].append([((c, i), l[i].strand) for i in range(len(l))])
+
+ for a in phylTree.listAncestr:
+     # Les genes ancestraux
+@@ -42,14 +42,14 @@
+     # Les diagonales
+     diags[a] = []
+     # On en profite pour lister les diagonales et les genes seuls
+-    notseen = set(xrange(len(genes[a].lstGenes[None])))
++    notseen = set(range(len(genes[a].lstGenes[None])))
+     f = utils.myFile.openFile(arguments["in:diagsFiles"] % phylTree.fileName[a], "r")
+     for l in f:
+         t = l.split("\t")
+         d = [int(x) for x in t[2].split()]
+         s = [int(x) for x in t[3].split()]
+         s = [2 * int(x >= 0) - 1 for x in s]
+-        diags[a].append(zip([(None, i) for i in d], s))
++        diags[a].append(list(zip([(None, i) for i in d], s)))
+         notseen.difference_update(d)
+     f.close()
+     assert len(notseen) == 0
+@@ -57,7 +57,7 @@
+ # diags[a].extend( [((None,g),0)] for g in notseen)
+
+ # Creation des dictionnaires genes -> diags
+-for (esp, lst) in diags.iteritems():
++for (esp, lst) in diags.items():
+     dic = {}
+     for (i, d) in enumerate(lst):
+         for (j, (g, s)) in enumerate(d):
+@@ -74,7 +74,7 @@
+
+     for (e, a) in phylTree.items.get(node, []):
+
+-        print >> sys.stderr, "Stating branch %s -> %s ..." % (node, e),
++        print("Stating branch %s -> %s ..." % (node, e), end=' ', file=sys.stderr)
+
+         # Les correspondances de genes entre les deux noeuds
+         corresp = {}
+@@ -83,7 +83,7 @@
+             assert len(l) in [0, 1]
+             if len(l) > 0:
+                 corresp[(c, i)] = dicDiags[node][tuple(l.pop())]
+-        print >> sys.stderr, 'e:', len(dicDiags[e]), 'node:', len(dicDiags[node]), 'corresp:', len(corresp)
++        print('e:', len(dicDiags[e]), 'node:', len(dicDiags[node]), 'corresp:', len(corresp), file=sys.stderr)
+         nbOK = 0
+         nbNO = 0
+         nbXX = 0
+@@ -97,31 +97,31 @@
+                 (c2, i2, t2) = corresp[g2]
+                 j1 = i2 - s2 * t2
+                 j2 = i1 + s1 * t1
+-                print >> sys.stderr, "XXX:", (s1, s2), corresp[g1], corresp[g2], (
++                print("XXX:", (s1, s2), corresp[g1], corresp[g2], (
+                     j1, j2), i2 == j2, i1 == j1, s1 * s2 == t1 * t2, len(
+-                    diags[node][c1]), len(diags[node][c2]),
++                    diags[node][c1]), len(diags[node][c2]), end=' ', file=sys.stderr)
+                 if c1 == c2:
+                     if (i2 == j2) and (s1 * s2 == t1 * t2):
+                         nbOK += 1
+-                        print >> sys.stderr, "OK1"
++                        print("OK1", file=sys.stderr)
+                     else:
+                         nbNO += 1
+-                        print >> sys.stderr, "NO1"
++                        print("NO1", file=sys.stderr)
+                 elif (j2 >= 0) and (j2 < len(diags[node][c1])):
+-                    print >> sys.stderr, "NO2"
++                    print("NO2", file=sys.stderr)
+                     nbNO += 1
+                 else:
+                     j1 = i2 - s2 * t2
+                     if (j1 >= 0) and (j1 < len(diags[node][c2])):
+                         nbNO += 1
+-                        print >> sys.stderr, "NO3"
++                        print("NO3", file=sys.stderr)
+                     else:
+                         nbXX += 1
+-                        print >> sys.stderr, "??"
++                        print("??", file=sys.stderr)
+
+-        print >> outfileTxt, utils.myFile.myTSV.printLine(
+-            [node, e, nbOK, nbNO, nbXX, nbOK + nbNO + nbXX, (100. * nbOK) / (nbOK + nbNO), len(diags[node]), a])
+-        print >> sys.stderr, "OK"
++        print(utils.myFile.myTSV.printLine(
++            [node, e, nbOK, nbNO, nbXX, nbOK + nbNO + nbXX, (100. * nbOK) / (nbOK + nbNO), len(diags[node]), a]), file=outfileTxt)
++        print("OK", file=sys.stderr)
+         val[(node, e)] = float(nbNO) / (nbOK + nbNO)
+         do(e)
+
+@@ -147,14 +147,14 @@
+ outfileTxt = utils.myFile.openFile(arguments["out:statFile"], "w")
+
+ if (arguments("colNames")):
+-    print >> outfileTxt, utils.myFile.myTSV.printLine(
++    print(utils.myFile.myTSV.printLine(
+         ["anc", "desc", "nbOK", "nbNO", "nbXX", "nbOK+nbNO", "nbNO+nbXX", "(100. * nbOK) / (nbOK + nbNO)", "nbDiags_Anc",
+-        "DivTime MA"])
++        "DivTime MA"]), file=outfileTxt)
+ do(phylTree.root)
+ outfileTxt.close()
+
+
+ # ecriture de l'arbre.
+ outfileTree = utils.myFile.openFile(arguments["out:treeFile"], "w")
+-print >> outfileTree, convertToFlatFile(phylTree.root), ";"
++print(convertToFlatFile(phylTree.root), ";", file=outfileTree)
+ outfileTree.close()
+RefactoringTool: Writing converted ToolsDyogen_py2.7/evolTools/ALL.calcRearrangRates.py to ToolsDyogen/evolTools/ALL.calcRearrangRates.py.
+RefactoringTool: Refactored ToolsDyogen_py2.7/evolTools/calcGeneEvolutionOnEachBranch.py
+--- ToolsDyogen_py2.7/evolTools/calcGeneEvolutionOnEachBranch.py        (original)
++++ ToolsDyogen_py2.7/evolTools/calcGeneEvolutionOnEachBranch.py        (refactored)
+@@ -23,7 +23,8 @@
+ for a in phylTree.listAncestr:
+        genes[a] = utils.myGenomes.Genome(arguments["ancGenesFile"] % phylTree.fileName[a])
+
+-def transformName(esp, (c,i)):
++def transformName(esp, xxx_todo_changeme):
++       (c,i) = xxx_todo_changeme
+        if esp in phylTree.items:
+                return i
+        else:
+@@ -33,7 +34,7 @@
+
+        for (e,da) in phylTree.items.get(node, []):
+                res = []
+-               seen = set([transformName(e,(c,i)) for (c,l) in genes[e].lstGenes.iteritems() for i in xrange(len(l))])
++               seen = set([transformName(e,(c,i)) for (c,l) in genes[e].lstGenes.items() for i in range(len(l))])
+                for g in genes[node].lstGenes[None]:
+                        lnewg = [transformName(e,x) for x in genes[e].getPositions(g.names)]
+                        seen.difference_update(lnewg)
+@@ -44,11 +45,11 @@
+                nbEgaux = len([x for x in res if len(x) == 1])
+                nbFinal = sum([len(x) for x in res]) + nbGagnes
+                nbDup = (nbFinal - nbGagnes) - (len(res) - nbPerdus)
+-               print utils.myFile.myTSV.printLine([node, e, da, len(res), nbFinal, nbPerdus, nbGagnes, nbEgaux, nbDup])
++               print(utils.myFile.myTSV.printLine([node, e, da, len(res), nbFinal, nbPerdus, nbGagnes, nbEgaux, nbDup]))
+                #print sum([len(x) for x in res])
+                do(e)
+
+ #print (phylTree.root,len(genes[phylTree.root].lstGenes[None]))
+-print utils.myFile.myTSV.printLine(["parent", "fils", "Age", "nbInit", "nbFinal", "nbPerdus", "nbGagnes", "nbEgaux", "nbDup"])
++print(utils.myFile.myTSV.printLine(["parent", "fils", "Age", "nbInit", "nbFinal", "nbPerdus", "nbGagnes", "nbEgaux", "nbDup"]))
+ do(phylTree.root)
+
+RefactoringTool: Writing converted ToolsDyogen_py2.7/evolTools/calcGeneEvolutionOnEachBranch.py to ToolsDyogen/evolTools/calcGeneEvolutionOnEachBranch.py.
+RefactoringTool: Refactored ToolsDyogen_py2.7/genomesTools/ALL.statsKaryotype.py
+--- ToolsDyogen_py2.7/genomesTools/ALL.statsKaryotype.py        (original)
++++ ToolsDyogen_py2.7/genomesTools/ALL.statsKaryotype.py        (refactored)
+@@ -18,6 +18,6 @@
+
+ # print >> sys.stderr, genome
+ # print >> sys.stdout, "Chr","Length"
+-for (chrom, l) in genome.lstGenes.iteritems():
++for (chrom, l) in genome.lstGenes.items():
+     if len(l) >= arguments["minChrSize"]:
+-        print >> sys.stdout, chrom, len(l)
++        print(chrom, len(l), file=sys.stdout)
+RefactoringTool: Writing converted ToolsDyogen_py2.7/genomesTools/ALL.statsKaryotype.py to ToolsDyogen/genomesTools/ALL.statsKaryotype.py.
+RefactoringTool: Refactored ToolsDyogen_py2.7/evolTools/extractGeneEvents.py
+--- ToolsDyogen_py2.7/evolTools/extractGeneEvents.py    (original)
++++ ToolsDyogen_py2.7/evolTools/extractGeneEvents.py    (refactored)
+@@ -24,14 +24,15 @@
+         return utils.myGenomes.Genome(arguments["ancGenesFile"] % phylTree.fileName[e])
+
+
+-def transformName(esp, (c, i)):
++def transformName(esp, xxx_todo_changeme):
++    (c, i) = xxx_todo_changeme
+     return getGenome(esp).lstGenes[c][i].names[0]
+
+
+ def do(node):
+     for (e, _) in phylTree.items.get(node, []):
+         trans = {}
+-        seen = set([transformName(e, (c, i)) for (c, l) in getGenome(e).lstGenes.iteritems() for i in xrange(len(l))])
++        seen = set([transformName(e, (c, i)) for (c, l) in getGenome(e).lstGenes.items() for i in range(len(l))])
+         deleted = set()
+         for g in getGenome(node).lstGenes[None]:
+             lnewg = [transformName(e, x) for x in getGenome(e).getPositions(g.names)]
+@@ -41,11 +42,11 @@
+             else:
+                 deleted.add(g.names[0])
+
+-        print utils.myFile.myTSV.printLine([node, e, len(trans), len(deleted), len(seen), trans, deleted, seen])
++        print(utils.myFile.myTSV.printLine([node, e, len(trans), len(deleted), len(seen), trans, deleted, seen]))
+         #print utils.myFile.myTSV.printLine([node, e, deleted])
+         do(e)
+
+
+ root = phylTree.root if len(arguments["rootSpecies"]) == 0 else arguments["rootSpecies"]
+-print utils.myFile.myTSV.printLine([root, set(gene.names[0] for gene in getGenome(root))])
++print(utils.myFile.myTSV.printLine([root, set(gene.names[0] for gene in getGenome(root))]))
+ do(root)
+RefactoringTool: Writing converted ToolsDyogen_py2.7/evolTools/extractGeneEvents.py to ToolsDyogen/evolTools/extractGeneEvents.py.
+RefactoringTool: Refactored ToolsDyogen_py2.7/evolTools/getGeneTimeline.py
+--- ToolsDyogen_py2.7/evolTools/getGeneTimeline.py      (original)
++++ ToolsDyogen_py2.7/evolTools/getGeneTimeline.py      (refactored)
+@@ -30,7 +30,7 @@
+ allnames = set()
+ for a in phylTree.listAncestr:
+     allnames.update(todo[a])
+-print >> sys.stderr, len(allnames)
++print(len(allnames), file=sys.stderr)
+
+ evol = dict((g, [None] * len(phylTree.indNames)) for g in allnames)
+
+@@ -47,7 +47,7 @@
+             r[e] = 0
+         for (cc, ii) in l:
+             r.update(countEvents(e, cc, ii))
+-    for (b, x) in r.iteritems():
++    for (b, x) in r.items():
+         evol[gene][phylTree.indNames[b]] = x
+     return r
+
+@@ -65,4 +65,4 @@
+
+
+     lookupBeginning(arguments["rootSpecies"])
+-    print gene, evol[gene]
++    print(gene, evol[gene])
+RefactoringTool: Writing converted ToolsDyogen_py2.7/evolTools/getGeneTimeline.py to ToolsDyogen/evolTools/getGeneTimeline.py.
+RefactoringTool: Refactored ToolsDyogen_py2.7/genomesTools/formatTabularAncGenome.py
+--- ToolsDyogen_py2.7/genomesTools/formatTabularAncGenome.py    (original)
++++ ToolsDyogen_py2.7/genomesTools/formatTabularAncGenome.py    (refactored)
+@@ -28,8 +28,8 @@
+ listSpecies = phylTree.getTargetsSpec(arguments["target"])
+ newlistSpecies = sorted(listSpecies)
+
+-print >> sys.stdout, utils.myFile.myTSV.printLine(
+-    ["Anc_chr", "Begin", "End", "Strand", "AncGene", '\t'.join(x for x in newlistSpecies)])
++print(utils.myFile.myTSV.printLine(
++    ["Anc_chr", "Begin", "End", "Strand", "AncGene", '\t'.join(x for x in newlistSpecies)]), file=sys.stdout)
+
+ ancGenome = utils.myGenomes.Genome(arguments["ancGenome"])
+
+@@ -64,5 +64,5 @@
+     #print >> sys.stderr, strModern
+ #     print >> sys.stdout, utils.myFile.myTSV.printLine([genes[0], genes[1], genes[2], genes[3], ancGene1[0], "\t".join(
+  #       str(x[1][1:])[1:-1] for x in sorted(strModern.iteritems(), reverse=False))])
+-    print >> sys.stdout, utils.myFile.myTSV.printLine([genes[0], genes[1], genes[2], genes[3], ancGene1[0], "\t".join(
+-        str(x[1])[1:-1] for x in sorted(strModern.iteritems(), reverse=False))])
++    print(utils.myFile.myTSV.printLine([genes[0], genes[1], genes[2], genes[3], ancGene1[0], "\t".join(
++        str(x[1])[1:-1] for x in sorted(iter(strModern.items()), reverse=False))]), file=sys.stdout)
+RefactoringTool: Writing converted ToolsDyogen_py2.7/genomesTools/formatTabularAncGenome.py to ToolsDyogen/genomesTools/formatTabularAncGenome.py.
+RefactoringTool: Refactored ToolsDyogen_py2.7/genomesTools/misc.conservedBlocks.py
+--- ToolsDyogen_py2.7/genomesTools/misc.conservedBlocks.py      (original)
++++ ToolsDyogen_py2.7/genomesTools/misc.conservedBlocks.py      (refactored)
+@@ -54,7 +54,7 @@
+                assert len(set(x/y for (x,y) in zip(ds1,ds2))) == 1, (ds1, ds2)
+                res.append(utils.myFile.myTSV.printLine(ds1, " "))
+
+-       print utils.myFile.myTSV.printLine(res)
++       print(utils.myFile.myTSV.printLine(res))
+
+-print >> sys.stderr, "Block length", utils.myMaths.myStats.txtSummary(statsDiags)
++print("Block length", utils.myMaths.myStats.txtSummary(statsDiags), file=sys.stderr)
+
+RefactoringTool: Writing converted ToolsDyogen_py2.7/genomesTools/misc.conservedBlocks.py to ToolsDyogen/genomesTools/misc.conservedBlocks.py.
+RefactoringTool: No changes to ToolsDyogen_py2.7/genomesTools/misc.convertContigsToGenome.py
+RefactoringTool: Writing converted ToolsDyogen_py2.7/genomesTools/misc.convertContigsToGenome.py to ToolsDyogen/genomesTools/misc.convertContigsToGenome.py.
+RefactoringTool: Refactored ToolsDyogen_py2.7/genomesTools/misc.convertGffToGenesST.py
+--- ToolsDyogen_py2.7/genomesTools/misc.convertGffToGenesST.py  (original)
++++ ToolsDyogen_py2.7/genomesTools/misc.convertGffToGenesST.py  (refactored)
+@@ -27,4 +27,4 @@
+         gene['strand'] = '1'
+     else:
+         gene['strand'] = '-1'
+-    print >> sys.stdout, utils.myFile.myTSV.printLine([gene['seqid'], gene['start'], gene['end'], gene['strand'], gene['attributes']['ID']])
++    print(utils.myFile.myTSV.printLine([gene['seqid'], gene['start'], gene['end'], gene['strand'], gene['attributes']['ID']]), file=sys.stdout)
+RefactoringTool: Writing converted ToolsDyogen_py2.7/genomesTools/misc.convertGffToGenesST.py to ToolsDyogen/genomesTools/misc.convertGffToGenesST.py.
+RefactoringTool: Refactored ToolsDyogen_py2.7/statsTools/printStats.py
+RefactoringTool: Refactored ToolsDyogen_py2.7/genomesTools/misc.convertScaffoldsToContigs.py
+--- ToolsDyogen_py2.7/statsTools/printStats.py  (original)
++++ ToolsDyogen_py2.7/statsTools/printStats.py  (refactored)
+@@ -34,13 +34,13 @@
+
+ if arguments["long"]:
+     if arguments["colNames"]:
+-        print " ".join(("%s" % x) for x in
++        print(" ".join(("%s" % x) for x in
+                        ["Min", "Q25", "Q50", "Q75", "N75", "N50", "N25", "WeightedAverage", "Max", "Mean", "Stddev",
+-                        "Length"])
++                        "Length"]))
+
+-    print " ".join(("%s" % x) for x in utils.myMaths.myStats.valSummary2(lst))
++    print(" ".join(("%s" % x) for x in utils.myMaths.myStats.valSummary2(lst)))
+
+
+ else:
+
+-    print utils.myMaths.myStats.syntheticTxtSummary(lst)
++    print(utils.myMaths.myStats.syntheticTxtSummary(lst))
+--- ToolsDyogen_py2.7/genomesTools/misc.convertScaffoldsToContigs.py    (original)
++++ ToolsDyogen_py2.7/genomesTools/misc.convertScaffoldsToContigs.py    (refactored)
+@@ -40,10 +40,10 @@
+                        ls.extend(-int(x) for x in reversed(t[3].split()))
+                        lw.extend(reversed(t[4].split()))
+
+-       print utils.myFile.myTSV.printLine([t[0], n, utils.myFile.myTSV.printLine(li, delim=" "), utils.myFile.myTSV.printLine(ls, delim=" "), utils.myFile.myTSV.printLine(lw, delim=" ")])
++       print(utils.myFile.myTSV.printLine([t[0], n, utils.myFile.myTSV.printLine(li, delim=" "), utils.myFile.myTSV.printLine(ls, delim=" "), utils.myFile.myTSV.printLine(lw, delim=" ")]))
+
+ for c in singletons:
+-       print ref.pop(c),
++       print(ref.pop(c), end=' ')
+
+ # S'assure que tous les contigs ont ete employes
+ assert len(ref) == 0
+RefactoringTool: Refactored ToolsDyogen_py2.7/genomesTools/cmpIntervals.py
+RefactoringTool: Writing converted ToolsDyogen_py2.7/genomesTools/misc.convertScaffoldsToContigs.py to ToolsDyogen/genomesTools/misc.convertScaffoldsToContigs.py.
+--- ToolsDyogen_py2.7/genomesTools/cmpIntervals.py      (original)
++++ ToolsDyogen_py2.7/genomesTools/cmpIntervals.py      (refactored)
+@@ -32,10 +32,10 @@
+
+
+ newGenome = rewriteGenome(genome)
+-print >> sys.stderr, "modernGenome", sum([len(x) for x in newGenome.itervalues()])
++print("modernGenome", sum([len(x) for x in newGenome.values()]), file=sys.stderr)
+
+ newAncGenome = rewriteGenome(ancGenome)
+-print >> sys.stderr, "ancGenome", sum([len(x) for x in newAncGenome.itervalues()])
++print("ancGenome", sum([len(x) for x in newAncGenome.values()]), file=sys.stderr)
+
+
+ # convertion tab between gene names (ancestral and modern)
+@@ -51,17 +51,17 @@
+
+
+RefactoringTool: Writing converted ToolsDyogen_py2.7/statsTools/printStats.py to ToolsDyogen/statsTools/printStats.py.
+ translateMA = {}
+-for (x, y) in translate(genome, newGenome, ancGenome, newAncGenome).iteritems():
++for (x, y) in translate(genome, newGenome, ancGenome, newAncGenome).items():
+     assert len(y) == 1
+     translateMA[x] = y[0]
+-print >> sys.stderr, "M->A", len(translateMA), translateMA.items()[0] if len(translateMA) > 0 else None
++print("M->A", len(translateMA), list(translateMA.items())[0] if len(translateMA) > 0 else None, file=sys.stderr)
+
+ translateAM = translate(ancGenome, newAncGenome, genome, newGenome)
+-print >> sys.stderr, "A->M", len(translateAM), translateAM.items()[0] if len(translateAM) > 0 else None
++print("A->M", len(translateAM), list(translateAM.items())[0] if len(translateAM) > 0 else None, file=sys.stderr)
+
+ # assuming the two sets of genes are equivalents
+-assert set(translateMA.itervalues()) == set(translateAM)
+-assert set(translateMA) == set(itertools.chain(*translateAM.itervalues()))
++assert set(translateMA.values()) == set(translateAM)
++assert set(translateMA) == set(itertools.chain(*iter(translateAM.values())))
+
+
+ def removeNewSingletons(genome, translate):
+@@ -75,28 +75,28 @@
+
+ while arguments["minimalLength"] < -1:
+     (n1, n2) = (len(newGenome), len(newAncGenome))
+-    print >> sys.stderr, "iter"
++    print("iter", file=sys.stderr)
+     newGenome = removeNewSingletons(newGenome, translateMA)
+-    print >> sys.stderr, "modernGenome", sum([len(x) for x in newGenome.itervalues()])
++    print("modernGenome", sum([len(x) for x in newGenome.values()]), file=sys.stderr)
+     newAncGenome = removeNewSingletons(newAncGenome, translateAM)
+-    print >> sys.stderr, "ancGenome", sum([len(x) for x in newAncGenome.itervalues()])
++    print("ancGenome", sum([len(x) for x in newAncGenome.values()]), file=sys.stderr)
+
+     if (n1, n2) == (len(newGenome), len(newAncGenome)):
+-        print >> sys.stderr, "stop"
++        print("stop", file=sys.stderr)
+         break
+
+     translateMA = {}
+-    for (x, y) in translate(genome, newGenome, ancGenome, newAncGenome).iteritems():
++    for (x, y) in translate(genome, newGenome, ancGenome, newAncGenome).items():
+         assert len(y) == 1
+         translateMA[x] = y[0]
+-    print >> sys.stderr, "M->A", len(translateMA), translateMA.items()[0] if len(translateMA) > 0 else None
++    print("M->A", len(translateMA), list(translateMA.items())[0] if len(translateMA) > 0 else None, file=sys.stderr)
+
+     translateAM = translate(ancGenome, newAncGenome, genome, newGenome)
+-    print >> sys.stderr, "A->M", len(translateAM), translateAM.items()[0] if len(translateAM) > 0 else None
++    print("A->M", len(translateAM), list(translateAM.items())[0] if len(translateAM) > 0 else None, file=sys.stderr)
+
+     # assuming the two sets of genes are equals
+-    assert set(translateMA.itervalues()) == set(translateAM)
+-    assert set(translateMA) == set(itertools.chain(*translateAM.itervalues()))
++    assert set(translateMA.values()) == set(translateAM)
++    assert set(translateMA) == set(itertools.chain(*iter(translateAM.values())))
+
+
+ # Intervals list
+@@ -114,15 +114,15 @@
+             dicPos[g] = (chrom, i, s)
+         dicLengths[chrom] = len(tmp)
+         listIntFilt.extend(utils.myTools.myIterator.slidingTuple(tmp))
+-    print >> sys.stderr, len(listIntAll), len(listIntFilt), list(listIntAll)[0] if len(listIntAll) > 0 else None, \
+-    listIntFilt[0] if len(listIntFilt) > 0 else None
++    print(len(listIntAll), len(listIntFilt), list(listIntAll)[0] if len(listIntAll) > 0 else None, \
++    listIntFilt[0] if len(listIntFilt) > 0 else None, file=sys.stderr)
+     return (listIntAll, listIntFilt, dicPos, dicLengths)
+
+
+-print >> sys.stderr, "intMod",
++print("intMod", end=' ', file=sys.stderr)
+ (listIntMall, listIntMfilt, dicPosMod, dicModLengths) = listInterv(newGenome, translateMA)
+
+-print >> sys.stderr, "intAnc",
++print("intAnc", end=' ', file=sys.stderr)
+ (listIntAall, listIntAfilt, dicPosAnc, dicAncLengths) = listInterv(newAncGenome, translateAM)
+ listIntAfilt = set(listIntAfilt)
+ listIntAalls = set((g1, g2) for ((g1, s1), (g2, s2)) in listIntAall)
+@@ -182,7 +182,7 @@
+         room2 = getRoom(dicAncLengths[ac2], ai2, as2 != s2)
+         flags.append(allendsT[room1 + room2])
+
+-    print "\t".join([status, "%s/%d" % (g1, s1), "%s/%d" % (g2, s2), tg1, tg2] + flags)
++    print("\t".join([status, "%s/%d" % (g1, s1), "%s/%d" % (g2, s2), tg1, tg2] + flags))
+
+ # Browsing from ancestral genome (unconserved intervals)
+ for ((g1, s1), (g2, s2)) in listIntAfilt:
+@@ -200,8 +200,8 @@
+         room2 = getRoom(dicModLengths[ac2], ai2, as2 != s2)
+         allends.append((room1 + room2, tg1, tg2))
+     if len(allends) == 0:
+-        print >> sys.stderr, ((g1, s1), (g2, s2)), translateAM[g1], translateAM[g2]
++        print(((g1, s1), (g2, s2)), translateAM[g1], translateAM[g2], file=sys.stderr)
+     (i, tg1, tg2) = max(allends)
+     flags.append(allendsT[i])
+
+-    print "\t".join([status, "%s/%d" % (g1, s1), "%s/%d" % (g2, s2), tg1, tg2] + flags)
++    print("\t".join([status, "%s/%d" % (g1, s1), "%s/%d" % (g2, s2), tg1, tg2] + flags))
+RefactoringTool: Writing converted ToolsDyogen_py2.7/genomesTools/cmpIntervals.py to ToolsDyogen/genomesTools/cmpIntervals.py.
+RefactoringTool: Refactored ToolsDyogen_py2.7/statsTools/stats.getNbComparisons.py
+--- ToolsDyogen_py2.7/statsTools/stats.getNbComparisons.py      (original)
++++ ToolsDyogen_py2.7/statsTools/stats.getNbComparisons.py      (refactored)
+@@ -30,8 +30,8 @@
+ phylTree = utils.myPhylTree.PhylogeneticTree(arguments["phylTree.conf"])
+
+ if (arguments["colNames"]):
+-    print >> sys.stdout, utils.myFile.myTSV.printLine(
+-        ["Ancestor", "NbComp", "Nb(In/Out)Comp", "Nb(In/In)Comp", "Age", "MeanSize_OfBlocks","N50Size_OfBlocks", "WASize_OfBlocks", "NbComp/Age"])
++    print(utils.myFile.myTSV.printLine(
++        ["Ancestor", "NbComp", "Nb(In/Out)Comp", "Nb(In/In)Comp", "Age", "MeanSize_OfBlocks","N50Size_OfBlocks", "WASize_OfBlocks", "NbComp/Age"]), file=sys.stdout)
+
+ for anc in phylTree.listAncestr:
+     # print >> sys.stderr, anc
+@@ -87,5 +87,5 @@
+
+
+
+-    print utils.myFile.myTSV.printLine(
+-        [anc, nbc, compInOut, compInIn, phylTree.ages[anc], totalStat[9], totalStat[6], int(totalStat[7]), float(nbc) / phylTree.ages[anc]])
++    print(utils.myFile.myTSV.printLine(
++        [anc, nbc, compInOut, compInIn, phylTree.ages[anc], totalStat[9], totalStat[6], int(totalStat[7]), float(nbc) / phylTree.ages[anc]]))
+RefactoringTool: Writing converted ToolsDyogen_py2.7/statsTools/stats.getNbComparisons.py to ToolsDyogen/statsTools/stats.getNbComparisons.py.
+RefactoringTool: Refactored ToolsDyogen_py2.7/statsTools/stats.mkODS.py
+--- ToolsDyogen_py2.7/statsTools/stats.mkODS.py (original)
++++ ToolsDyogen_py2.7/statsTools/stats.mkODS.py (refactored)
+@@ -63,7 +63,7 @@
+
+ for cutoff in allCutoff:
+
+-    print >> sys.stderr, cutoff, "...",
++    print(cutoff, "...", end=' ', file=sys.stderr)
+
+     # Recuperation des donnees de longueur de blocs
+     alldata[cutoff] = data = {}
+@@ -97,17 +97,17 @@
+         newdata = [(x - ref[e][i] if i >= 2 else x) for (i, x) in enumerate(data[e])]
+         newdata.insert(2, 100 * (1. - float(newdata[4]) / newdata[2]) if newdata[2] != 0 else None)
+         diff[e] = newdata
+-    print >> sys.stderr, "OK"
++    print("OK", file=sys.stderr)
+
+ if arguments["outputODS"] == "":
+     for cutoff in allCutoff:
+-        print utils.myFile.myTSV.printLine(["Ancestor", "Age (My)"] + titles)
++        print(utils.myFile.myTSV.printLine(["Ancestor", "Age (My)"] + titles))
+         for e in lstEspeces:
+-            print utils.myFile.myTSV.printLine(alldata[cutoff][e])
++            print(utils.myFile.myTSV.printLine(alldata[cutoff][e]))
+     if cutoff in alldiff:
+-        print utils.myFile.myTSV.printLine(["Ancestor", "Age (My)", "%Useful Gene Loss"] + titles)
++        print(utils.myFile.myTSV.printLine(["Ancestor", "Age (My)", "%Useful Gene Loss"] + titles))
+         for e in lstEspeces:
+-            print utils.myFile.myTSV.printLine(alldiff[cutoff][e])
++            print(utils.myFile.myTSV.printLine(alldiff[cutoff][e]))
+
+ else:
+     import odf.opendocument
+RefactoringTool: Writing converted ToolsDyogen_py2.7/statsTools/stats.mkODS.py to ToolsDyogen/statsTools/stats.mkODS.py.
+RefactoringTool: Refactored ToolsDyogen_py2.7/statsTools/stats.mkODS_withSummary.py
+--- ToolsDyogen_py2.7/statsTools/stats.mkODS_withSummary.py     (original)
++++ ToolsDyogen_py2.7/statsTools/stats.mkODS_withSummary.py     (refactored)
+@@ -69,7 +69,7 @@
+     allEvents.append(cutoff)
+ for events in allEvents:
+
+-    print >> sys.stderr, events, "...",
++    print(events, "...", end=' ', file=sys.stderr)
+
+     # Recuperation des donnees de longueur de blocs
+     alldata[events] = data = {}
+@@ -108,7 +108,7 @@
+             nbBlock += 1
+
+         data[e].append(nbBlock)
+-        print >> sys.stderr, e, "...", nbBlock, "...",
++        print(e, "...", nbBlock, "...", end=' ', file=sys.stderr)
+     if events == allEvents[0]:
+         ref = data
+     # else:
+@@ -118,18 +118,18 @@
+     #          newdata = [(x-ref[e][i] if i >= 2 else x) for (i,x) in enumerate(data[e])]
+     #          newdata.insert(2, 100*(1.-float(newdata[4])/newdata[2]) if newdata[2] != 0 else None)
+     #          diff[e] = newdata
+-    print >> sys.stderr, "OK"
++    print("OK", file=sys.stderr)
+
+ if arguments["outputODS"] == "":
+     for events in allEvents:
+-        print >> sys.stdout, events
+-        print utils.myFile.myTSV.printLine(["Ancestor", "Age (My)"] + titles)
++        print(events, file=sys.stdout)
++        print(utils.myFile.myTSV.printLine(["Ancestor", "Age (My)"] + titles))
+         for e in lstEspeces:
+-            print utils.myFile.myTSV.printLine(alldata[events][e])
++            print(utils.myFile.myTSV.printLine(alldata[events][e]))
+     if events in alldiff:
+-        print utils.myFile.myTSV.printLine(["Ancestor", "Age (My)", "%Useful Gene Loss"] + titles)
++        print(utils.myFile.myTSV.printLine(["Ancestor", "Age (My)", "%Useful Gene Loss"] + titles))
+         for e in lstEspeces:
+-            print utils.myFile.myTSV.printLine(alldiff[events][e])
++            print(utils.myFile.myTSV.printLine(alldiff[events][e]))
+
+ else:
+     import odf.opendocument
+RefactoringTool: Writing converted ToolsDyogen_py2.7/statsTools/stats.mkODS_withSummary.py to ToolsDyogen/statsTools/stats.mkODS_withSummary.py.
+RefactoringTool: Refactored ToolsDyogen_py2.7/statsTools/statsEvents.mkODS.py
+--- ToolsDyogen_py2.7/statsTools/statsEvents.mkODS.py   (original)
++++ ToolsDyogen_py2.7/statsTools/statsEvents.mkODS.py   (refactored)
+@@ -41,7 +41,7 @@
+     allEvents.append(cutoff)
+ for events in allEvents:
+
+-    print >> sys.stderr, events, "...",
++    print(events, "...", end=' ', file=sys.stderr)
+
+     # Recuperation des donnees de longueur de blocs
+     alldata[events] = data = {}
+@@ -80,22 +80,22 @@
+             nbBlock += 1
+
+         data[e].append(nbBlock)
+-        print >> sys.stderr, e, "...", nbBlock, "...",
++        print(e, "...", nbBlock, "...", end=' ', file=sys.stderr)
+     if events == allEvents[0]:
+         ref = data
+
+-    print >> sys.stderr, "OK"
++    print("OK", file=sys.stderr)
+
+ if arguments["outputODS"] == "":
+     for events in allEvents:
+-        print >> sys.stdout, events
+-        print utils.myFile.myTSV.printLine(["Ancestor", "Age (My)"] + titles)
++        print(events, file=sys.stdout)
++        print(utils.myFile.myTSV.printLine(["Ancestor", "Age (My)"] + titles))
+         for e in lstEspeces:
+-            print utils.myFile.myTSV.printLine(alldata[events][e])
++            print(utils.myFile.myTSV.printLine(alldata[events][e]))
+     if events in alldiff:
+-        print utils.myFile.myTSV.printLine(["Ancestor", "Age (My)", "%Useful Gene Loss"] + titles)
++        print(utils.myFile.myTSV.printLine(["Ancestor", "Age (My)", "%Useful Gene Loss"] + titles))
+         for e in lstEspeces:
+-            print utils.myFile.myTSV.printLine(alldiff[events][e])
++            print(utils.myFile.myTSV.printLine(alldiff[events][e]))
+
+ else:
+     import odf.opendocument
+RefactoringTool: Writing converted ToolsDyogen_py2.7/statsTools/statsEvents.mkODS.py to ToolsDyogen/statsTools/statsEvents.mkODS.py.
+RefactoringTool: No changes to ToolsDyogen_py2.7/treeTools/ALL.convertPhyloXMLToPhylTree.py
+RefactoringTool: Refactored ToolsDyogen_py2.7/treeTools/ALL.convertNewickTree.py
+--- ToolsDyogen_py2.7/treeTools/ALL.convertNewickTree.py        (original)
++++ ToolsDyogen_py2.7/treeTools/ALL.convertNewickTree.py        (refactored)
+@@ -22,7 +22,7 @@
+         node = node.replace("*", "")
+         names = utils.myFile.myTSV.printLine(
+             [node] + [x for x in phylTree.commonNames.get(node, "") if isinstance(x, str) and (x != node)], delim="|")
+-        print ("\t" * indent) + "%s" % names
++        print(("\t" * indent) + "%s" % names)
+         if node in phylTree.items:
+             for (f, _) in phylTree.items[node]:
+                 do(f, indent + 1)
+@@ -43,4 +43,4 @@
+                 a, phylTree.ages[anc])
+
+
+-    print convertToFlatFile(phylTree.root), ";"
++    print(convertToFlatFile(phylTree.root), ";")
+RefactoringTool: Writing converted ToolsDyogen_py2.7/treeTools/ALL.convertPhyloXMLToPhylTree.py to ToolsDyogen/treeTools/ALL.convertPhyloXMLToPhylTree.py.
+Process Process-1:
+RefactoringTool: Refactored ToolsDyogen_py2.7/treeTools/ALL.cutTree.py
+--- ToolsDyogen_py2.7/treeTools/ALL.cutTree.py  (original)
++++ ToolsDyogen_py2.7/treeTools/ALL.cutTree.py  (refactored)
+@@ -45,4 +45,4 @@
+                                                                                                              True)
+             utils.myProteinTree.printTree(sys.stdout, tree.data, tree.info, r)
+
+-print >> sys.stderr, nb, "extracted trees"
++print(nb, "extracted trees", file=sys.stderr)
+RefactoringTool: Writing converted ToolsDyogen_py2.7/treeTools/ALL.cutTree.py to ToolsDyogen/treeTools/ALL.cutTree.py.
+Traceback (most recent call last):
+  File "/users/ldog/glouvel/miniconda3/lib/python3.5/multiprocessing/process.py", line 249, in _bootstrap
+    self.run()
+  File "/users/ldog/glouvel/miniconda3/lib/python3.5/multiprocessing/process.py", line 93, in run
+    self._target(*self._args, **self._kwargs)
+  File "/users/ldog/glouvel/miniconda3/lib/python3.5/lib2to3/refactor.py", line 737, in _child
+    *args, **kwargs)
+  File "/users/ldog/glouvel/miniconda3/lib/python3.5/lib2to3/refactor.py", line 358, in refactor_file
+    write=write, encoding=encoding)
+  File "/users/ldog/glouvel/miniconda3/lib/python3.5/lib2to3/refactor.py", line 524, in processed_file
+    self.write_file(new_text, filename, old_text, encoding)
+  File "/users/ldog/glouvel/miniconda3/lib/python3.5/lib2to3/main.py", line 84, in write_file
+    os.makedirs(output_dir)
+  File "/users/ldog/glouvel/miniconda3/lib/python3.5/os.py", line 241, in makedirs
+    mkdir(name, mode)
+FileExistsError: [Errno 17] File exists: 'ToolsDyogen/treeTools'
+RefactoringTool: Refactored ToolsDyogen_py2.7/treeTools/ALL.extractGeneFamilies.py
+--- ToolsDyogen_py2.7/treeTools/ALL.extractGeneFamilies.py      (original)
++++ ToolsDyogen_py2.7/treeTools/ALL.extractGeneFamilies.py      (refactored)
+@@ -97,10 +97,10 @@
+     extractGeneFamilies(tree.root, tree.info[tree.root]["tree_name"], None, None)
+     utils.myProteinTree.printTree(sys.stdout, tree.data, tree.info, tree.root)
+
+-for (anc, lst) in geneFamilies.iteritems():
+-    print >> sys.stderr, "Ecriture des familles de %s ..." % anc,
++for (anc, lst) in geneFamilies.items():
++    print("Ecriture des familles de %s ..." % anc, end=' ', file=sys.stderr)
+     f = utils.myFile.openFile(arguments["out:ancGenesFiles"] % phylTree.fileName[anc], "w")
+     for gg in lst:
+-        print >> f, " ".join(gg)
++        print(" ".join(gg), file=f)
+     f.close()
+-    print >> sys.stderr, len(lst), "OK"
++    print(len(lst), "OK", file=sys.stderr)
+RefactoringTool: Writing converted ToolsDyogen_py2.7/treeTools/ALL.extractGeneFamilies.py to ToolsDyogen/treeTools/ALL.extractGeneFamilies.py.
+RefactoringTool: Refactored ToolsDyogen_py2.7/treeTools/ALL.extractMultipleGeneTree.py
+--- ToolsDyogen_py2.7/treeTools/ALL.extractMultipleGeneTree.py  (original)
++++ ToolsDyogen_py2.7/treeTools/ALL.extractMultipleGeneTree.py  (refactored)
+@@ -53,10 +53,10 @@
+RefactoringTool: Refactored ToolsDyogen_py2.7/treeTools/ALL.extractNewickTrees.py
+ for tree in myProteinTree.loadTree(arguments.proteinTree):
+     family = tree.info[tree.root]["family_name"]
+     if family in family_names:
+-        print >>sys.stderr, "Found", family
++        print("Found", family, file=sys.stderr)
+         outfile = arguments.output.format(genetree=family)
+         if os.path.isfile(outfile) and not arguments.force:
+-            print >>sys.stderr, "%s exists. Skipping. (use --force)" % outfile
++            print("%s exists. Skipping. (use --force)" % outfile, file=sys.stderr)
+         else:
+             if arguments.phyltree:
+                 tree.rebuildTree(phyltree)
+@@ -70,7 +70,7 @@
+                     raise
+
+             if arguments.toNewick:
+-                print >>sys.stderr, "Output to newick format"
++                print("Output to newick format", file=sys.stderr)
+                 tree.printNewick(out, withDist=True, withTags=False,
+                                  withAncSpeciesNames=arguments.withAncSpeciesNames,
+                                  withAncGenesNames=True)
+RefactoringTool: Writing converted ToolsDyogen_py2.7/treeTools/ALL.extractMultipleGeneTree.py to ToolsDyogen/treeTools/ALL.extractMultipleGeneTree.py.
+--- ToolsDyogen_py2.7/treeTools/ALL.extractNewickTrees.py       (original)
++++ ToolsDyogen_py2.7/treeTools/ALL.extractNewickTrees.py       (refactored)
+@@ -16,10 +16,10 @@
+ # Arguments
+ arguments = utils.myTools.checkArgs( [("proteinTree",file)], [("withDist",bool,False), ("withNHXTags",bool,False), ("withAncSpeciesNames",bool,False), ("withAncGenesNames",bool,False)], __doc__ )
+
+-print >> sys.stderr, "Mise en forme des arbres ...",
++print("Mise en forme des arbres ...", end=' ', file=sys.stderr)
+ nb = 0
+ for tree in utils.myProteinTree.loadTree(arguments["proteinTree"]):
+        tree.printNewick(sys.stdout, withDist=arguments["withDist"], withTags=arguments["withNHXTags"], withAncSpeciesNames=arguments["withAncSpeciesNames"], withAncGenesNames=arguments["withAncGenesNames"])
+        nb += 1
+-print >> sys.stderr, "%d arbres OK" % nb
++print("%d arbres OK" % nb, file=sys.stderr)
+
+RefactoringTool: Writing converted ToolsDyogen_py2.7/treeTools/ALL.extractNewickTrees.py to ToolsDyogen/treeTools/ALL.extractNewickTrees.py.
+RefactoringTool: Refactored ToolsDyogen_py2.7/treeTools/ALL.extractOneGeneTree.py
+--- ToolsDyogen_py2.7/treeTools/ALL.extractOneGeneTree.py       (original)
++++ ToolsDyogen_py2.7/treeTools/ALL.extractOneGeneTree.py       (refactored)
+@@ -35,7 +35,7 @@
+     def filtertest(nodeinfo):
+         return nodeinfo["family_name"].startswith(arguments["filter"])
+ else:
+-    print >> sys.stderr, "Invalid '-field' option"
++    print("Invalid '-field' option", file=sys.stderr)
+     sys.exit(1)
+
+
+@@ -53,7 +53,7 @@
+ for tree in myProteinTree.loadTree(arguments["proteinTree"]):
+     if do(tree.root):
+         if arguments['toNewick']:
+-            print >>sys.stderr, "Output to newick format"
++            print("Output to newick format", file=sys.stderr)
+             tree.printNewick(sys.stdout, withDist=True, withTags=False,
+                              withAncSpeciesNames=arguments['withAncSpeciesNames'],
+                              withAncGenesNames=True)
+RefactoringTool: Writing converted ToolsDyogen_py2.7/treeTools/ALL.extractOneGeneTree.py to ToolsDyogen/treeTools/ALL.extractOneGeneTree.py.
+RefactoringTool: Refactored ToolsDyogen_py2.7/treeTools/ALL.extractSpecificTrees.py
+--- ToolsDyogen_py2.7/treeTools/ALL.extractSpecificTrees.py     (original)
++++ ToolsDyogen_py2.7/treeTools/ALL.extractSpecificTrees.py     (refactored)
+@@ -23,19 +23,19 @@
+
+ lstIn = arguments["inDesc"].split(",")
+
+-print >> sys.stderr, lstIn
++print(lstIn, file=sys.stderr)
+
+ lstOut = arguments["notinDesc"].split(",")
+
+-print >> sys.stderr,lstOut
++print(lstOut, file=sys.stderr)
+
+ lst = lstIn+lstOut
+
+-print >> sys.stderr,lst
++print(lst, file=sys.stderr)
+
+ lastCommonAnc = phylTree.lastCommonAncestor([x for x in lst])
+
+-print >> sys.stderr, "LastCommonAnc = ", lastCommonAnc
++print("LastCommonAnc = ", lastCommonAnc, file=sys.stderr)
+
+ # Chargement des fichiers
+ lastAncGenes = utils.myGenomes.Genome(arguments["in:ancGenesFiles"] % lastCommonAnc)
+@@ -51,27 +51,27 @@
+     in_genome[inAnc]=set(in_genome[inAnc])
+
+ #print in_genome
+-intersectIn=set.intersection(*(in_genome.values()))
++intersectIn=set.intersection(*(list(in_genome.values())))
+
+ #print intersectIn
+-print >> sys.stderr, len(intersectIn)
++print(len(intersectIn), file=sys.stderr)
+
+
+ for notinAnc in  lstOut:
+-    print >> sys.stderr, notinAnc
++    print(notinAnc, file=sys.stderr)
+     out_genome[notinAnc]=[]
+     for gene in utils.myGenomes.Genome(arguments["in:ancGenesFiles"] % notinAnc):
+         #print gene.names[0]
+         out_genome[notinAnc].append(gene.names[0])
+     out_genome[notinAnc]=set(out_genome[notinAnc])
+
+-intersectOut=set.intersection(*(out_genome.values()))
+-print >> sys.stderr, len(intersectOut)
++intersectOut=set.intersection(*(list(out_genome.values())))
++print(len(intersectOut), file=sys.stderr)
+
+
+ for gene in lastAncGenes:
+         if (gene.names[0] in intersectIn) and (gene.names[0] not in intersectOut):
+-            print gene.names[0], " ".join((x for x in gene.names[1:]))
++            print(gene.names[0], " ".join((x for x in gene.names[1:])))
+
+ """
+ for ancGene in lastAncGenes:
+RefactoringTool: Writing converted ToolsDyogen_py2.7/treeTools/ALL.extractSpecificTrees.py to ToolsDyogen/treeTools/ALL.extractSpecificTrees.py.
+RefactoringTool: Refactored ToolsDyogen_py2.7/treeTools/ALL.getGeneHistory.py
+RefactoringTool: Refactored ToolsDyogen_py2.7/treeTools/ALL.getOldestAncForEachGene.py
+--- ToolsDyogen_py2.7/treeTools/ALL.getGeneHistory.py   (original)
++++ ToolsDyogen_py2.7/treeTools/ALL.getGeneHistory.py   (refactored)
+@@ -35,7 +35,7 @@
+     txt.append(tree.info[node].pop("family_name", None))
+     txt.append(tree.info[node].pop("Bootstrap", None))
+     txt.append(tree.info[node].pop("duplication_confidence_score", None))
+-    print utils.myFile.myTSV.printLine(txt)
++    print(utils.myFile.myTSV.printLine(txt))
+
+
+ # Information on Gene
+@@ -44,7 +44,7 @@
+     txt.append("GENE")
+     txt.append(tree.info[node].pop("taxon_name", None))
+     txt.append(tree.info[node].pop("gene_name", None))
+-    print utils.myFile.myTSV.printLine(txt)
++    print(utils.myFile.myTSV.printLine(txt))
+
+
+ # Recursive loop on the gene family
+RefactoringTool: Writing converted ToolsDyogen_py2.7/treeTools/ALL.getGeneHistory.py to ToolsDyogen/treeTools/ALL.getGeneHistory.py.
+--- ToolsDyogen_py2.7/treeTools/ALL.getOldestAncForEachGene.py  (original)
++++ ToolsDyogen_py2.7/treeTools/ALL.getOldestAncForEachGene.py  (refactored)
+@@ -24,7 +24,7 @@
+     #txt.append("GENE")
+     #txt.append(tree.info[node].pop("taxon_name", None))
+     txt.append(tree.info[node].pop("gene_name", None))
+-    print utils.myFile.myTSV.printLine(txt)
++    print(utils.myFile.myTSV.printLine(txt))
+
+
+ # Recursive loop on the gene family
+RefactoringTool: Writing converted ToolsDyogen_py2.7/treeTools/ALL.getOldestAncForEachGene.py to ToolsDyogen/treeTools/ALL.getOldestAncForEachGene.py.
+RefactoringTool: No changes to ToolsDyogen_py2.7/treeTools/ALL.infoProtTree.py
+RefactoringTool: Writing converted ToolsDyogen_py2.7/treeTools/ALL.infoProtTree.py to ToolsDyogen/treeTools/ALL.infoProtTree.py.
+RefactoringTool: Refactored ToolsDyogen_py2.7/treeTools/ALL.keepSomeSpeciesFromTree.py
+--- ToolsDyogen_py2.7/treeTools/ALL.keepSomeSpeciesFromTree.py  (original)
++++ ToolsDyogen_py2.7/treeTools/ALL.keepSomeSpeciesFromTree.py  (refactored)
+@@ -50,10 +50,10 @@
+     if esp not in SpeciesList1:
+         SpeciesList.append(esp)
+
+-print >> sys.stderr, 'keep', SpeciesList1
+-print >> sys.stderr, 'remove', SpeciesList
++print('keep', SpeciesList1, file=sys.stderr)
++print('remove', SpeciesList, file=sys.stderr)
+
+-for ((name, esp), l) in count.iteritems():
++for ((name, esp), l) in count.items():
+     # print >> sys.stderr, name, esp, l
+     if esp not in SpeciesList:
+         continue
+RefactoringTool: Writing converted ToolsDyogen_py2.7/treeTools/ALL.keepSomeSpeciesFromTree.py to ToolsDyogen/treeTools/ALL.keepSomeSpeciesFromTree.py.
+RefactoringTool: Refactored ToolsDyogen_py2.7/treeTools/ALL.removeGeneListFromTree.py
+--- ToolsDyogen_py2.7/treeTools/ALL.removeGeneListFromTree.py   (original)
++++ ToolsDyogen_py2.7/treeTools/ALL.removeGeneListFromTree.py   (refactored)
+@@ -33,7 +33,7 @@
+             for (g, _) in tree.data[node]:
+                 countGenes(g)
+         else:
+-            print >> sys.stderr, tree.info[node]
++            print(tree.info[node], file=sys.stderr)
+             count[(tree.info[node]['gene_name'], tree.info[node]['taxon_name'])].append((node, tree.root))
+
+
+@@ -46,15 +46,15 @@
+ for l in f:
+     GeneList.append(l.replace('\n', ''))
+
+-print >> sys.stderr, GeneList
++print(GeneList, file=sys.stderr)
+
+-for ((name, esp), l) in count.iteritems():
++for ((name, esp), l) in count.items():
+     # print >> sys.stderr, name, esp, len(l)
+     if name not in GeneList:
+         continue
+     delete = True
+     s = set(root for (node, root) in l)
+-    print >> sys.stderr, name, esp, len(l), len(s),
++    print(name, esp, len(l), len(s), end=' ', file=sys.stderr)
+     if len(s) == 1:
+         root = s.pop()
+         lca = None
+@@ -84,7 +84,7 @@
+
+         findLastCommonAncestor(root)
+
+-    print >> sys.stderr, delete
++    print(delete, file=sys.stderr)
+     # Rebuild the tree
+     if delete:
+         for (node, root) in l:
+RefactoringTool: Writing converted ToolsDyogen_py2.7/treeTools/ALL.removeGeneListFromTree.py to ToolsDyogen/treeTools/ALL.removeGeneListFromTree.py.
+RefactoringTool: Refactored ToolsDyogen_py2.7/treeTools/ALL.removeMultipleGenes.py
+--- ToolsDyogen_py2.7/treeTools/ALL.removeMultipleGenes.py      (original)
++++ ToolsDyogen_py2.7/treeTools/ALL.removeMultipleGenes.py      (refactored)
+@@ -38,12 +38,12 @@
+
+     countGenes(tree.root)
+
+-for ((name, esp), l) in count.iteritems():
++for ((name, esp), l) in count.items():
+     if len(l) == 1:
+         continue
+     delete = True
+     s = set(root for (node, root) in l)
+-    print >> sys.stderr, name, esp, len(l), len(s),
++    print(name, esp, len(l), len(s), end=' ', file=sys.stderr)
+     if len(s) == 1:
+         root = s.pop()
+         lca = None
+@@ -73,7 +73,7 @@
+
+         findLastCommonAncestor(root)
+
+-    print >> sys.stderr, delete
++    print(delete, file=sys.stderr)
+     # Rebuild the tree
+     if delete:
+         for (node, root) in l:
+RefactoringTool: Writing converted ToolsDyogen_py2.7/treeTools/ALL.removeMultipleGenes.py to ToolsDyogen/treeTools/ALL.removeMultipleGenes.py.
+RefactoringTool: Refactored ToolsDyogen_py2.7/treeTools/ALL.removeSpeciesFromTree.py
+--- ToolsDyogen_py2.7/treeTools/ALL.removeSpeciesFromTree.py    (original)
++++ ToolsDyogen_py2.7/treeTools/ALL.removeSpeciesFromTree.py    (refactored)
+@@ -38,8 +38,8 @@
+     countGenes(tree.root)
+
+ SpeciesList = arguments["SpeciesList"]
+-print >> sys.stderr, SpeciesList
+-for ((name, esp), l) in count.iteritems():
++print(SpeciesList, file=sys.stderr)
++for ((name, esp), l) in count.items():
+     # print >> sys.stderr, name, esp, l
+     if esp not in SpeciesList:
+         continue
+RefactoringTool: Writing converted ToolsDyogen_py2.7/treeTools/ALL.removeSpeciesFromTree.py to ToolsDyogen/treeTools/ALL.removeSpeciesFromTree.py.
+RefactoringTool: Refactored ToolsDyogen_py2.7/treeTools/ENSEMBL.buildProteinTreesV1.py
+--- ToolsDyogen_py2.7/treeTools/ENSEMBL.buildProteinTreesV1.py  (original)
++++ ToolsDyogen_py2.7/treeTools/ENSEMBL.buildProteinTreesV1.py  (refactored)
+@@ -51,7 +51,7 @@
+                anc = phylTree.officialName[t[0]]
+                minDuplicationScore[anc] = calc(anc, float(t[1]))
+        f.close()
+-print >> sys.stderr, "minDuplicationScore:", minDuplicationScore
++print("minDuplicationScore:", minDuplicationScore, file=sys.stderr)
+
+ # Les scores dans l'abre pour les especes modernes valent toujours 1, on doit toujours les accepter
+ for esp in phylTree.listSpecies:
+@@ -74,7 +74,7 @@
+                if node in tree.data:
+                        return set().union(*(getSpeciesSets(x) for (x,_) in tree.data[node]))
+                else:
+-                       print >> sys.stderr,tree.info[node]["taxon_name"]
++                       print(tree.info[node]["taxon_name"], file=sys.stderr)
+                        assert tree.info[node]["taxon_name"] in phylTree.listSpecies
+                        return set([tree.info[node]["taxon_name"]])
+
+@@ -103,8 +103,8 @@
+
+        # On trie les bonnes duplications des mauvaises
+        ################################################
+-       for (node,inf) in tree.info.iteritems():
+-               print >> sys.stderr,node,inf
++       for (node,inf) in tree.info.items():
++               print(node,inf, file=sys.stderr)
+                if inf['Duplication'] != 0:
+
+                        if 'dubious_duplication' in inf:
+@@ -134,5 +134,5 @@
+
+        tree.printTree(sys.stdout)
+
+-print >> sys.stderr, nbEdit
++print(nbEdit, file=sys.stderr)
+
+RefactoringTool: Writing converted ToolsDyogen_py2.7/treeTools/ENSEMBL.buildProteinTreesV1.py to ToolsDyogen/treeTools/ENSEMBL.buildProteinTreesV1.py.
+RefactoringTool: Refactored ToolsDyogen_py2.7/treeTools/getInfoOnSpeciesTree.py
+--- ToolsDyogen_py2.7/treeTools/getInfoOnSpeciesTree.py (original)
++++ ToolsDyogen_py2.7/treeTools/getInfoOnSpeciesTree.py (refactored)
+@@ -20,10 +20,10 @@
+ phylTree = utils.myPhylTree.PhylogeneticTree(arguments["phylTree.conf"])
+
+ if arguments["speciesList"]:
+-    print >> sys.stdout, "Extant Species:", ",".join(x for x in phylTree.listSpecies)
++    print("Extant Species:", ",".join(x for x in phylTree.listSpecies), file=sys.stdout)
+ if arguments["ancList"]:
+-    print >> sys.stdout
+-    print >> sys.stdout, "Ancestral Species:", ",".join(x for x in phylTree.listAncestr)
+-print >> sys.stdout
+-print >> sys.stdout, "Extant Species:", len(phylTree.listSpecies)
+-print >> sys.stdout, "Ancetral Species:", len(phylTree.listAncestr)
++    print(file=sys.stdout)
++    print("Ancestral Species:", ",".join(x for x in phylTree.listAncestr), file=sys.stdout)
++print(file=sys.stdout)
++print("Extant Species:", len(phylTree.listSpecies), file=sys.stdout)
++print("Ancetral Species:", len(phylTree.listAncestr), file=sys.stdout)
+RefactoringTool: Writing converted ToolsDyogen_py2.7/treeTools/getInfoOnSpeciesTree.py to ToolsDyogen/treeTools/getInfoOnSpeciesTree.py.
+RefactoringTool: Refactored ToolsDyogen_py2.7/treeTools/getSpeciesList.py
+--- ToolsDyogen_py2.7/treeTools/getSpeciesList.py       (original)
++++ ToolsDyogen_py2.7/treeTools/getSpeciesList.py       (refactored)
+@@ -22,4 +22,4 @@
+
+ for (x, _) in phylTree.items[arguments["anc"]]:
+     for y in phylTree.species[x]:
+-        print y
++        print(y)
+RefactoringTool: Writing converted ToolsDyogen_py2.7/treeTools/getSpeciesList.py to ToolsDyogen/treeTools/getSpeciesList.py.
+RefactoringTool: Refactored ToolsDyogen_py2.7/treeTools/misc.printAllDescendants.py
+--- ToolsDyogen_py2.7/treeTools/misc.printAllDescendants.py     (original)
++++ ToolsDyogen_py2.7/treeTools/misc.printAllDescendants.py     (refactored)
+@@ -31,12 +31,12 @@
+ if ( arguments["withExtantSpecies"]):
+
+     for anc in descendantAnc:
+-        print >> sys.stdout, anc
++        print(anc, file=sys.stdout)
+
+-    print >> sys.stdout, "----------------------"
++    print("----------------------", file=sys.stdout)
+     for esp in extantSpecies:
+-        print >> sys.stdout, esp
++        print(esp, file=sys.stdout)
+
+ else:
+     for anc in descendantAnc:
+-        print >> sys.stdout, anc
++        print(anc, file=sys.stdout)
+RefactoringTool: Writing converted ToolsDyogen_py2.7/treeTools/misc.printAllDescendants.py to ToolsDyogen/treeTools/misc.printAllDescendants.py.
+RefactoringTool: Refactored ToolsDyogen_py2.7/treeTools/misc.printLastCommonAncestors.py
+--- ToolsDyogen_py2.7/treeTools/misc.printLastCommonAncestors.py        (original)
++++ ToolsDyogen_py2.7/treeTools/misc.printLastCommonAncestors.py        (refactored)
+@@ -22,4 +22,4 @@
+         l1 = [e for e in phylTree.species[f1]]
+         l2 = [e for e in phylTree.species[f2]]
+         for (e1, e2) in itertools.product(l1, l2):
+-            print >> sys.stdout, "%s\t%s\t%s" % (e1, e2, a)
++            print("%s\t%s\t%s" % (e1, e2, a), file=sys.stdout)
+RefactoringTool: Writing converted ToolsDyogen_py2.7/treeTools/misc.printLastCommonAncestors.py to ToolsDyogen/treeTools/misc.printLastCommonAncestors.py.
+RefactoringTool: Refactored ToolsDyogen_py2.7/treeTools/ENSEMBL.buildProteinTrees.py
+--- ToolsDyogen_py2.7/treeTools/ENSEMBL.buildProteinTrees.py    (original)
++++ ToolsDyogen_py2.7/treeTools/ENSEMBL.buildProteinTrees.py    (refactored)
+@@ -271,7 +271,7 @@
+         # On trie les bonnes duplications des mauvaises
+         ################################################
+         nodeLowscore = []
+-        for (node, inf) in tree.info.iteritems():
++        for (node, inf) in tree.info.items():
+             if 'tree_name' in inf:
+                 treename = inf['tree_name']
+
+@@ -356,7 +356,7 @@
+         for iii in tree.info:
+             NewDataTreeInfo[iii] = tree.info[iii]
+             # print >> sys.stderr, 'TREEEEEEEEEEEEEEEE', NewDataTreeInfo
+-        for (node, inf) in tree.info.iteritems():
++        for (node, inf) in tree.info.items():
+             if node in NodeToTest:
+                 ChildToRemove = []
+                 # print >> sys.stderr, 'nodeatester', node
+@@ -702,5 +702,5 @@
+
+     tree.printTree(sys.stdout)
+
+-print >> sys.stderr, 'total edition', nbEdit
+-print >> sys.stderr, 'total duplication', nbdup
++print('total edition', nbEdit, file=sys.stderr)
++print('total duplication', nbdup, file=sys.stderr)
+RefactoringTool: Writing converted ToolsDyogen_py2.7/treeTools/ENSEMBL.buildProteinTrees.py to ToolsDyogen/treeTools/ENSEMBL.buildProteinTrees.py.
+RefactoringTool: Refactored ToolsDyogen_py2.7/treeTools/splitTrees.py
+--- ToolsDyogen_py2.7/treeTools/splitTrees.py   (original)
++++ ToolsDyogen_py2.7/treeTools/splitTrees.py   (refactored)
+@@ -14,7 +14,7 @@
+ arguments = utils.myTools.checkArgs( [("proteinTree",file), ("output",str)], [], __doc__ )
+
+ for (i,tree) in enumerate(utils.myProteinTree.loadTree(arguments["proteinTree"])):
+-       print i
++       print(i)
+        f = utils.myFile.openFile(arguments["output"] % (i+1), "w")
+        tree.printTree(f)
+        f.close()
+RefactoringTool: Writing converted ToolsDyogen_py2.7/treeTools/splitTrees.py to ToolsDyogen/treeTools/splitTrees.py.
+RefactoringTool: No files need to be modified.
