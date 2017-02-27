@@ -1,16 +1,21 @@
 #! /usr/bin/env python3
 
 """
-    Search and print out a single gene tree from the forest of trees.
+Search and print out a single gene tree from the forest of trees.
 
-    usage:
-        ./ALL.extractOneGeneTree.py GeneTrees.bz2 ENSOARG00000011785
-    options:
-        -field    : field on which to select: possible values:
-                        - gene_name     : modern gene ID (default)
-                        - protein_name  : modern protein ID
-                        - tree_name : use a gene tree ID instead : 'ENSGT...'
-        -toNewick : output in newick format
+USAGE:
+    ./ALL.extractOneGeneTree.py GeneTrees.bz2 ENSOARG00000011785
+
+OPTIONS:
+    -field    : field on which to select: possible values:
+                    - gene_name     : modern gene ID (default)
+                    - protein_name  : modern protein ID
+                    - family_name : use a gene tree ID instead : 'ENSGT...'
+    -toNewick : output in newick format
+    -phyltree : a PhylTree.conf file (species phylogeny). If given, the 
+                protein tree is rebuilt to match the species tree.
+    -withAncSpeciesNames: if True, prepend the ancient species name to the
+                          node name
 """
 
 import sys
