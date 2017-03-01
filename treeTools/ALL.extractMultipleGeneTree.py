@@ -34,9 +34,10 @@ parser.add_argument("-withAncSpeciesNames", action="store_true")
 #                    help="rebuild tree to fit species tree. Requires -phyltree")
 parser.add_argument("-phyltree", help=("path to PhylTree.conf file. -> rebuild"
                     "the gene tree to fit the species tree"))
-parser.add_argument("-output", "-o",
+parser.add_argument("-output", "-o", default='{genetree}.nwk',
                     help=("template for the filename. {genetree} will be "
-                          "replaced by the name provided in the command line."))
+                          "replaced by the name provided in the command line."
+                          " [%(default)s]"))
 parser.add_argument("-force", "-f", action="store_true",
                     help="overwrite existing file")
 parser.add_argument("-mkdirs", action="store_true",
