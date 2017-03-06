@@ -38,6 +38,18 @@ def do(node, filtertest):
     return False
 
 
+def def_filtertest(fieldfilter, field='gene_name')
+    """Define the correct filter"""
+    if field in ("gene_name", "protein_name"):
+        def filtertest(nodeinfo):
+            return nodeinfo[field] == fieldfilter
+    elif field == "family_name":
+        def filtertest(nodeinfo):
+            return nodeinfo["family_name"].startswith(fieldfilter)
+    else:
+        raise RuntimeError("Invalid '-field' option")
+
+
 def search(filtertest, proteinTree, phyltree=None, toNewick=False, withAncSpecieNames=False):
     """search for the good gene tree, according to the function `filtertest`"""
     for tree in myProteinTree.loadTree(arguments["proteinTree"]):
@@ -55,6 +67,13 @@ def search(filtertest, proteinTree, phyltree=None, toNewick=False, withAncSpecie
             break
 
 
+def main(**arguments):
+    fieldfilter = arguments.pop("filter")
+    field = arguments.pop("field")
+    filtertest = def_filtertest(fieldfilter, field)
+    search(filtertest, **arguments)
+
+
 if __name__=='__main__':
 
     arguments = myTools.checkArgs([("proteinTree", myTools.File), ("filter", str)],
@@ -63,20 +82,4 @@ if __name__=='__main__':
                                    ("toNewick", bool, False),
                                    ("withAncSpeciesNames", bool, False)],
                                   __doc__)
-
-    field = arguments.pop("field")
-    fieldfilter = arguments.pop("filter")
-
-    # Define the correct filter
-    if field in ("gene_name", "protein_name"):
-        def filtertest(nodeinfo):
-            return nodeinfo[field] == fieldfilter
-    elif field == "family_name":
-        def filtertest(nodeinfo):
-            return nodeinfo["family_name"].startswith(fieldfilter)
-    else:
-        print("Invalid '-field' option", file=sys.stderr)
-        sys.exit(1)
-
-
-    search(filtertest, **arguments)
+    main(**arguments)
