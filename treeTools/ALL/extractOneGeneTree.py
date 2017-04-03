@@ -26,42 +26,43 @@ import LibsDyogen.myPhylTree    as myPhylTree
 import LibsDyogen.myProteinTree as myProteinTree
 
 
-def do(node, filtertest):
-    """filtertest: takes `node.info` in input, return True/False if matches
-    your search criterion."""
-    if node in tree.data:
-        for (g, d) in tree.data[node]:
-            if do(g):
-                return True
-    elif filtertest(tree.info[node]):
-        return True
-    return False
-
-
-def def_filtertest(fieldfilter, field='gene_name')
+def def_filtertest(fieldfilter, field='gene_name'):
     """Define the correct filter"""
-    if field in ("gene_name", "protein_name"):
+    if field in ("gene_name", "protein_name", "tree_name"):
         def filtertest(nodeinfo):
-            return nodeinfo[field] == fieldfilter
+            return nodeinfo.get(field) == fieldfilter
     elif field == "family_name":
         def filtertest(nodeinfo):
             return nodeinfo["family_name"].startswith(fieldfilter)
     else:
         raise RuntimeError("Invalid '-field' option")
+    
+    return filtertest
 
 
-def search(filtertest, proteinTree, phyltree=None, toNewick=False, withAncSpecieNames=False):
+def search(filtertest, proteinTree, phyltree=None, toNewick=False,
+           withAncSpeciesNames=False, withAncGenesNames=True):
     """search for the good gene tree, according to the function `filtertest`"""
-    for tree in myProteinTree.loadTree(arguments["proteinTree"]):
+
+    def do(node):
+        if node in tree.data:
+            for (g, d) in tree.data[node]:
+                if do(g):
+                    return True
+        elif filtertest(tree.info[node]):
+            return True
+        return False
+
+    for tree in myProteinTree.loadTree(proteinTree):
         if do(tree.root):
-            if arguments['phyltree']:
+            if phyltree is not None:
                 phyltree = myPhylTree.PhylogeneticTree(arguments['phyltree'])
                 tree.rebuildTree(phyltree)
-            if arguments['toNewick']:
+            if toNewick:
                 print("Output to newick format", file=sys.stderr)
                 tree.printNewick(sys.stdout, withDist=True, withTags=False,
-                                 withAncSpeciesNames=arguments['withAncSpeciesNames'],
-                                 withAncGenesNames=True)
+                                 withAncSpeciesNames=withAncSpeciesNames,
+                                 withAncGenesNames=withAncGenesNames)
             else:
                 tree.printTree(sys.stdout)
             break
@@ -80,6 +81,7 @@ if __name__=='__main__':
                                   [("phyltree", str, None),
                                    ("field", str, "gene_name"),
                                    ("toNewick", bool, False),
-                                   ("withAncSpeciesNames", bool, False)],
+                                   ("withAncSpeciesNames", bool, False),
+                                   ("withAncGenesNames", bool, True)],
                                   __doc__)
     main(**arguments)
