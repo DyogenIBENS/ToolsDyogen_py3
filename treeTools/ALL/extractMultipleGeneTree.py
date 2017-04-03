@@ -21,7 +21,8 @@ import LibsDyogen.myPhylTree    as myPhylTree
 import LibsDyogen.myProteinTree as myProteinTree
 
 
-def main(proteinTree, family_name, toNewick=False, withAncSpeciesNames=False,
+def main(proteinTree, family_name, field='family_name',
+         toNewick=False, withAncSpeciesNames=False, withAncGenesNames=False,
          phyltree=None, output='{genetree}.nwk', force=False, mkdirs=False):
     if phyltree:
         phyltree = myPhylTree.PhylogeneticTree(phyltree)
@@ -29,9 +30,9 @@ def main(proteinTree, family_name, toNewick=False, withAncSpeciesNames=False,
     family_names = set(family_name)
 
     for tree in myProteinTree.loadTree(proteinTree):
-        family = tree.info[tree.root]["family_name"]
+        family = tree.info[tree.root][field]
         if family in family_names:
-            print("Found", family, file=sys.stderr)
+            print("Found", family, end=' ', file=sys.stderr)
             outfile = output.format(genetree=family)
             if os.path.isfile(outfile) and not force:
                 print("%s exists. Skipping. (use --force)" % outfile, file=sys.stderr)
@@ -51,7 +52,7 @@ def main(proteinTree, family_name, toNewick=False, withAncSpeciesNames=False,
                     print("Output to newick format", file=sys.stderr)
                     tree.printNewick(out, withDist=True, withTags=False,
                                      withAncSpeciesNames=withAncSpeciesNames,
-                                     withAncGenesNames=True)
+                                     withAncGenesNames=withAncGenesNames)
                 else:
                     tree.printTree(out)
                 out.close()
@@ -67,11 +68,13 @@ if __name__=='__main__':
 
     parser.add_argument("proteinTree")
     parser.add_argument("family_name", nargs='+')
-    #parser.add_argument("-field", default="gene_name",
-    #                    choices=("gene_name","family_name"))
+    parser.add_argument("-field", default="family_name",
+                        choices=("tree_name","family_name"))
     parser.add_argument("-toNewick", action="store_true",
                         help="output in newick format")
     parser.add_argument("-withAncSpeciesNames", action="store_true")
+    parser.add_argument("-noAncGenesNames", action="store_false",
+                        dest='withAncGenesNames')
     #parser.add_argument("-rebuild", action="store_true",
     #                    help="rebuild tree to fit species tree. Requires -phyltree")
     parser.add_argument("-phyltree", help=("path to PhylTree.conf file. -> rebuild"
