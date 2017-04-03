@@ -1,24 +1,23 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 
-__doc__ = """
-	Give all the descendant extant species for a given ancestor in a species tree
-	
-	Usage:	getSpeciesList.py PhylTree.conf Boreoeutheria
+"""
+    Give all the descendant extant species for a given ancestor in a species tree
+    
+    Usage: getSpeciesList.py PhylTree.conf Boreoeutheria
 """
 
-import utils.myFile
-import utils.myTools
-import utils.myPhylTree
+import LibsDyogen.myTools    as myTools
+import LibsDyogen.myPhylTree as myPhylTree
 
 # Arguments
-arguments = utils.myTools.checkArgs( \
-    [("phylTree.conf", file), ("anc", str)], [], \
+arguments = myTools.checkArgs( \
+    [("phylTree.conf", myTools.File), ("anc", str)], [], \
     __doc__ \
     )
 
 
 # L'arbre phylogenetique
-phylTree = utils.myPhylTree.PhylogeneticTree(arguments["phylTree.conf"])
+phylTree = myPhylTree.PhylogeneticTree(arguments["phylTree.conf"])
 
 for (x, _) in phylTree.items[arguments["anc"]]:
     for y in phylTree.species[x]:
