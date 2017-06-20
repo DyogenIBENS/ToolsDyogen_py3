@@ -13,7 +13,7 @@ OPTIONS:
                     - family_name : use a gene tree ID instead : 'ENSGT...'
     -toNewick : output in newick format
     -phyltree : a PhylTree.conf file (species phylogeny). If given, the 
-                protein tree is rebuilt to match the species tree.
+                protein tree is rebuilt to match the species tree (UNTESTED!).
     -withAncSpeciesNames: if True, prepend the ancient species name to the
                           node name
 """
