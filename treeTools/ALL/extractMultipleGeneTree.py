@@ -69,7 +69,8 @@ if __name__=='__main__':
     parser.add_argument("proteinTree")
     parser.add_argument("family_name", nargs='+')
     parser.add_argument("-field", default="family_name",
-                        choices=("tree_name","family_name"))
+                        choices=("tree_name","family_name"), 
+                        help="[%(default)s]")
     parser.add_argument("-toNewick", action="store_true",
                         help="output in newick format")
     parser.add_argument("-withAncSpeciesNames", action="store_true")
