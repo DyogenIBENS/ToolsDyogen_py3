@@ -1,4 +1,6 @@
-#! /usr/bin/env python3
+#!/usr/bin/env python3
+
+from __future__ import print_function
 
 """
 	Extract Trees that contain Specific ancestral nodes and/or do not contain specific ancestral nodes
@@ -48,10 +50,8 @@ lastAncGenes = myGenomes.Genome(arguments["in:ancGenesFiles"] % lastCommonAnc)
 in_genome  = {}
 out_genome = {}
 for inAnc in lstIn:
-    #print >> sys.stderr, inAnc
     in_genome[inAnc]=[]
     for gene in myGenomes.Genome(arguments["in:ancGenesFiles"] % inAnc):
-        #print gene.names[0]
         in_genome[inAnc].append(gene.names[0])
     in_genome[inAnc]=set(in_genome[inAnc])
 
@@ -66,7 +66,6 @@ for notinAnc in  lstOut:
     print(notinAnc, file=sys.stderr)
     out_genome[notinAnc]=[]
     for gene in myGenomes.Genome(arguments["in:ancGenesFiles"] % notinAnc):
-        #print gene.names[0]
         out_genome[notinAnc].append(gene.names[0])
     out_genome[notinAnc]=set(out_genome[notinAnc])
 
@@ -75,8 +74,8 @@ print(len(intersectOut), file=sys.stderr)
 
 
 for gene in lastAncGenes:
-        if (gene.names[0] in intersectIn) and (gene.names[0] not in intersectOut):
-            print(gene.names[0], " ".join((x for x in gene.names[1:])))
+    if (gene.names[0] in intersectIn) and (gene.names[0] not in intersectOut):
+        print(gene.names[0], " ".join((x for x in gene.names[1:])))
 
 """
 for ancGene in lastAncGenes:
