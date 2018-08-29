@@ -12,14 +12,10 @@ from __future__ import print_function
 import sys
 import collections
 
-import LibsDyogen.myFile        as myFile
-import LibsDyogen.myTools       as myTools
-import LibsDyogen.myPhylTree    as myPhylTree
-import LibsDyogen.myProteinTree as myProteinTree
-import LibsDyogen.myGenomes     as myGenomes
+from LibsDyogen import myFile, myTools, myPhylTree, myProteinTree, myGenomes
 
-arguments = myTools.checkArgs([("phylTree.conf", file),
-                                     ("proteinTree", file)],
+arguments = myTools.checkArgs([("phylTree.conf", myTools.File),
+                                     ("proteinTree", myTools.File)],
                                     [("inDesc", str, "Mammalia"),
                                      ("notinDesc", str, "HomoPan"),
                                      ("in:ancGenesFiles", str, "")],
