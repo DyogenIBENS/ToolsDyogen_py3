@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-__doc__ = """
+"""
 	Print all the ancestral and/or extants descendants species from one Ancestor
 
 	Usage:
@@ -10,12 +10,13 @@ __doc__ = """
 
 import sys
 
-import utils.myTools
-import utils.myPhylTree
+from LibsDyogen import myTools, myPhylTree
 
-arguments = utils.myTools.checkArgs([("phylTree.conf", file), ("taxon_name", str)], [("withExtantSpecies", bool, True)], __doc__)
+arguments = myTools.checkArgs([("phylTree.conf", myTools.File),
+                               ("taxon_name", str)],
+                              [("withExtantSpecies", bool, True)], __doc__)
 
-phylTree = utils.myPhylTree.PhylogeneticTree(arguments["phylTree.conf"])
+phylTree = myPhylTree.PhylogeneticTree(arguments["phylTree.conf"])
 
 fromAnc = arguments["taxon_name"]
 

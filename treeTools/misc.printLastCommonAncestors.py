@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-__doc__ = """
+"""
 	Print each pair of species and their commun ancestror
 	
 	Usage: misc.printLastCommonAncestors.py PhylTree.conf
@@ -9,12 +9,11 @@ __doc__ = """
 import sys
 import itertools
 
-import utils.myTools
-import utils.myPhylTree
+from LibsDyogen import myTools, myPhylTree
 
-arguments = utils.myTools.checkArgs([("phylTree.conf", file)], [], __doc__)
+arguments = myTools.checkArgs([("phylTree.conf", myTools.File)], [], __doc__)
 
-phylTree = utils.myPhylTree.PhylogeneticTree(arguments["phylTree.conf"])
+phylTree = myPhylTree.PhylogeneticTree(arguments["phylTree.conf"])
 
 for a in phylTree.listAncestr:
     for (f1, f2) in itertools.combinations([f for (f, _) in phylTree.items[a]], 2):

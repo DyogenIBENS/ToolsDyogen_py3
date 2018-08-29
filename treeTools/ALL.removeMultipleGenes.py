@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-__doc__ = """
+"""
 	Analyse l'arbre et supprime les genes qui sont presents en plusieurs copies
 """
 
@@ -8,20 +8,18 @@ import os
 import sys
 import collections
 
-import utils.myFile
-import utils.myTools
-import utils.myPhylTree
-import utils.myProteinTree
+from LibsDyogen import myFile, myTools, myPhylTree, myProteinTree
 
 sys.setrecursionlimit(10000)
-arguments = utils.myTools.checkArgs([("phylTree.conf", file), ("proteinTree", file)], [], __doc__)
+arguments = myTools.checkArgs([("phylTree.conf", myTools.File),
+                               ("proteinTree", myTools.File)], [], __doc__)
 
 count = collections.defaultdict(list)
 
 allTrees = {}
 allRoots = []
 
-for tree in utils.myProteinTree.loadTree(arguments["proteinTree"]):
+for tree in myProteinTree.loadTree(arguments["proteinTree"]):
 
     allTrees[tree.root] = tree
     allRoots.append(tree.root)

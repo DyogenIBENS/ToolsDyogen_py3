@@ -1,14 +1,13 @@
 #! /usr/bin/env python
 
-__doc__ = """
+"""
 	Gives information on forest of gene trees.
 	Nb families, Nb nodes (speciation, duplication)
 """
 
-import utils.myTools
-import utils.myProteinTree
+from LibsDyogen import myTools, myProteinTree
 
-arguments = utils.myTools.checkArgs([("iniTree", file)], [], __doc__)
+arguments = myTools.checkArgs([("iniTree", myTools.File)], [], __doc__)
 
-for tree in utils.myProteinTree.loadTree(arguments["iniTree"]):
+for tree in myProteinTree.loadTree(arguments["iniTree"]):
     next

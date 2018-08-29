@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-__doc__ = """
+"""
 	Analyse l'arbre et supprime les genes des especes demandees.
 """
 
@@ -8,19 +8,18 @@ import os
 import sys
 import collections
 
-import utils.myFile
-import utils.myTools
-import utils.myPhylTree
-import utils.myProteinTree
+from LibsDyogen import myFile, myTools, myPhylTree, myProteinTree
 
-arguments = utils.myTools.checkArgs([("phylTree.conf", file), ("proteinTree", file), ("SpeciesList", str)], [], __doc__)
+arguments = myTools.checkArgs([("phylTree.conf", myTools.File),
+                               ("proteinTree", myTools.File),
+                               ("SpeciesList", str)], [], __doc__)
 
 count = collections.defaultdict(list)
-phylTree = utils.myPhylTree.PhylogeneticTree(arguments["phylTree.conf"])
+phylTree = myPhylTree.PhylogeneticTree(arguments["phylTree.conf"])
 allTrees = {}
 allRoots = []
 
-for tree in utils.myProteinTree.loadTree(arguments["proteinTree"]):
+for tree in myProteinTree.loadTree(arguments["proteinTree"]):
 
     allTrees[tree.root] = tree
     allRoots.append(tree.root)

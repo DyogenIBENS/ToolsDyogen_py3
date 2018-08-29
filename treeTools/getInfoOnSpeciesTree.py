@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-__doc__ = """
+"""
         From a species tree, print the number of extant species and ancetors.
 	Optional: print the list of species
 	
@@ -10,14 +10,14 @@ __doc__ = """
 
 import sys
 
-import utils.myFile
-import utils.myTools
-import utils.myPhylTree
+from LibsDyogen import myFile, myTools, myPhylTree
 
-arguments = utils.myTools.checkArgs([("phylTree.conf", file)], [("speciesList", bool, False), ("ancList", bool, False)],
-                                    __doc__)
+arguments = myTools.checkArgs([("phylTree.conf", myTools.File)],
+                              [("speciesList", bool, False),
+                               ("ancList", bool, False)],
+                              __doc__)
 
-phylTree = utils.myPhylTree.PhylogeneticTree(arguments["phylTree.conf"])
+phylTree = myPhylTree.PhylogeneticTree(arguments["phylTree.conf"])
 
 if arguments["speciesList"]:
     print("Extant Species:", ",".join(x for x in phylTree.listSpecies), file=sys.stdout)

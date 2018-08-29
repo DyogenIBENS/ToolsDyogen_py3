@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-__doc__ = """
+"""
 	Analyse l'arbre et supprime les genes qui sont dasn la liste en argument
 """
 
@@ -8,20 +8,19 @@ import os
 import sys
 import collections
 
-import utils.myFile
-import utils.myTools
-import utils.myPhylTree
-import utils.myProteinTree
+from LibsDyogen import myFile, myTools, myPhylTree, myProteinTree
 
 sys.setrecursionlimit(10000)
-arguments = utils.myTools.checkArgs([("phylTree.conf", file), ("proteinTree", file), ("GeneList", file)], [], __doc__)
+arguments = myTools.checkArgs([("phylTree.conf", myTools.File),
+                               ("proteinTree", myTools.File),
+                               ("GeneList", myTools.File)], [], __doc__)
 
 count = collections.defaultdict(list)
 
 allTrees = {}
 allRoots = []
 
-for tree in utils.myProteinTree.loadTree(arguments["proteinTree"]):
+for tree in myProteinTree.loadTree(arguments["proteinTree"]):
 
     allTrees[tree.root] = tree
     allRoots.append(tree.root)
@@ -40,7 +39,7 @@ for tree in utils.myProteinTree.loadTree(arguments["proteinTree"]):
     countGenes(tree.root)
 
 GeneList = []
-f = utils.myFile.openFile(arguments["GeneList"], "r")
+f = myFile.openFile(arguments["GeneList"], "r")
 # file = open (filename, mode="r")
 # for line in file:
 for l in f:

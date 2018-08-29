@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-__doc__ = """
+"""
 	Print the oldest ancestor of each request species gene.
 	
 	usage:
@@ -9,12 +9,10 @@ __doc__ = """
 
 import sys
 
-import utils.myFile
-import utils.myTools
-import utils.myPhylTree
-import utils.myProteinTree
+from LibsDyogen import myFile, myTools, myPhylTree, myProteinTree
 
-arguments = utils.myTools.checkArgs([("proteinTree", file), ("taxon_name", str)], [], __doc__)
+arguments = myTools.checkArgs([("proteinTree", myTools.File),
+                               ("taxon_name", str)], [], __doc__)
 
 
 
@@ -24,7 +22,7 @@ def printGeneNode(node):
     #txt.append("GENE")
     #txt.append(tree.info[node].pop("taxon_name", None))
     txt.append(tree.info[node].pop("gene_name", None))
-    print(utils.myFile.myTSV.printLine(txt))
+    print(myFile.myTSV.printLine(txt))
 
 
 # Recursive loop on the gene family
@@ -37,6 +35,6 @@ def do(node):
 
 
 # searching for the good gene tree
-for tree in utils.myProteinTree.loadTree(arguments["proteinTree"]):
+for tree in myProteinTree.loadTree(arguments["proteinTree"]):
     
     do(tree.root)
