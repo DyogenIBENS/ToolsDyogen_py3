@@ -12,16 +12,15 @@
 import collections
 import sys
 
-import LibsDyogen.myFile        as myFile
-import LibsDyogen.myPhylTree    as myPhylTree
-import LibsDyogen.myProteinTree as myProteinTree
-import LibsDyogen.myTools       as myTools
+from LibsDyogen import myFile, myPhylTree, myProteinTree, myTools
 
 sys.setrecursionlimit(10000)
 
 # Arguments
 arguments = myTools.checkArgs([("phylTree.conf", file), ("proteinTree", file)],
-                                    [("out:ancGenesFiles", str, ""), ("reuseNames", bool, False)], __doc__)
+                              [("out:ancGenesFiles", str, ""),
+                               ("reuseNames", bool, False)],
+                              __doc__)
 
 phylTree = myPhylTree.PhylogeneticTree(arguments["phylTree.conf"])
 
@@ -36,13 +35,13 @@ def futureName(name, dup):
         return name
 
 
-#################################################
-# Find true root in each family                 #
-#################################################
 def getRoots(node, previousAnc, lastWrittenAnc):
+    """Find true root in each family"""
+    ### Unused function
     newAnc = tree.info[node]['taxon_name']
-    (_, newLastWritten, isroot) = myProteinTree.getIntermediateAnc(phylTree, previousAnc, lastWrittenAnc, newAnc,
-                                                                         tree.info[node]['Duplication'] >= 2)
+    _, newLastWritten, isroot = myProteinTree.getIntermediateAnc(phylTree,
+                                    previousAnc, lastWrittenAnc, newAnc,
+                                    tree.info[node]['Duplication'] >= 2)
 
     if isroot:
         return [node]
@@ -57,14 +56,12 @@ def getRoots(node, previousAnc, lastWrittenAnc):
 count = collections.defaultdict(int)
 
 
-###########################################
-# Backup all the genes families           #
-###########################################
 def extractGeneFamilies(node, baseName, previousAnc, lastWrittenAnc):
+    """Backup all the genes families"""
     newAnc = tree.info[node]['taxon_name']
-    (toWrite, newLastWritten, isroot) = myProteinTree.getIntermediateAnc(phylTree, previousAnc, lastWrittenAnc,
-                                                                               newAnc,
-                                                                               tree.info[node]['Duplication'] >= 2)
+    toWrite, newLastWritten, isroot = myProteinTree.getIntermediateAnc(phylTree,
+                                               previousAnc, lastWrittenAnc,
+                                               newAnc, tree.info[node]['Duplication'] >= 2)
 
     if isroot and (previousAnc != None):
         if not arguments["reuseNames"]:
