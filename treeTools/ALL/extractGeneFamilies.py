@@ -17,7 +17,7 @@ from LibsDyogen import myFile, myPhylTree, myProteinTree, myTools
 sys.setrecursionlimit(10000)
 
 # Arguments
-arguments = myTools.checkArgs([("phylTree.conf", file), ("proteinTree", file)],
+arguments = myTools.checkArgs([("phylTree.conf", myTools.File), ("proteinTree", myTools.File)],
                               [("out:ancGenesFiles", str, ""),
                                ("reuseNames", bool, False)],
                               __doc__)
@@ -56,6 +56,7 @@ def getRoots(node, previousAnc, lastWrittenAnc):
 count = collections.defaultdict(int)
 
 
+### TODO: Put in LibsDyogen
 def extractGeneFamilies(node, baseName, previousAnc, lastWrittenAnc):
     """Backup all the genes families"""
     newAnc = tree.info[node]['taxon_name']
