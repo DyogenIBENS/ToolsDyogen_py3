@@ -5,9 +5,12 @@ Extract ancestral gene content from a forest of gene trees.
 One file per ancestor, and one file per extant species.
 
 usage:
-    ./treeTools/ALL.extractGeneFamilies.py PhylTree.conf GeneTrees.bz2 -out:ancGenesFiles=ancGenes/all/ancGenes.%s.list.bz2
-    ./treeTools/ALL.extractGeneFamilies.py PhylTree.conf GeneTrees.bz2 -out:ancGenesFiles=ancGenes/all/ancGenes.%s.list.bz2 +bz2 > ForestWithFamilyNames.bz2
+    ./treeTools/ALL/extractGeneFamilies.py PhylTree.conf GeneTrees.bz2 -out:ancGenesFiles=ancGenes/all/ancGenes.%s.list.bz2
+    ./treeTools/ALL/extractGeneFamilies.py PhylTree.conf GeneTrees.bz2 -out:ancGenesFiles=ancGenes/all/ancGenes.%s.list.bz2 +bz2 > ForestWithFamilyNames.bz2
 """
+
+from __future__ import print_function
+
 
 import collections
 import sys
@@ -19,7 +22,10 @@ sys.setrecursionlimit(10000)
 
 ### TODO: Put in LibsDyogen
 ### TODO: Make a subfunction that applies only on one protein tree at once.
-def extractGeneFamilies(phylTree, proteinTreeFile, outFile=sys.stdout):
+def extractGeneFamilies(phylTree, proteinTrees, reuseNames=False, outFile=sys.stdout):
+
+    get_baseName = (lambda baseName: baseName) if reuseNames else \
+                   (lambda baseName: baseName.split(".")[0])
 
     dupCount = collections.defaultdict(int)
     def futureName(name, dup):
@@ -57,8 +63,7 @@ def extractGeneFamilies(phylTree, proteinTreeFile, outFile=sys.stdout):
                                                    newAnc, tree.info[node]['Duplication'] >= 2)
 
         if isroot and (previousAnc is not None):
-            if not arguments["reuseNames"]:
-                baseName = baseName.split(".")[0]
+            baseName = get_baseName(baseName)
             count[baseName] += 1
             currName = baseName + myProteinTree.getDupSuffix(count[baseName], True)
         else:
@@ -70,8 +75,16 @@ def extractGeneFamilies(phylTree, proteinTreeFile, outFile=sys.stdout):
         if node in tree.data:
             allGenes = []
             for (g, _) in tree.data[node]:
-                allGenes.extend(
-                    doGeneFamilies(g, futureName(currName, tree.info[node]['Duplication']), newAnc, newLastWritten))
+                try:
+                    allGenes.extend(
+                        doGeneFamilies(g,
+                                futureName(currName,
+                                           tree.info[node]['Duplication']),
+                                newAnc,
+                                newLastWritten))
+                except BaseException as err:
+                    err.args += ("Child id, node id: (%d, %d)" % (g,node),)
+                    raise
         else:
             allGenes = [tree.info[node]["gene_name"]]
 
@@ -80,10 +93,14 @@ def extractGeneFamilies(phylTree, proteinTreeFile, outFile=sys.stdout):
 
         return allGenes
 
-    for tree in myProteinTree.loadTree(proteinTreeFile):
+    for tree in proteinTrees:
         # print >> sys.stderr, tree.root
-        doGeneFamilies(tree.root, tree.info[tree.root]["tree_name"], None, None)
-        myProteinTree.printTree(outFile, tree.data, tree.info, tree.root)
+        try:
+            doGeneFamilies(tree.root, tree.info[tree.root]["tree_name"], None, None)
+        except BaseException as err:
+            err.args += ("Root id: '%d'" % tree.root,)
+            raise
+        tree.printTree(outFile)
 
     return count, dupCount, geneFamilies
 
@@ -98,9 +115,11 @@ if __name__ == '__main__':
                                   __doc__)
 
     phylTree = myPhylTree.PhylogeneticTree(arguments["phylTree.conf"])
+    proteinTrees = myProteinTree.loadTree(arguments["proteinTree"])
 
     count, dupCount, geneFamilies = extractGeneFamilies(phylTree,
-                                                        arguments["proteinTree"])
+                                                        proteinTrees,
+                                                        arguments["reuseNames"])
 
     outTemplate = arguments["out:ancGenesFiles"]
     for (anc, lst) in geneFamilies.items():
