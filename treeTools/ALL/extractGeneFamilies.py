@@ -122,10 +122,11 @@ if __name__ == '__main__':
                                                         arguments["reuseNames"])
 
     outTemplate = arguments["out:ancGenesFiles"]
-    for (anc, lst) in geneFamilies.items():
-        print("Ecriture des familles de %s ..." % anc, end=' ', file=sys.stderr)
-        f = myFile.openFile(outTemplate % phylTree.fileName[anc], "w")
-        for gg in lst:
-            print(" ".join(gg), file=f)
-        f.close()
-        print(len(lst), "OK", file=sys.stderr)
+    if outTemplate:
+        for (anc, lst) in geneFamilies.items():
+            print("Ecriture des familles de %s ..." % anc, end=' ', file=sys.stderr)
+            f = myFile.openFile(outTemplate % phylTree.fileName[anc], "w")
+            for gg in lst:
+                print(" ".join(gg), file=f)
+            f.close()
+            print(len(lst), "OK", file=sys.stderr)
