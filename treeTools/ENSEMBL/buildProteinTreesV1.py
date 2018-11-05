@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-__doc__ = """
+"""
     Cette version est la version de modification des arbres initialement développées par MM.
 	Corrige les arbres d'Ensembl en fonction du seuil minimal de duplication_score et de l'arbre des especes desire
 		1: score par defaut (0 -> 1)
@@ -12,20 +12,20 @@ import sys
 import itertools
 import collections
 
-import utils.myFile
-import utils.myTools
-import utils.myPhylTree
-import utils.myProteinTree
+if sys.version_info[0] == 3:
+    from LibsDyogen import myFile, myTools, myPhylTree, myProteinTree
+else:
+    from LibsDyogen.utils import myFile, myTools, myPhylTree, myProteinTree
 
 sys.setrecursionlimit(20000) 
 
-arguments = utils.myTools.checkArgs( \
-	[("phylTree.conf",file), ("ensemblTree",file)], \
+arguments = myTools.checkArgs( \
+	[("phylTree.conf",myTools.File), ("ensemblTree",myTools.File)], \
 	[("cutoff",str,"-1"), ("defaultFamName",str,"FAM%08d"), ("scoreMethod",int,[1,2,3]), ("newNodeID",int,100000000), ("recurs",bool,False)], \
 	__doc__ \
 )
 
-phylTree = utils.myPhylTree.PhylogeneticTree(arguments["phylTree.conf"])
+phylTree = myPhylTree.PhylogeneticTree(arguments["phylTree.conf"])
 
 # Limites automatiques de score de duplication
 if arguments["scoreMethod"] in [1, 3]:
@@ -45,7 +45,7 @@ try:
 	for anc in phylTree.listAncestr:
 		minDuplicationScore[anc] = calc(anc, val)
 except ValueError:
-	f = utils.myFile.openFile(arguments["cutoff"], "r")
+	f = myFile.openFile(arguments["cutoff"], "r")
 	for l in f:
 		t = l.split()
 		anc = phylTree.officialName[t[0]]
@@ -58,9 +58,9 @@ for esp in phylTree.listSpecies:
 	minDuplicationScore[esp] = 0
 
 
-utils.myProteinTree.nextNodeID = arguments["newNodeID"]
+myProteinTree.nextNodeID = arguments["newNodeID"]
 
-@utils.myTools.memoize
+@myTools.memoize
 def goodSpecies(anc):
 	return phylTree.species[anc].difference(phylTree.lstEsp2X)
 
@@ -69,7 +69,7 @@ def alwaysTrue(tree, rnode):
 
 def hasLowScore(tree, rnode):
 
-	@utils.myTools.memoize
+	@myTools.memoize
 	def getSpeciesSets(node):
 		if node in tree.data:
 			return set().union(*(getSpeciesSets(x) for (x,_) in tree.data[node]))
@@ -97,7 +97,7 @@ def hasLowScore(tree, rnode):
 
 nbEdit = {"dubious": 0, "toolow": 0, "good": 0}
 
-for (nb,tree) in enumerate(utils.myProteinTree.loadTree(arguments["ensemblTree"])):
+for (nb,tree) in enumerate(myProteinTree.loadTree(arguments["ensemblTree"])):
 
 	assert max(tree.info) < arguments["newNodeID"]
 
