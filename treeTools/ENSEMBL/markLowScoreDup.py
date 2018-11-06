@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#!/usr/bin/env python3
 
 """
 Cette version est la version de modification des arbres initialement développées par MM.
@@ -9,6 +9,8 @@ Corrige les arbres d'Ensembl en fonction du seuil minimal de duplication_score e
     2: coef multiplicateur d'un score reference 6X_species / all_species
     3: duplication_confidence_score calcule sur uniquement 6X_species
 """
+
+from __future__ import print_function
 
 import sys
 import itertools
@@ -132,7 +134,8 @@ def markLowDup(tree, hasLowScore, newNodeID=100000000):
 if __name__ == '__main__':
     arguments = myTools.checkArgs( \
         [("phylTree.conf",myTools.File), ("ensemblTree",myTools.File)], \
-        [("cutoff",str,"-1"), ("defaultFamName",str,"FAM%08d"),
+        [("flatten",bool,False), ("rebuild",bool,False),
+         ("cutoff",str,"-1"), ("defaultFamName",str,"FAM%08d"),
          ("scoreMethod",int,[1,2,3]), ("newNodeID",int,100000000),
          ("recurs",bool,False)], \
         __doc__ \
@@ -146,6 +149,9 @@ if __name__ == '__main__':
                                 arguments["cutoff"])
 
     nbEdit = {"dubious": 0, "toolow": 0, "good": 0}
+    nbFlattened = 0
+    nbRebuilt = 0
+    
 
     for (nb,tree) in enumerate(myProteinTree.loadTree(arguments["ensemblTree"])):
 
@@ -153,12 +159,16 @@ if __name__ == '__main__':
         nbEdit["dubious"] += dubious
         nbEdit["toolow"] += toolow
         nbEdit["good"] += good
-        tree.flattenTree(phylTree, True)
-        tree.rebuildTree(phylTree, hasLowScore if arguments["recurs"] else alwaysTrue)
+        if arguments["flatten"]:
+            flattened = tree.flattenTree(phylTree, True)
+            nbFlattened += int(flattened)
+        if arguments["rebuild"]:
+            rebuilt = tree.rebuildTree(phylTree, hasLowScore if arguments["recurs"] else alwaysTrue)
+            nbRebuilt += int(rebuilt)
 
         if "tree_name" not in tree.info[tree.root]:
             tree.info[tree.root]["tree_name"] = arguments["defaultFamName"] % nb
 
         tree.printTree(sys.stdout)
 
-    print(nbEdit, file=sys.stderr)
+    print(nbEdit, 'flattened:', nbFlattened, 'rebuilt:', nbRebuilt, file=sys.stderr)
