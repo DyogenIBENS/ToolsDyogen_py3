@@ -17,16 +17,16 @@ Example:
 from __future__ import print_function
 
 from sys import argv, stderr, stdout, stdin
+from collections import defaultdict
 from CLItools.autoCLI import build_cli_processor
 
 try:
-    from LibsDyogen import myTools, myProteinTree, myPhylTree
+    from LibsDyogen import myProteinTree, myPhylTree
 except ImportError:
     try: 
-        from LibsDyogen.utils import myTools, myProteinTree, myPhylTree
+        from LibsDyogen.utils import myProteinTree, myPhylTree
     except ImportError:
-        from utils import myTools, myProteinTree, myPhylTree
-
+        from utils import myProteinTree, myPhylTree
 
 
 
@@ -36,9 +36,19 @@ def run(process, proteinTreeFile, converted_args):
     if proteinTreeFile == '-':
         proteinTreeFile = stdin
 
+    count_outputs = defaultdict(int)
+
     for tree in myProteinTree.loadTree(proteinTreeFile):
-        process(tree, *converted_args)
+        r = process(tree, *converted_args)
+        try:
+            count_outputs[r] += 1
+        except TypeError:
+            count_outputs["unhashable"] += 1
+            pass
+
         tree.printTree(stdout)
+    
+    print("Outputs counts:", count_outputs, file=stderr)
         
 
 
