@@ -41,13 +41,15 @@ def processTrees(ensemblTree, phylTree):
 if __name__ == '__main__':
     arguments = myTools.checkArgs(
         [("phylTree.conf", myTools.File), ("ensemblTree", myTools.File)],
-        [("reuseNames", bool, False)],
+        [("newNodeID",int,int(1e9)), ("reuseNames", bool, False)],
         __doc__
     )
 
 
     phylTree = myPhylTree.PhylogeneticTree(arguments["phylTree.conf"])
     setrecursionlimit(20000)
+    # !important
+    myProteinTree.nextNodeID = arguments["newNodeID"]
 
     count, dupCount, geneFamilies = extractGeneFamilies(phylTree,
                                             processTrees(arguments["ensemblTree"],
