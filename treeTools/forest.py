@@ -54,6 +54,8 @@ def run(process, proteinTreeFile, converted_args):
 
 if __name__=='__main__':
 
+    # This is necessary for rebuildTree:
+    myProteinTree.nextNodeID = int(1e8)
     process, converted_args = build_cli_processor(myProteinTree.ProteinTree,
                                               {'phyltree': myPhylTree.PhylogeneticTree},
                                               1,
