@@ -21,7 +21,8 @@ from LibsDyogen import myFile, myPhylTree, myProteinTree
 
 def main(proteinTree, family_name, field='family_name',
          toNewick=False, withAncSpeciesNames=False, withAncGenesNames=False,
-         phyltree=None, output='{genetree}.nwk', force=False, mkdirs=False):
+         withTags=False, phyltree=None, output='{genetree}.nwk', force=False,
+         mkdirs=False):
     if phyltree:
         phyltree = myPhylTree.PhylogeneticTree(phyltree)
 
@@ -36,6 +37,9 @@ def main(proteinTree, family_name, field='family_name',
                 print("%s exists. Skipping. (use --force)" % outfile, file=sys.stderr)
             else:
                 if phyltree is not None:
+                    #markLowScore(tree, hasLowScore)
+                    #flattenTree
+                    #
                     tree.rebuildTree(phyltree)
                 try:
                     out = open(outfile, 'w')
@@ -48,9 +52,10 @@ def main(proteinTree, family_name, field='family_name',
 
                 if toNewick:
                     print("Output to newick format", file=sys.stderr)
-                    tree.printNewick(out, withDist=True, withTags=False,
+                    tree.printNewick(out, withDist=True, withTags=withTags,
                                      withAncSpeciesNames=withAncSpeciesNames,
-                                     withAncGenesNames=withAncGenesNames)
+                                     withAncGenesNames=withAncGenesNames,
+                                     withID=withTags)
                 else:
                     tree.printTree(out)
                 out.close()
@@ -66,6 +71,8 @@ if __name__=='__main__':
 
     parser.add_argument("proteinTree")
     parser.add_argument("family_name", nargs='+')
+    parser.add_argument("-fromfile", action='store_true',
+                        help='read `family_name` from a file, one per line.')
     parser.add_argument("-field", default="family_name",
                         choices=("tree_name","family_name"), 
                         help="[%(default)s]")
@@ -74,6 +81,7 @@ if __name__=='__main__':
     parser.add_argument("-withAncSpeciesNames", action="store_true")
     parser.add_argument("-noAncGenesNames", action="store_false",
                         dest='withAncGenesNames')
+    parser.add_argument("-withTags", action="store_true")
     #parser.add_argument("-rebuild", action="store_true",
     #                    help="rebuild tree to fit species tree. Requires -phyltree")
     parser.add_argument("-phyltree", help=("path to PhylTree.conf file. -> rebuild"
@@ -90,5 +98,11 @@ if __name__=='__main__':
     # (need to add the option in LibsDyogen.MyProteinTree ...)
 
     arguments = parser.parse_args()
+    if arguments.pop('fromfile'):
+        fam_names = []
+        for filename in arguments['family_name']:
+            with open(filename) as f:
+                fam_names.extend(line.rstrip() for line in f if not line.startswith('#'))
+        arguments.family_name = fam_names
 
     main(**vars(arguments))
