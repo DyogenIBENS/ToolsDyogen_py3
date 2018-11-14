@@ -16,9 +16,7 @@ import sys
 import os.path
 
 import argparse
-import LibsDyogen.myFile        as myFile
-import LibsDyogen.myPhylTree    as myPhylTree
-import LibsDyogen.myProteinTree as myProteinTree
+from LibsDyogen import myFile, myPhylTree, myProteinTree
 
 
 def main(proteinTree, family_name, field='family_name',

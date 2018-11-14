@@ -9,12 +9,12 @@
 
 import sys
 
-import LibsDyogen.myFile        as myFile
-import LibsDyogen.myTools       as myTools
-import LibsDyogen.myPhylTree    as myPhylTree
-import LibsDyogen.myProteinTree as myProteinTree
+from LibsDyogen import myFile, myTools, myPhylTree, myProteinTree
 
-arguments = myTools.checkArgs([("proteinTree", file), ("gene_name", str)], [], __doc__)
+
+arguments = myTools.checkArgs([("proteinTree", myTools.File),
+                               ("gene_name", str)],
+                              [], __doc__)
 
 
 # Information on ancestral node

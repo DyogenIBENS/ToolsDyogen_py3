@@ -14,7 +14,11 @@ import LibsDyogen.myTools       as myTools
 import LibsDyogen.myProteinTree as myProteinTree
 
 # Arguments
-arguments = myTools.checkArgs( [("proteinTree",file)], [("withDist",bool,False), ("withNHXTags",bool,False), ("withAncSpeciesNames",bool,False), ("withAncGenesNames",bool,False)], __doc__ )
+arguments = myTools.checkArgs( [("proteinTree",myTools.File)],
+                               [("withDist",bool,False),
+                                ("withNHXTags",bool,False),
+                                ("withAncSpeciesNames",bool,False),
+                                ("withAncGenesNames",bool,False)], __doc__ )
 
 print("Mise en forme des arbres ...", end=' ', file=sys.stderr)
 nb = 0
