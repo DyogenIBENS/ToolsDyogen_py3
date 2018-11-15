@@ -1,7 +1,7 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # coding: latin-1
 
-__doc__ = """
+"""
     Transform a reconstructed ancestral list of blocks (diags) in a formated ancestral genome (list of genes)
 
     usage:
@@ -11,12 +11,11 @@ __doc__ = """
 import sys
 
 from gff3 import Gff3
-import utils.myGenomes
-import utils.myTools
+from LibsDyogen import myGenomes, myTools
 
 
 
-arguments = utils.myTools.checkArgs([("gffFile", file)], [], __doc__)
+arguments = myTools.checkArgs([("gffFile", file)], [], __doc__)
 
 gff = Gff3(arguments["gffFile"])
 genes = [line for line in gff.lines if line['line_type'] == 'feature' and line['type'] == 'mRNA']
@@ -27,4 +26,4 @@ for gene in genes:
         gene['strand'] = '1'
     else:
         gene['strand'] = '-1'
-    print(utils.myFile.myTSV.printLine([gene['seqid'], gene['start'], gene['end'], gene['strand'], gene['attributes']['ID']]), file=sys.stdout)
+    print(myFile.myTSV.printLine([gene['seqid'], gene['start'], gene['end'], gene['strand'], gene['attributes']['ID']]), file=sys.stdout)

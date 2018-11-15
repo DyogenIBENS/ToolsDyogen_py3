@@ -1,6 +1,6 @@
-#! /usr/bin/env python
+#!/usr/bin/env python3
 
-__doc__ = """
+"""
 
 	print the number of pairwise comparison for each ancestor. 
 
@@ -12,25 +12,22 @@ __doc__ = """
 import sys
 import itertools
 
-import utils.myFile
-import utils.myTools
-import utils.myMaths
-import utils.myPhylTree
+from LibsDyogen import myFile, myTools, myMaths, myPhylTree
 
 
 
 # Arguments
-arguments = utils.myTools.checkArgs( \
+arguments = myTools.checkArgs( \
     [("phylTree.conf", file)], [("diags", str, ""), ("colNames", bool, False)], \
     __doc__ \
     )
 
 
 # L'arbre phylogenetique
-phylTree = utils.myPhylTree.PhylogeneticTree(arguments["phylTree.conf"])
+phylTree = myPhylTree.PhylogeneticTree(arguments["phylTree.conf"])
 
 if (arguments["colNames"]):
-    print(utils.myFile.myTSV.printLine(
+    print(myFile.myTSV.printLine(
         ["Ancestor", "NbComp", "Nb(In/Out)Comp", "Nb(In/In)Comp", "Age", "MeanSize_OfBlocks","N50Size_OfBlocks", "WASize_OfBlocks", "NbComp/Age"]), file=sys.stdout)
 
 for anc in phylTree.listAncestr:
@@ -72,14 +69,14 @@ for anc in phylTree.listAncestr:
     totalStat= []
     if (arguments["diags"] != ""):
         r = []
-        f = utils.myFile.openFile(arguments["diags"] % phylTree.fileName[anc], "r")
+        f = myFile.openFile(arguments["diags"] % phylTree.fileName[anc], "r")
         for line in f:
             x = int(line.split("\t")[1])
             if x > 1:
                 r.append(x)
         f.close()
         #lll = float(sum(r)) / len(r)
-        totalStat = utils.myMaths.myStats.valSummary2(r)
+        totalStat = myMaths.myStats.valSummary2(r)
     else:
         lll = "NONE"
     ###############
@@ -87,5 +84,5 @@ for anc in phylTree.listAncestr:
 
 
 
-    print(utils.myFile.myTSV.printLine(
+    print(myFile.myTSV.printLine(
         [anc, nbc, compInOut, compInIn, phylTree.ages[anc], totalStat[9], totalStat[6], int(totalStat[7]), float(nbc) / phylTree.ages[anc]]))

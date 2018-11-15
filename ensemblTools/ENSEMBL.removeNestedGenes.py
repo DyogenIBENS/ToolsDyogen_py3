@@ -1,6 +1,6 @@
-#! /usr/bin/env python
+#!/usr/bin/env python3
 
-__doc__ = """
+"""
 	Parcourt un fichier de genome et enleve les genes inclus dans un autre
 """
 
@@ -9,15 +9,13 @@ import collections
 import itertools
 import operator
 
-import utils.myFile
-import utils.myTools
-import utils.myGenomes
+from LibsDyogen import myFile, myTools, myGenomes
 
 
 # Arguments
-arguments = utils.myTools.checkArgs( [("genome",file)], [], __doc__)
+arguments = myTools.checkArgs( [("genome",file)], [], __doc__)
 
-genome = utils.myGenomes.Genome(arguments["genome"])
+genome = myGenomes.Genome(arguments["genome"])
 
 for c in genome.lstGenes:
 
@@ -27,7 +25,7 @@ for c in genome.lstGenes:
 	lnew = list(genome.lstGenes[c])
 	lnew.sort(key=operator.attrgetter("end"))
 
-	comb = utils.myTools.myCombinator()
+	comb = myTools.myCombinator()
 	for (g1,g2) in zip(lref, lnew):
 		if g1 != g2:
 			comb.addLink([g1,g2])
@@ -43,5 +41,5 @@ for c in genome.lstGenes:
 
 	for gene in lref:
 		if gene not in removed:
-			print(utils.myFile.myTSV.printLine([c, gene.beginning, gene.end, gene.strand, " ".join(gene.names)]))
+			print(myFile.myTSV.printLine([c, gene.beginning, gene.end, gene.strand, " ".join(gene.names)]))
 

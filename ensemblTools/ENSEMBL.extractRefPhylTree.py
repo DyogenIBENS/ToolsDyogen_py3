@@ -1,17 +1,16 @@
-#! /usr/bin/env python
+#!/usr/bin/env python3
 
-__doc__ = """
+"""
 	Extrait l'arbre phylogenetique des especes utilise par Ensembl
 """
 
 import sys
 import io
 
-import utils.myFile
-import utils.myTools
-import utils.myPhylTree
+from LibsDyogen import myFile, myTools, myPhylTree
 
-arguments = utils.myTools.checkArgs( [("IN.protein_tree_tag",file)], [], __doc__)
+
+arguments = myTools.checkArgs( [("IN.protein_tree_tag",file)], [], __doc__)
 
 dicTaxonName = {}
 dicTaxonID = {}
@@ -19,7 +18,7 @@ dicTaxonAlias = {}
 
 # Chargement des donnees
 print("Chargement des tags ...", end=' ', file=sys.stderr)
-f = utils.myFile.openFile(arguments["IN.protein_tree_tag"], "r")
+f = myFile.openFile(arguments["IN.protein_tree_tag"], "r")
 for ligne in f:
 	t = ligne[:-1].split("\t")
 	if t[1] == "taxon_name":
@@ -47,7 +46,7 @@ for x in dicTaxonName:
 		resTaxon[i] = (s,a)
 print(len(resTaxon), "taxa named", file=sys.stderr)
 
-phylTree = utils.myPhylTree.PhylogeneticTree(io.StringIO(tree))
+phylTree = myPhylTree.PhylogeneticTree(io.StringIO(tree))
 
 # Impression sous mon format, avec des indentations
 def do(node, indent):

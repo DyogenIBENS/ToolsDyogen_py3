@@ -1,39 +1,39 @@
-#! /usr/bin/env python
+#!/usr/bin/env python3
 #  -*- coding: utf-8 -*-
+
+
+""" "Dessine l'arbre phylogenetique avec des informations dessus comme des evolutions de taux"
+
+     usage:
+
+        ./drawPhylTreeRearrang.py data84/PhylTree.conf -lengthFile=nbDup -colorFile=nbDup +landscape
+        avec nbDup = nom de gene dupliqués par branche
+        format du fichier:
+
+        Pere    Fils    Valeur(nbDup)
+"""
 
 # Librairies
 import sys
 import math
 
-import utils.myFile
-import utils.myMaths
-import utils.myTools
-import utils.myPhylTree
-import utils.myPsOutput
+from LibsDyogen import myFile, myMaths, myTools, myPhylTree, myPsOutput
 
-__doc__ = """ "Dessine l'arbre phylogenetique avec des informations dessus comme des evolutions de taux"
-
-     usage:
-
-        ./drawPhylTreeRearrang.py data84/PhylTree.conf -lengthFile=nbDup -colorFile=nbDup +landscape
-		avec nbDup = nom de gene dupliqués par branche
-		format du fichier:
-
-		Pere	Fils	Valeur(nbDup)
-
-        """
 
 # Arguments
-arguments = utils.myTools.checkArgs( \
-	[("phylTree.conf",file)], \
-	[("landscape",bool,False), ("printSpecies",bool,True), ("printAncestors",bool,True), ("printAges",bool,False), \
-	("lengthFile",str,""), ("colorFile",str,""), ("funcLength",str,""), ("funcColor",str,""), ("root",str,""), ("min",float,None), ("max",float,None)], \
-	__doc__ \
+arguments = myTools.checkArgs(
+	[("phylTree.conf",file)],
+	[("landscape",bool,False), ("printSpecies",bool,True),
+	 ("printAncestors",bool,True), ("printAges",bool,False),
+	 ("lengthFile",str,""), ("colorFile",str,""), ("funcLength",str,""),
+	 ("funcColor",str,""), ("root",str,""), ("min",float,None),
+	 ("max",float,None)],
+	__doc__
 )
 
-phylTree = utils.myPhylTree.PhylogeneticTree(arguments["phylTree.conf"])
+phylTree = myPhylTree.PhylogeneticTree(arguments["phylTree.conf"])
 
-(largeur,hauteur) = utils.myPsOutput.printPsHeader(landscape=arguments["landscape"])
+(largeur,hauteur) = myPsOutput.printPsHeader(landscape=arguments["landscape"])
 
 root = arguments["root"] if arguments["root"] in phylTree.items else phylTree.root
 funcLength = (lambda x, a: x) if arguments["funcLength"] == "" else eval(arguments["funcLength"])
@@ -43,7 +43,7 @@ def loadVals(filename, func):
 
 	vals = {}
 	if filename != "":
-		f = utils.myFile.openFile(filename, "r")
+		f = myFile.openFile(filename, "r")
 		for l in f:
 			#print >> sys.stderr, "the line", l
 			t = l.replace('\n','').split("\t")
@@ -65,7 +65,7 @@ lengths = loadVals(arguments["lengthFile"], funcLength)
 #colors = loadVals(arguments["colorFile"], funcColor)
 
 refcolors = [(0,0,127), (0,192,192), (0,192,0), (255,255,0), (242,148,0), (255,0,0)]
-inter = utils.myMaths.myInterpolator.getMultDim(utils.myMaths.myInterpolator.oneDimCubic, list(range(len(refcolors))), refcolors)
+inter = myMaths.myInterpolator.getMultDim(myMaths.myInterpolator.oneDimCubic, list(range(len(refcolors))), refcolors)
 
 y = 0
 dy = hauteur / (len(phylTree.species[root])+1.)
@@ -96,7 +96,7 @@ print(newAge, file=sys.stderr)
 
 #minV = float(min(val))
 #maxV = float(max(val))
-#print >> sys.stderr, utils.myMaths.myStats.txtSummary(val)
+#print >> sys.stderr, myMaths.myStats.txtSummary(val)
 
 #if arguments["min"] != None:
 #	minV = arguments["min"]
@@ -111,9 +111,9 @@ def getColor(value):
 
 #for i in xrange(101):
 #	col = inter((i * (len(refcolors)-1))/100.)
-#	utils.myPsOutput.drawBox(17.5+i/10., 20.5, 0.1, 0.2, col, col)
-#utils.myPsOutput.drawText(17.5, 20, str(minV), "black")
-#utils.myPsOutput.drawText(27, 20, str(maxV), "black")
+#	myPsOutput.drawBox(17.5+i/10., 20.5, 0.1, 0.2, col, col)
+#myPsOutput.drawText(17.5, 20, str(minV), "black")
+#myPsOutput.drawText(27, 20, str(maxV), "black")
 
 dx = (largeur-margeX1-margeX2) / m
 
@@ -125,7 +125,7 @@ def printSubTree(node):
 	if node not in phylTree.items:
 		y += dy
 		if arguments["printSpecies"]:
-			utils.myPsOutput.drawText(x + .3, y-.1, node, "black")
+			myPsOutput.drawText(x + .3, y-.1, node, "black")
 		return y
 	
 	mi = hauteur
@@ -147,18 +147,18 @@ def printSubTree(node):
 			color = "black"
 		else:
 			print("0.1 cm setlinewidth")
-		utils.myPsOutput.drawLine(x, tmpY, a*dx, 0, color)
-		utils.myPsOutput.drawLine(x, tmpY, 0, (mi+ma)/2.-tmpY, color)
+		myPsOutput.drawLine(x, tmpY, a*dx, 0, color)
+		myPsOutput.drawLine(x, tmpY, 0, (mi+ma)/2.-tmpY, color)
 
 
 	if arguments["printAncestors"]:
-		utils.myPsOutput.drawText(x - 1., (mi+ma)/2. + .1, node, "black")
+		myPsOutput.drawText(x - 1., (mi+ma)/2. + .1, node, "black")
 	if arguments["printAges"]:
-		utils.myPsOutput.drawText(x - 1., (mi+ma)/2. - .4, "(%d)" % phylTree.ages[node], "black")
+		myPsOutput.drawText(x - 1., (mi+ma)/2. - .4, "(%d)" % phylTree.ages[node], "black")
 
 	return (mi+ma)/2.
 
 printSubTree(root)
 
-utils.myPsOutput.printPsFooter()
+myPsOutput.printPsFooter()
 

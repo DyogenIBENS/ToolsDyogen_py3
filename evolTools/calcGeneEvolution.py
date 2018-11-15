@@ -1,24 +1,21 @@
-#! /usr/bin/env python
+#!/usr/bin/env python3
 
-__doc__ = """
+"""
 	Renvoie les listes des devenirs de chaque gene le long des branches de l'arbre phylogenetique
 """
 
-import utils.myMaths
-import utils.myTools
-import utils.myGenomes
-import utils.myPhylTree
+from LibsDyogen import myMaths, myTools, myGenomes, myPhylTree
 
-arguments = utils.myTools.checkArgs([("phylTree.conf", file), ("rootSpecies", str)],
+arguments = myTools.checkArgs([("phylTree.conf", file), ("rootSpecies", str)],
                                     [("genesFile", str, ""), ("ancGenesFile", str, "")], __doc__)
 
-phylTree = utils.myPhylTree.PhylogeneticTree(arguments["phylTree.conf"])
+phylTree = myPhylTree.PhylogeneticTree(arguments["phylTree.conf"])
 # Chargement des tous les fichiers
 genes = {}
 for e in phylTree.listSpecies:
-    genes[e] = utils.myGenomes.Genome(arguments["genesFile"] % phylTree.fileName[e])
+    genes[e] = myGenomes.Genome(arguments["genesFile"] % phylTree.fileName[e])
 for a in phylTree.listAncestr:
-    genes[a] = utils.myGenomes.Genome(arguments["ancGenesFile"] % phylTree.fileName[a])
+    genes[a] = myGenomes.Genome(arguments["ancGenesFile"] % phylTree.fileName[a])
 
 
 def transformName(esp, xxx_todo_changeme):

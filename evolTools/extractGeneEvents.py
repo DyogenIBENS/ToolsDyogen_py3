@@ -1,27 +1,28 @@
-#! /usr/bin/env python
+#!/usr/bin/env python3
 
-__doc__ = """
-	Extrait (des genomes reels) la liste des evenements de duplications/pertes/gains sur chaque branche de l'arbre
+"""
+Extrait (des genomes reels) la liste des evenements de
+duplications/pertes/gains sur chaque branche de l'arbre
 """
 
-import utils.myMaths
-import utils.myTools
-import utils.myGenomes
-import utils.myPhylTree
-
-arguments = utils.myTools.checkArgs([("phylTree.conf", file)],
-                                    [("rootSpecies", str, ""), ("genesFile", str, ""), ("ancGenesFile", str, "")],
-                                    __doc__)
-
-phylTree = utils.myPhylTree.PhylogeneticTree(arguments["phylTree.conf"])
+from LibsDyogen import myMaths, myTools, myGenomes, myPhylTree
 
 
-@utils.myTools.memoize
+arguments = myTools.checkArgs([("phylTree.conf", file)],
+                              [("rootSpecies", str, ""),
+                               ("genesFile", str, ""),
+                               ("ancGenesFile", str, "")],
+                               __doc__)
+
+phylTree = myPhylTree.PhylogeneticTree(arguments["phylTree.conf"])
+
+
+@myTools.memoize
 def getGenome(e):
     if e in phylTree.listSpecies:
-        return utils.myGenomes.Genome(arguments["genesFile"] % phylTree.fileName[e])
+        return myGenomes.Genome(arguments["genesFile"] % phylTree.fileName[e])
     else:
-        return utils.myGenomes.Genome(arguments["ancGenesFile"] % phylTree.fileName[e])
+        return myGenomes.Genome(arguments["ancGenesFile"] % phylTree.fileName[e])
 
 
 def transformName(esp, xxx_todo_changeme):
@@ -42,11 +43,11 @@ def do(node):
             else:
                 deleted.add(g.names[0])
 
-        print(utils.myFile.myTSV.printLine([node, e, len(trans), len(deleted), len(seen), trans, deleted, seen]))
-        #print utils.myFile.myTSV.printLine([node, e, deleted])
+        print(myFile.myTSV.printLine([node, e, len(trans), len(deleted), len(seen), trans, deleted, seen]))
+        #print(myFile.myTSV.printLine([node, e, deleted]))
         do(e)
 
 
 root = phylTree.root if len(arguments["rootSpecies"]) == 0 else arguments["rootSpecies"]
-print(utils.myFile.myTSV.printLine([root, set(gene.names[0] for gene in getGenome(root))]))
+print(myFile.myTSV.printLine([root, set(gene.names[0] for gene in getGenome(root))]))
 do(root)

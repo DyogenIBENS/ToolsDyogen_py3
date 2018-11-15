@@ -1,43 +1,42 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # coding: latin-1
+
+"""
+    Transform an ancestral genome in tabular format with descendant species genes (one column by species), with modern position or not
+
+    usage:
+        ./formatTabularAncGenome.py PhylTree.conf genome.Boreoeutheria.list.bz2 Boreoeutheria  -in:genesFiles=genes/genesST.%s.list.bz2 +withPos > genome.Boreoeutheria.WithDescendant.list
+"""
+
 
 import sys
 import collections
 
-import utils.myFile
-import utils.myPhylTree
-import utils.myGenomes
-import utils.myTools
+from LibsDyogen import myFile, myPhylTree, myGenomes, myTools
 
-__doc__ = """
-        transform an ancestral genome in tabular format with descendant species genes (one column by species), with modern position or not
 
-        usage:
-                ./formatTabularAncGenome.py PhylTree.conf genome.Boreoeutheria.list.bz2 Boreoeutheria  -in:genesFiles=genes/genesST.%s.list.bz2 +withPos > genome.Boreoeutheria.WithDescendant.list
-"""
-
-arguments = utils.myTools.checkArgs(
-    [("phylTree.conf", file), ("ancGenome", file), ("target", str)], \
+arguments = myTools.checkArgs(
+    [("phylTree.conf", file), ("ancGenome", file), ("target", str)],
     [("in:genesFiles", str, ""), ("withPos", bool, False)],
     __doc__
 )
 
 # loading species tree
-phylTree = utils.myPhylTree.PhylogeneticTree(arguments["phylTree.conf"])
+phylTree = myPhylTree.PhylogeneticTree(arguments["phylTree.conf"])
 # Extant species list to load
 listSpecies = phylTree.getTargetsSpec(arguments["target"])
 newlistSpecies = sorted(listSpecies)
 
-print(utils.myFile.myTSV.printLine(
+print(myFile.myTSV.printLine(
     ["Anc_chr", "Begin", "End", "Strand", "AncGene", '\t'.join(x for x in newlistSpecies)]), file=sys.stdout)
 
-ancGenome = utils.myGenomes.Genome(arguments["ancGenome"])
+ancGenome = myGenomes.Genome(arguments["ancGenome"])
 
 genome = {}
 for esp in listSpecies:
     # loading extant genome
     if phylTree.isChildOf(esp, arguments["target"]):
-        genome[esp] = utils.myGenomes.Genome(arguments["in:genesFiles"] % phylTree.fileName[esp])
+        genome[esp] = myGenomes.Genome(arguments["in:genesFiles"] % phylTree.fileName[esp])
 
 desc = {}
 for genes in ancGenome:
@@ -62,7 +61,7 @@ for genes in ancGenome:
                 strModern[esp].append(str1)
 
     #print >> sys.stderr, strModern
-#     print >> sys.stdout, utils.myFile.myTSV.printLine([genes[0], genes[1], genes[2], genes[3], ancGene1[0], "\t".join(
+#     print >> sys.stdout, myFile.myTSV.printLine([genes[0], genes[1], genes[2], genes[3], ancGene1[0], "\t".join(
  #       str(x[1][1:])[1:-1] for x in sorted(strModern.iteritems(), reverse=False))])
-    print(utils.myFile.myTSV.printLine([genes[0], genes[1], genes[2], genes[3], ancGene1[0], "\t".join(
+    print(myFile.myTSV.printLine([genes[0], genes[1], genes[2], genes[3], ancGene1[0], "\t".join(
         str(x[1])[1:-1] for x in sorted(iter(strModern.items()), reverse=False))]), file=sys.stdout)

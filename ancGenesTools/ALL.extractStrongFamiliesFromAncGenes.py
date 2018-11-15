@@ -1,19 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
-__doc__ = """
-	Find Strong ancGenes Families 1-1 (no duplication, no loss in descendants.
+"""
+Find Strong ancGenes Families 1-1 (no duplication, no loss in descendants.
 """
 
 import sys
 
-import utils.myFile
-import utils.myMaths
-import utils.myTools
-import utils.myPhylTree
+from LibsDyogen import myFile, myMaths, myTools, myPhylTree
 
-arguments = utils.myTools.checkArgs( [("phylTree.conf",file), ("target",str), ("IN.ancGenesFiles",str), ("OUT.ancGenesFiles",str)], [("except2XSpecies",bool,True)], __doc__ )
 
-phylTree = utils.myPhylTree.PhylogeneticTree(arguments["phylTree.conf"])
+arguments = myTools.checkArgs([("phylTree.conf",file),
+                               ("target",str),
+                               ("IN.ancGenesFiles",str),
+                               ("OUT.ancGenesFiles",str)],
+                              [("except2XSpecies",bool,True)],
+                              __doc__ )
+
+phylTree = myPhylTree.PhylogeneticTree(arguments["phylTree.conf"])
 target = phylTree.officialName[arguments["target"]]
 
 if arguments["except2XSpecies"] == "True":
@@ -39,7 +42,7 @@ for x in lstModernGenomes:
     for (i,gene) in enumerate(phylTree.dicGenomes[x].lstGenes[None]):
         extantGenes[gene.names[1]]=x
 
-#print >> sys.stderr, extantGenes
+#print(extantGenes, file=sys.stderr)
 
 for x in lstAncGenomes:
         if arguments["except2XSpecies"]=="True":
@@ -48,11 +51,11 @@ for x in lstAncGenomes:
             lstDescSpecies = [y for y in phylTree.listSpecies if phylTree.dicParents[y][x] == x]
 
         if len(lstDescSpecies) > 0:
-            f= utils.myFile.openFile(arguments["OUT.ancGenesFiles"] % phylTree.fileName[x], "w")
+            f = myFile.openFile(arguments["OUT.ancGenesFiles"] % phylTree.fileName[x], "w")
 
             print(x, lstDescSpecies, file=sys.stdout)
             for ancGene in phylTree.dicGenomes[x]:
-                #print >> sys.stderr, ancGene
+                #print(ancGene, file=sys.stderr)
                 nbDesc={}
                 ancGenename=ancGene.names[0]
                 for descSpecies in lstDescSpecies:
@@ -60,13 +63,13 @@ for x in lstAncGenomes:
                 for modernGene in ancGene.names[1:]:
 
                        if (modernGene in extantGenes):
-                            #print >> sys.stderr, "modernGene:", modernGene,extantGenes[modernGene]
+                            #print("modernGene:", modernGene,extantGenes[modernGene], file=sys.stderr)
                             nbDesc[extantGenes[modernGene]]+=1
                        else:
                            next
-                #print >> sys.stderr, nbDesc
+                #print(nbDesc, file=sys.stderr)
                 a=list(nbDesc.values())
-                #print a, max(a), min(a)
+                #print(a, max(a), min(a))
                 if  max(a)>1 or min(a)==0:
                     print(ancGenename, file=f)
                 else:

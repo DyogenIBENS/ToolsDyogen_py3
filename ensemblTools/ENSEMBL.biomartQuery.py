@@ -1,7 +1,7 @@
-#! /usr/bin/env python
+#!/usr/bin/env python3
 
 
-__doc__ = """
+"""
 	Run the XMLfile BIOMART Query
 	Usage:
 		./ENSEMBL.biomartQuery.py XMLfiles/BIOMART.HumanProteinCodingGene.xml   -> will generate ouput.txt
@@ -11,20 +11,18 @@ __doc__ = """
 import sys
 import urllib.request, urllib.parse, urllib.error
 
-import utils.myFile
-import utils.myTools
+from LibsDyogen import myFile, myTools
 
 # Arguments
-arguments = utils.myTools.checkArgs( \
-    [("xmlRequest", file)], \
-    [("biomartServer", str, "http://www.ensembl.org/biomart/martservice"), ("outputFileName", str, "output.txt")], \
-    __doc__ \
-    )
+arguments = utils.myTools.checkArgs(
+    [("xmlRequest", file)],
+    [("biomartServer", str, "http://www.ensembl.org/biomart/martservice"),
+     ("outputFileName", str, "output.txt")],
+    __doc__)
 
 # La requete
-f = utils.myFile.openFile(arguments["xmlRequest"], "r")
-request = f.read()
-f.close()
+with myFile.openFile(arguments["xmlRequest"], "r") as f:
+    request = f.read()
 
 print("Downloading XML Query", end=' ', file=sys.stderr)
 urllib.request.urlretrieve(arguments["biomartServer"], filename=arguments["outputFileName"],

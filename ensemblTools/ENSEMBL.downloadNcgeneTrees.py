@@ -1,6 +1,6 @@
-#! /usr/bin/env python
+#!/usr/bin/env python3
 
-__doc__ = """
+"""
 	Met en forme les arbres de genes non codant (en les telechargeant / utilisant les fichiers locaux)
 """
 
@@ -8,28 +8,26 @@ import os
 import sys
 import collections
 
-import utils.myFile
-import utils.myTools
-import utils.myPhylTree
-import utils.myProteinTree
+from LibsDyogen import myFile, myTools, myPhylTree, myProteinTree
 
-arguments = utils.myTools.checkArgs( \
-	[("phylTree.conf",file)], \
-	[("IN.EnsemblURL",str,"ftp://ftp.ensembl.org/pub/release-XXX/mysql/ensembl_compara_XXX"), \
-	("IN.member",str,"member.txt.gz"), \
-	("IN.genome_db",str,"genome_db.txt.gz"), \
-	("IN.nc_tree_node",str,"nc_tree_node.txt.gz"), \
-	("IN.nc_tree_member",str,"nc_tree_member.txt.gz"), \
-	("IN.nc_tree_tag",str,"nc_tree_tag.txt.gz"), \
-	("IN.protein_tree_stable_id",str,"protein_tree_stable_id.txt.gz"), \
-	("OUT.tree",str,"tree_nc.1.ensembl"), \
-	("OUT.geneInfo",str,"ncRNAInfoFromTrees.txt"), \
-	], \
-	__doc__ \
+
+arguments = myTools.checkArgs(
+	[("phylTree.conf",file)],
+	[("IN.EnsemblURL",str,"ftp://ftp.ensembl.org/pub/release-XXX/mysql/ensembl_compara_XXX"),
+	("IN.member",str,"member.txt.gz"),
+	("IN.genome_db",str,"genome_db.txt.gz"),
+	("IN.nc_tree_node",str,"nc_tree_node.txt.gz"),
+	("IN.nc_tree_member",str,"nc_tree_member.txt.gz"),
+	("IN.nc_tree_tag",str,"nc_tree_tag.txt.gz"),
+	("IN.protein_tree_stable_id",str,"protein_tree_stable_id.txt.gz"),
+	("OUT.tree",str,"tree_nc.1.ensembl"),
+	("OUT.geneInfo",str,"ncRNAInfoFromTrees.txt"),
+	],
+	__doc__
 )
 
 
-phylTree = utils.myPhylTree.PhylogeneticTree(arguments["phylTree.conf"])
+phylTree = myPhylTree.PhylogeneticTree(arguments["phylTree.conf"])
 
 
 ##############################################
@@ -41,8 +39,8 @@ phylTree = utils.myPhylTree.PhylogeneticTree(arguments["phylTree.conf"])
 ###############################################
 print("Chargement des liens taxon_id -> species_name ...", end=' ', file=sys.stderr)
 taxonName = {}
-f = utils.myFile.openFile(os.path.join(arguments["IN.EnsemblURL"], arguments["IN.genome_db"]), "r")
-for ligne in utils.myFile.myTSV.MySQLFileLoader(f):
+f = myFile.openFile(os.path.join(arguments["IN.EnsemblURL"], arguments["IN.genome_db"]), "r")
+for ligne in myFile.myTSV.MySQLFileLoader(f):
 	t = ligne.split("\t")
 	taxonName[t[1]] = t[2]
 f.close()
@@ -53,8 +51,8 @@ print(len(taxonName), "especes OK", file=sys.stderr)
 ################################################
 print("Chargement des liens member_id -> protein_name ...", end=' ', file=sys.stderr)
 tmpLinks = {}
-f = utils.myFile.openFile(os.path.join(arguments["IN.EnsemblURL"], arguments["IN.member"]), "r")
-for ligne in utils.myFile.myTSV.MySQLFileLoader(f):
+f = myFile.openFile(os.path.join(arguments["IN.EnsemblURL"], arguments["IN.member"]), "r")
+for ligne in myFile.myTSV.MySQLFileLoader(f):
 	t = ligne.split("\t")
 	# A un numero member_id, on associe les noms (gene/transcrit/proteine) et l'espece
 	if t[7] != "\\N":
@@ -70,13 +68,13 @@ print(len(tmpLinks), "membres OK", file=sys.stderr)
 print("Chargement des liens node_id -> member_id ...", end=' ', file=sys.stderr)
 x = 0
 info = collections.defaultdict(dict)
-f = utils.myFile.openFile(os.path.join(arguments["IN.EnsemblURL"], arguments["IN.nc_tree_member"]), "r")
-fi = utils.myFile.openFile(arguments["OUT.geneInfo"], "w")
-for ligne in utils.myFile.myTSV.MySQLFileLoader(f):
+f = myFile.openFile(os.path.join(arguments["IN.EnsemblURL"], arguments["IN.nc_tree_member"]), "r")
+fi = myFile.openFile(arguments["OUT.geneInfo"], "w")
+for ligne in myFile.myTSV.MySQLFileLoader(f):
 	t = ligne.split("\t")
 	data = tmpLinks[t[2]]
 	info[int(t[0])] = {'gene_name': data[0][0], 'taxon_name': data[1]}
-	print(utils.myFile.myTSV.printLine([t[0], data[1], data[0][0], data[0][1], data[0][2], t[4]]), file=fi)
+	print(myFile.myTSV.printLine([t[0], data[1], data[0][0], data[0][1], data[0][2], t[4]]), file=fi)
 	x += 1
 f.close()
 fi.close()
@@ -88,8 +86,8 @@ del tmpLinks
 ###########################################
 print("Chargement des node_id -> tree_name ...", end=' ', file=sys.stderr)
 x = 0
-f = utils.myFile.openFile(os.path.join(arguments["IN.EnsemblURL"], arguments["IN.protein_tree_stable_id"]), "r")
-for ligne in utils.myFile.myTSV.MySQLFileLoader(f):
+f = myFile.openFile(os.path.join(arguments["IN.EnsemblURL"], arguments["IN.protein_tree_stable_id"]), "r")
+for ligne in myFile.myTSV.MySQLFileLoader(f):
 	t = ligne.split("\t")
 	info[int(t[0])]["tree_name"] = t[1]
 	x += 1
@@ -100,8 +98,8 @@ print(x, "noms OK", file=sys.stderr)
 # On charge les liens node_id -> infos 
 #######################################
 print("Chargement des liens node_id -> infos ...", end=' ', file=sys.stderr)
-f = utils.myFile.openFile(os.path.join(arguments["IN.EnsemblURL"], arguments["IN.nc_tree_tag"]), "r")
-for ligne in utils.myFile.myTSV.MySQLFileLoader(f):
+f = myFile.openFile(os.path.join(arguments["IN.EnsemblURL"], arguments["IN.nc_tree_tag"]), "r")
+for ligne in myFile.myTSV.MySQLFileLoader(f):
 	t = ligne.split("\t")
 
 	# On extrait l'info sous forme numerique si possible
@@ -123,8 +121,8 @@ print(len(info), "infos OK", file=sys.stderr)
 ####################################################
 print("Chargement des arbres (node_id_father -> node_id_son) ...", end=' ', file=sys.stderr)
 data = collections.defaultdict(list)
-f = utils.myFile.openFile(os.path.join(arguments["IN.EnsemblURL"], arguments["IN.nc_tree_node"]), "r")
-for ligne in utils.myFile.myTSV.MySQLFileLoader(f):
+f = myFile.openFile(os.path.join(arguments["IN.EnsemblURL"], arguments["IN.nc_tree_node"]), "r")
+for ligne in myFile.myTSV.MySQLFileLoader(f):
 	t = ligne.split("\t")
 	# On rajoute le fils a son pere (avec une distance)
 	node = int(t[1])
@@ -152,10 +150,10 @@ for dat in data.values():
 
 # On a besoin des genomes modernes pour reconnaitre les genes
 print("Mise en forme des arbres ...", end=' ', file=sys.stderr)
-ft = utils.myFile.openFile(arguments["OUT.tree"], "w")
+ft = myFile.openFile(arguments["OUT.tree"], "w")
 for root in allroots:
 	if 'taxon_name' in info[root]:
-		utils.myProteinTree.ProteinTree(data, info, root).printTree(ft)
+		myProteinTree.ProteinTree(data, info, root).printTree(ft)
 ft.close()
 print(len(data[1]), "arbres OK", file=sys.stderr)
 

@@ -1,8 +1,8 @@
-#! /usr/bin/env python
+#!/usr/bin/env python3
 
 
-__doc__ = """
-	Reads file of numbers and print statistics:
+"""
+	Read file of numbers and print statistics:
 	Min  [Q25/Q50/Q75]  [N75/N50/N25]   Max   [Mean/Stddev-Length]
 	
 	
@@ -11,14 +11,13 @@ __doc__ = """
 	
 """
 
-import utils.myFile
-import utils.myMaths
-import utils.myTools
+from LibsDyogen import myFile, myMaths, myTools
 
-arguments = utils.myTools.checkArgs([("file", file)], [("long", bool, False), ("colNames", bool, False)], __doc__)
+
+arguments = myTools.checkArgs([("file", file)], [("long", bool, False), ("colNames", bool, False)], __doc__)
 
 lst = []
-f = utils.myFile.openFile(arguments["file"], 'r')
+f = myFile.openFile(arguments["file"], 'r')
 
 for l in f:
     c = l.split()
@@ -38,9 +37,9 @@ if arguments["long"]:
                        ["Min", "Q25", "Q50", "Q75", "N75", "N50", "N25", "WeightedAverage", "Max", "Mean", "Stddev",
                         "Length"]))
 
-    print(" ".join(("%s" % x) for x in utils.myMaths.myStats.valSummary2(lst)))
+    print(" ".join(("%s" % x) for x in myMaths.myStats.valSummary2(lst)))
 
 
 else:
 
-    print(utils.myMaths.myStats.syntheticTxtSummary(lst))
+    print(myMaths.myStats.syntheticTxtSummary(lst))

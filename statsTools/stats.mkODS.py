@@ -1,6 +1,6 @@
-#! /usr/bin/env python
+#!/usr/bin/env python3
 
-__doc__ = """
+"""
 
 	Creates a spreadsheet ods of stats for each ancestral reconstruction according to threshold
 	
@@ -12,22 +12,18 @@ __doc__ = """
 
 import sys
 
-import utils.myPhylTree
-import utils.myGenomes
-import utils.myFile
-import utils.myTools
-import utils.myMaths
+from LibsDyogen import myPhylTree, myGenomes, myFile, myTools, myMaths
 
 
 # Arguments
-arguments = utils.myTools.checkArgs( \
-    [("phylTree.conf", file), ("dirList", utils.myTools.FileList(1))], \
+arguments = myTools.checkArgs( \
+    [("phylTree.conf", file), ("dirList", myTools.FileList(1))], \
     [("diagsFile", str, "diags/integr/final/anc/diags.%s.list.bz2"), ("outputODS", str, "")], \
     __doc__ \
     )
 
 # L'arbre phylogenetique
-phylTree = utils.myPhylTree.PhylogeneticTree(arguments["phylTree.conf"])
+phylTree = myPhylTree.PhylogeneticTree(arguments["phylTree.conf"])
 
 # Liste des especes dans le bon ordre
 todo = set(phylTree.listAncestr)
@@ -69,7 +65,7 @@ for cutoff in allCutoff:
     alldata[cutoff] = data = {}
     for e in lstEspeces:
 
-        f = utils.myFile.openFile(cutoff + "/" + (arguments["diagsFile"] % phylTree.fileName[e]), "r")
+        f = myFile.openFile(cutoff + "/" + (arguments["diagsFile"] % phylTree.fileName[e]), "r")
         lst = []
         sing = 0
         tot = 0
@@ -86,7 +82,7 @@ for cutoff in allCutoff:
 
         data[e] = [e, phylTree.ages[e], tot, len(lst), tot - sing, (100. * (tot - sing)) / tot, interv,
                    (100. * interv) / (tot - 20.)]
-        data[e].extend(utils.myMaths.myStats.valSummary(lst)[:-2])
+        data[e].extend(myMaths.myStats.valSummary(lst)[:-2])
 
     if cutoff == allCutoff[0]:
         ref = data
@@ -101,13 +97,13 @@ for cutoff in allCutoff:
 
 if arguments["outputODS"] == "":
     for cutoff in allCutoff:
-        print(utils.myFile.myTSV.printLine(["Ancestor", "Age (My)"] + titles))
+        print(myFile.myTSV.printLine(["Ancestor", "Age (My)"] + titles))
         for e in lstEspeces:
-            print(utils.myFile.myTSV.printLine(alldata[cutoff][e]))
+            print(myFile.myTSV.printLine(alldata[cutoff][e]))
     if cutoff in alldiff:
-        print(utils.myFile.myTSV.printLine(["Ancestor", "Age (My)", "%Useful Gene Loss"] + titles))
+        print(myFile.myTSV.printLine(["Ancestor", "Age (My)", "%Useful Gene Loss"] + titles))
         for e in lstEspeces:
-            print(utils.myFile.myTSV.printLine(alldiff[cutoff][e]))
+            print(myFile.myTSV.printLine(alldiff[cutoff][e]))
 
 else:
     import odf.opendocument
@@ -162,9 +158,9 @@ else:
             "BlockLength %gain (Median)", "BlockLength %gain (N50)", "Cov %gain", "CovInt %gain"]]
     for cutoff in allCutoff:
         valCutoff = cutoff.split("/")[-1]
-        val.append([valCutoff] + [utils.myMaths.myStats.mean([alldiff[cutoff][e][i] for e in lstEspeces]) for i in
+        val.append([valCutoff] + [myMaths.myStats.mean([alldiff[cutoff][e][i] for e in lstEspeces]) for i in
                                   [17, 12, 14, 6, 8]] +
-                   [utils.myMaths.myStats.mean([100 * float(
+                   [myMaths.myStats.mean([100 * float(
                        alldata[cutoff][e][i - 1] - alldata[allCutoff[0]][e][i - 1]) / alldata[allCutoff[0]][e][i - 1]
                                                 for e in lstEspeces]) for i in [17, 12, 14, 6, 8]]
                    )

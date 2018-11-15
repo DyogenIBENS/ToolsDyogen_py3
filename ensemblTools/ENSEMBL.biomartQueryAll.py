@@ -1,7 +1,7 @@
-#! /usr/bin/env python
+#!/usr/bin/env python3
 
 
-__doc__ = """
+"""
 	Run the XMLQuery for each species in the PhylTree.conf file to the ENSEMBL biomart server
 	Usage:
 		./ENSEMBL.biomartQueryAll.py ../PhylTree.conf XMLfiles/BIOMART.transcriptsCoords.xml -outputFileName=coords.%s.list
@@ -12,24 +12,22 @@ import sys
 import time
 import urllib.request, urllib.parse, urllib.error
 
-import utils.myFile
-import utils.myPhylTree
-import utils.myTools
+from LibsDyogen import myFile, myPhylTree, myTools
+
 
 # Arguments
-arguments = utils.myTools.checkArgs( \
+arguments = myTools.checkArgs( \
     [("phylTree.conf", file), ("xmlRequest", file)], \
     [("biomartServer", str, "http://www.ensembl.org/biomart/martservice"), ("outputFileName", str, "output.%s.txt")], \
     __doc__ \
     )
 
 # Read the Phylogenetic species tree
-phylTree = utils.myPhylTree.PhylogeneticTree(arguments["phylTree.conf"])
+phylTree = myPhylTree.PhylogeneticTree(arguments["phylTree.conf"])
 
 # Read the Query to execute
-f = utils.myFile.openFile(arguments["xmlRequest"], "r")
-request = f.read()
-f.close()
+with myFile.openFile(arguments["xmlRequest"], "r") as f:
+    request = f.read()
 
 for esp in phylTree.listSpecies:
     # transform species name to ensembl species name  "Homo Sapiens" -> "hsapiens"

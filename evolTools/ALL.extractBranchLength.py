@@ -1,19 +1,18 @@
-#! /usr/bin/env python
+#!/usr/bin/env python3
 
-__doc__ = """
+"""
 	Renvoie un arbre phylogenetique des especes avec les valeurs medianes issues des arbres de proteines
 """
 
 import collections
 import sys
 
-import utils.myTools
-import utils.myPhylTree
-import utils.myProteinTree
+from LibsDyogen import myTools, myPhylTree, myProteinTree
 
-arguments = utils.myTools.checkArgs([("phylTree.conf", file), ("proteinTree", file)], [], __doc__)
 
-phylTree = utils.myPhylTree.PhylogeneticTree(arguments["phylTree.conf"])
+arguments = myTools.checkArgs([("phylTree.conf", file), ("proteinTree", file)], [], __doc__)
+
+phylTree = myPhylTree.PhylogeneticTree(arguments["phylTree.conf"])
 
 lengths = collections.defaultdict(list)
 
@@ -30,11 +29,11 @@ def do(node):
                 # Les deux noeuds doivent etre strictement consecutifs
                 if (phylTree.parent[t2].name == t1) and (d != 0):
                     lengths[(t1, t2)].append(d)
-                    print(utils.myFile.myTSV.printLine([t1, t2, d]), file=sys.stderr)
+                    print(myFile.myTSV.printLine([t1, t2, d]), file=sys.stderr)
             do(g)
 
 
-for tree in utils.myProteinTree.loadTree(arguments["proteinTree"]):
+for tree in myProteinTree.loadTree(arguments["proteinTree"]):
     do(tree.root)
 
 # On trie les listes des longueurs

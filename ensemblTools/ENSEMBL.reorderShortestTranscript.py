@@ -1,7 +1,7 @@
-#! /usr/bin/env python
+#!/usr/bin/env python3
 
 
-__doc__ = """
+"""
     Creates a list of ordered genes according to the shorstest transcript for genes with alternatve splicing transcript
     Usage:
 
@@ -11,22 +11,21 @@ __doc__ = """
 import collections
 import sys
 
-import utils.myFile
-import utils.myGenomes
-import utils.myTools
+from LibsDyogen import myFile, myGenomes, myTools
 
-arguments = utils.myTools.checkArgs(
+
+arguments = myTools.checkArgs(
     [("genesFile", file), ("transcriptsCoords", file)],
     [("useShortestTranscript", bool, True), ("sortOn5", bool, True), ("authorizedBiotypes", str, "protein_coding")],
     __doc__
     )
 
-genome = utils.myGenomes.Genome(arguments["genesFile"])
+genome = myGenomes.Genome(arguments["genesFile"])
 biotypes = set(arguments["authorizedBiotypes"].split(","))
 
 # Loading transcripts list
 lstTrans = collections.defaultdict(list)
-f = utils.myFile.myTSV.reader(arguments["transcriptsCoords"])
+f = myFile.myTSV.reader(arguments["transcriptsCoords"])
 for l in f.csvobject:
     if l[-1] in biotypes:
         lstTrans[l[0]].append((int(l[2]), int(l[3]), l[1]))
@@ -65,4 +64,4 @@ for chrom in genome.lstGenes:
         res = [gene.chromosome, x, y, gene.strand, " ".join(gene.names)]
         if name is not None:
             res.append(name)
-        print(utils.myFile.myTSV.printLine(res))
+        print(myFile.myTSV.printLine(res))

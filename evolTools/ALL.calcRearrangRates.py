@@ -1,20 +1,16 @@
-#! /usr/bin/env python
+#!/usr/bin/env python3
 
-__doc__ = """
+"""
 	Renvoie un tableau de statistiques de rearrangement le long des branches et un arbre de especes tenant compte de ces rearrangements.
 """
 
 import sys
 
-import utils.myFile
-import utils.myMaths
-import utils.myTools
-import utils.myGenomes
-import utils.myPhylTree
+from LibsDyogen import myFile, myMaths, myTools, myGenomes, myPhylTree
 
 
 # Argument:
-arguments = utils.myTools.checkArgs(
+arguments = myTools.checkArgs(
     [("phylTree.conf", file)],
     [("onlyOrthos", bool, False), ("in:genesFiles", str, ""), ("in:ancGenesFiles", str, ""), ("in:diagsFiles", str, ""),
      ("out:treeFile", str, "out.nwk"), ("out:statFile", str, "out.txt"), ("colNames", bool, True )],
@@ -23,7 +19,7 @@ arguments = utils.myTools.checkArgs(
 
 # Chargement des tous les fichiers
 ###################################
-phylTree = utils.myPhylTree.PhylogeneticTree(arguments["phylTree.conf"])
+phylTree = myPhylTree.PhylogeneticTree(arguments["phylTree.conf"])
 
 genes = {}
 diags = {}
@@ -31,19 +27,19 @@ dicDiags = {}
 
 for e in phylTree.listSpecies:
     # Les genes des especes modernes
-    genes[e] = utils.myGenomes.Genome(arguments["in:genesFiles"] % phylTree.fileName[e])
+    genes[e] = myGenomes.Genome(arguments["in:genesFiles"] % phylTree.fileName[e])
     diags[e] = []
     for (c, l) in genes[e].lstGenes.items():
         diags[e].append([((c, i), l[i].strand) for i in range(len(l))])
 
 for a in phylTree.listAncestr:
     # Les genes ancestraux
-    genes[a] = utils.myGenomes.Genome(arguments["in:ancGenesFiles"] % phylTree.fileName[a])
+    genes[a] = myGenomes.Genome(arguments["in:ancGenesFiles"] % phylTree.fileName[a])
     # Les diagonales
     diags[a] = []
     # On en profite pour lister les diagonales et les genes seuls
     notseen = set(range(len(genes[a].lstGenes[None])))
-    f = utils.myFile.openFile(arguments["in:diagsFiles"] % phylTree.fileName[a], "r")
+    f = myFile.openFile(arguments["in:diagsFiles"] % phylTree.fileName[a], "r")
     for l in f:
         t = l.split("\t")
         d = [int(x) for x in t[2].split()]
@@ -90,7 +86,7 @@ def do(node):
         for d in diags[e]:
             if arguments["onlyOrthos"]:
                 d = [(g, s) for (g, s) in d if g in corresp]
-            for ((g1, s1), (g2, s2)) in utils.myTools.myIterator.slidingTuple(d):
+            for ((g1, s1), (g2, s2)) in myTools.myIterator.slidingTuple(d):
                 if (g1 not in corresp) or (g2 not in corresp):
                     continue
                 (c1, i1, t1) = corresp[g1]
@@ -119,7 +115,7 @@ def do(node):
                         nbXX += 1
                         print("??", file=sys.stderr)
 
-        print(utils.myFile.myTSV.printLine(
+        print(myFile.myTSV.printLine(
             [node, e, nbOK, nbNO, nbXX, nbOK + nbNO + nbXX, (100. * nbOK) / (nbOK + nbNO), len(diags[node]), a]), file=outfileTxt)
         print("OK", file=sys.stderr)
         val[(node, e)] = float(nbNO) / (nbOK + nbNO)
@@ -144,10 +140,10 @@ def convertToFlatFile(anc):
 
 
 # ecriture du fichier de stats
-outfileTxt = utils.myFile.openFile(arguments["out:statFile"], "w")
+outfileTxt = myFile.openFile(arguments["out:statFile"], "w")
 
 if (arguments("colNames")):
-    print(utils.myFile.myTSV.printLine(
+    print(myFile.myTSV.printLine(
         ["anc", "desc", "nbOK", "nbNO", "nbXX", "nbOK+nbNO", "nbNO+nbXX", "(100. * nbOK) / (nbOK + nbNO)", "nbDiags_Anc",
         "DivTime MA"]), file=outfileTxt)
 do(phylTree.root)
@@ -155,6 +151,6 @@ outfileTxt.close()
 
 
 # ecriture de l'arbre.
-outfileTree = utils.myFile.openFile(arguments["out:treeFile"], "w")
+outfileTree = myFile.openFile(arguments["out:treeFile"], "w")
 print(convertToFlatFile(phylTree.root), ";", file=outfileTree)
 outfileTree.close()

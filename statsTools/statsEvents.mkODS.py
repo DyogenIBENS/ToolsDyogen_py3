@@ -1,27 +1,23 @@
-#! /usr/bin/env python
+#!/usr/bin/env python3
 
-__doc__ = """
+"""
 	Cree le tableau des stats des blocs de syntenie et des genes ancestraux en fonction d'un seuil de coupure
 """
 
 import sys
 
-import utils.myPhylTree
-import utils.myGenomes
-import utils.myFile
-import utils.myTools
-import utils.myMaths
+from LibsDyogen import myPhylTree, myGenomes, myFile, myTools, myMaths
 
 
 # Arguments
-arguments = utils.myTools.checkArgs( \
-    [("phylTree.conf", file), ("dirList", utils.myTools.FileList(1))], \
+arguments = myTools.checkArgs( \
+    [("phylTree.conf", file), ("dirList", myTools.FileList(1))], \
     [("diagsFile", str, "diags/integr/diags.%s.list.bz2"), ("outputODS", str, "")], \
     __doc__ \
     )
 
 # L'arbre phylogenetique
-phylTree = utils.myPhylTree.PhylogeneticTree(arguments["phylTree.conf"])
+phylTree = myPhylTree.PhylogeneticTree(arguments["phylTree.conf"])
 
 
 # except KeyError:
@@ -47,7 +43,7 @@ for events in allEvents:
     alldata[events] = data = {}
     for e in lstEspeces:
         # print >> sys.stderr, e, "...",
-        f = utils.myFile.openFile(events + "/" + (arguments["diagsFile"] % phylTree.fileName[e]), "r")
+        f = myFile.openFile(events + "/" + (arguments["diagsFile"] % phylTree.fileName[e]), "r")
         lst = []
 
         sing = 0
@@ -65,7 +61,7 @@ for events in allEvents:
 
         data[e] = [e, phylTree.ages[e], tot, len(lst), tot - sing, (100. * (tot - sing)) / tot, interv,
                    (100. * interv) / (tot - 20.)]
-        data[e].extend(utils.myMaths.myStats.valSummary(lst)[:-2])
+        data[e].extend(myMaths.myStats.valSummary(lst)[:-2])
 
         # on trie la liste des blocks par taille de blocks.
         lstSort = list(lst)
@@ -89,13 +85,13 @@ for events in allEvents:
 if arguments["outputODS"] == "":
     for events in allEvents:
         print(events, file=sys.stdout)
-        print(utils.myFile.myTSV.printLine(["Ancestor", "Age (My)"] + titles))
+        print(myFile.myTSV.printLine(["Ancestor", "Age (My)"] + titles))
         for e in lstEspeces:
-            print(utils.myFile.myTSV.printLine(alldata[events][e]))
+            print(myFile.myTSV.printLine(alldata[events][e]))
     if events in alldiff:
-        print(utils.myFile.myTSV.printLine(["Ancestor", "Age (My)", "%Useful Gene Loss"] + titles))
+        print(myFile.myTSV.printLine(["Ancestor", "Age (My)", "%Useful Gene Loss"] + titles))
         for e in lstEspeces:
-            print(utils.myFile.myTSV.printLine(alldiff[events][e]))
+            print(myFile.myTSV.printLine(alldiff[events][e]))
 
 else:
     import odf.opendocument

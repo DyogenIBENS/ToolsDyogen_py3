@@ -1,22 +1,20 @@
-#! /usr/bin/env python
+#!/usr/bin/env python3
 
-__doc__ = """
+"""
 	Convertit un genome (scaffolds = suite de contigs) en genome (uniquement des contigs)
 """
 
 import sys
 
-import utils.myDiags
-import utils.myFile
-import utils.myTools
-import utils.myGenomes
+from LibsDyogen import myDiags, myFile, myTools, myGenomes
 
-arguments = utils.myTools.checkArgs( [("scaffoldsFile",file), ("contigsFile",file)], [], __doc__)
 
-(diags,singletons) = utils.myDiags.loadIntegr(arguments["scaffoldsFile"])
+arguments = myTools.checkArgs( [("scaffoldsFile",file), ("contigsFile",file)], [], __doc__)
+
+(diags,singletons) = myDiags.loadIntegr(arguments["scaffoldsFile"])
 
 ref = {}
-f = utils.myFile.openFile(arguments["contigsFile"], "r")
+f = myFile.openFile(arguments["contigsFile"], "r")
 for (i,l) in enumerate(f):
 	ref[i+1] = l
 f.close()
@@ -40,7 +38,7 @@ for (chrom,weights) in diags:
 			ls.extend(-int(x) for x in reversed(t[3].split()))
 			lw.extend(reversed(t[4].split()))
 		
-	print(utils.myFile.myTSV.printLine([t[0], n, utils.myFile.myTSV.printLine(li, delim=" "), utils.myFile.myTSV.printLine(ls, delim=" "), utils.myFile.myTSV.printLine(lw, delim=" ")]))
+	print(myFile.myTSV.printLine([t[0], n, myFile.myTSV.printLine(li, delim=" "), myFile.myTSV.printLine(ls, delim=" "), myFile.myTSV.printLine(lw, delim=" ")]))
 
 for c in singletons:
 	print(ref.pop(c), end=' ')

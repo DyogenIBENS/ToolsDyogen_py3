@@ -1,6 +1,6 @@
-#! /usr/bin/env python
+#!/usr/bin/env python3
 
-__doc__ = """
+"""
 	Compute the conservation of each adjacency between extant and ancestral genome
 	Usage:
 		./cmpIntervals.py ../data/ancGenomes/genome.Boreoeutheria.list.bz2 ../data/genes/genesST.Homo.sapiens.list.bz2
@@ -9,23 +9,22 @@ __doc__ = """
 import sys
 import itertools
 
-import utils.myTools
-import utils.myGenomes
+from LibsDyogen import myTools, myGenomes
 
 
 
 # Arguments:
-arguments = utils.myTools.checkArgs([("ancGenome", file), ("modernGenome", file)], [("minimalLength", int, 0)], __doc__)
+arguments = myTools.checkArgs([("ancGenome", file), ("modernGenome", file)], [("minimalLength", int, 0)], __doc__)
 
-ancGenome = utils.myGenomes.Genome(arguments["ancGenome"])
-genome = utils.myGenomes.Genome(arguments["modernGenome"])
+ancGenome = myGenomes.Genome(arguments["ancGenome"])
+genome = myGenomes.Genome(arguments["modernGenome"])
 
 
 # Genome rewritting
 def rewriteGenome(genome):
     newGenome = {}
-    for chrom in genome.chrList[utils.myGenomes.ContigType.Chromosome] + genome.chrList[
-        utils.myGenomes.ContigType.Scaffold]:
+    for chrom in genome.chrList[myGenomes.ContigType.Chromosome] + genome.chrList[
+        myGenomes.ContigType.Scaffold]:
         if len(genome.lstGenes[chrom]) >= abs(arguments["minimalLength"]):
             newGenome[chrom] = [(gene.names[0], gene.strand) for gene in genome.lstGenes[chrom]]
     return newGenome
@@ -108,12 +107,12 @@ def listInterv(genome, translate):
     dicPos = {}
     dicLengths = {}
     for chrom in genome:
-        listIntAll.update(utils.myTools.myIterator.slidingTuple(genome[chrom]))
+        listIntAll.update(myTools.myIterator.slidingTuple(genome[chrom]))
         tmp = [(g, s) for (g, s) in genome[chrom] if g in translate]
         for (i, (g, s)) in enumerate(tmp):
             dicPos[g] = (chrom, i, s)
         dicLengths[chrom] = len(tmp)
-        listIntFilt.extend(utils.myTools.myIterator.slidingTuple(tmp))
+        listIntFilt.extend(myTools.myIterator.slidingTuple(tmp))
     print(len(listIntAll), len(listIntFilt), list(listIntAll)[0] if len(listIntAll) > 0 else None, \
     listIntFilt[0] if len(listIntFilt) > 0 else None, file=sys.stderr)
     return (listIntAll, listIntFilt, dicPos, dicLengths)

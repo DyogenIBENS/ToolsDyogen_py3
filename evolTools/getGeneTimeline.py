@@ -1,30 +1,29 @@
-#! /usr/bin/env python
+#!/usr/bin/env python3
 
-__doc__ = """
+"""
 	Renvoie pour chaque gene ancestral le decompte des evenements qu'il subit sur chaque branche
 """
 
 import sys
 
-import utils.myTools
-import utils.myGenomes
-import utils.myPhylTree
+from LibsDyogen import myTools, myGenomes, myPhylTree
 
-arguments = utils.myTools.checkArgs(
+
+arguments = myTools.checkArgs(
     [("phylTree.conf", file), ("rootSpecies", str)],
     [("genesFiles", str, ""), ("ancGenesFiles", str, ""), ("countDup", bool, True), ("countLoss", bool, True)],
     __doc__
 )
 
-phylTree = utils.myPhylTree.PhylogeneticTree(arguments["phylTree.conf"])
+phylTree = myPhylTree.PhylogeneticTree(arguments["phylTree.conf"])
 
 # Chargement des tous les fichiers
 genes = {}
 todo = {}
 for e in phylTree.listSpecies:
-    genes[e] = utils.myGenomes.Genome(arguments["genesFiles"] % phylTree.fileName[e])
+    genes[e] = myGenomes.Genome(arguments["genesFiles"] % phylTree.fileName[e])
 for a in phylTree.listAncestr:
-    genes[a] = utils.myGenomes.Genome(arguments["ancGenesFiles"] % phylTree.fileName[a])
+    genes[a] = myGenomes.Genome(arguments["ancGenesFiles"] % phylTree.fileName[a])
     todo[a] = set(g.names[0] for g in genes[a])
 
 allnames = set()

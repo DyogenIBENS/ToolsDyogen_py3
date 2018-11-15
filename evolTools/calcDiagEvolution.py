@@ -1,23 +1,19 @@
-#! /usr/bin/env python
+#!/usr/bin/env python3
 
-__doc__ = """
+"""
 	Renvoie les listes des devenirs de chaque gene le long des branches de l'arbre phylogenetique
 """
 
 import sys
 import collections
 
-import utils.myDiags
-import utils.myMaths
-import utils.myTools
-import utils.myGenomes
-import utils.myPhylTree
+from LibsDyogen import myDiags, myMaths, myTools, myGenomes, myPhylTree
 
 
 
 
 # Argument:
-arguments = utils.myTools.checkArgs( \
+arguments = myTools.checkArgs( \
     [("phylTree.conf", file)], \
     [("IN.genesFile", str, ""), ("IN.ancGenesFile", str, ""), ("IN.diagsFile", str, "")], \
     __doc__ \
@@ -25,7 +21,7 @@ arguments = utils.myTools.checkArgs( \
 
 # Chargement des tous les fichiers
 ###################################
-phylTree = utils.myPhylTree.PhylogeneticTree(arguments["phylTree.conf"])
+phylTree = myPhylTree.PhylogeneticTree(arguments["phylTree.conf"])
 
 genes = {}
 diags = {}
@@ -33,14 +29,14 @@ dicDiags = {}
 
 for e in phylTree.listSpecies:
     # Les genes des especes modernes
-    genes[e] = utils.myGenomes.Genome(arguments["IN.genesFile"] % phylTree.fileName[e])
+    genes[e] = myGenomes.Genome(arguments["IN.genesFile"] % phylTree.fileName[e])
     diags[e] = [[g] for g in range(len(list(genes[e])))]
 
 for a in phylTree.listAncestr:
     # Les genes ancestraux
-    genes[a] = utils.myGenomes.Genome(arguments["IN.ancGenesFile"] % phylTree.fileName[a])
+    genes[a] = myGenomes.Genome(arguments["IN.ancGenesFile"] % phylTree.fileName[a])
     # Les diagonales
-    tmp = utils.myDiags.loadDiagsFile(arguments["IN.diagsFile"] % phylTree.fileName[a], [a], phylTree.officialName)[a]
+    tmp = myDiags.loadDiagsFile(arguments["IN.diagsFile"] % phylTree.fileName[a], [a], phylTree.officialName)[a]
     # On en profite pour lister les diagonales et les genes seuls
     notseen = set(range(len(genes[a].lstGenes[None])))
     diags[a] = []
