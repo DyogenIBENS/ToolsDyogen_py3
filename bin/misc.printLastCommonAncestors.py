@@ -1,1 +1,1 @@
-../treeTools/misc.printLastCommonAncestors.py
+../treeTools/misc/printLastCommonAncestors.py

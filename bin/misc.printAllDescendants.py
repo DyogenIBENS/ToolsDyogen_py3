@@ -1,1 +1,1 @@
-../treeTools/misc.printAllDescendants.py
+../treeTools/misc/printAllDescendants.py

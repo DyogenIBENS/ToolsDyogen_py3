@@ -1,1 +1,1 @@
-../treeTools/ALL.infoProtTree.py
+../treeTools/ALL/infoProtTree.py

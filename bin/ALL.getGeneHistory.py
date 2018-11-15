@@ -1,1 +1,1 @@
-../treeTools/ALL.getGeneHistory.py
+../treeTools/ALL/getGeneHistory.py

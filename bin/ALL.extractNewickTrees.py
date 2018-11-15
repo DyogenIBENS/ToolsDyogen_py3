@@ -1,1 +1,1 @@
-../treeTools/ALL.extractNewickTrees.py
+../treeTools/ALL/extractNewickTrees.py

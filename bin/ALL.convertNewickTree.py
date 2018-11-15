@@ -1,1 +1,1 @@
-../treeTools/ALL.convertNewickTree.py
+../treeTools/ALL/convertNewickTree.py

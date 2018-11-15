@@ -1,1 +1,1 @@
-../treeTools/ALL.cutTree.py
+../treeTools/ALL/cutTree.py

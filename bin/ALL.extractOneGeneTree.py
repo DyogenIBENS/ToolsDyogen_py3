@@ -1,1 +1,1 @@
-../treeTools/ALL.extractOneGeneTree.py
+../treeTools/ALL/extractOneGeneTree.py
