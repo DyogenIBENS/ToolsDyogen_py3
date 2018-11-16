@@ -1,1 +1,1 @@
-../genomesTools/ALL.statsKaryotype.py
+../genomesTools/ALL/statsKaryotype.py

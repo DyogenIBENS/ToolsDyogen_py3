@@ -1,1 +1,1 @@
-../statsTools/statsEvents.mkODS.py
+../statsTools/statsEvents/mkODS.py

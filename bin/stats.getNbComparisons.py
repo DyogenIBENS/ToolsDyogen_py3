@@ -1,1 +1,1 @@
-../statsTools/stats.getNbComparisons.py
+../statsTools/stats/getNbComparisons.py

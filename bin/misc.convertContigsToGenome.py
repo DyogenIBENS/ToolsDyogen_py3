@@ -1,1 +1,1 @@
-../genomesTools/misc.convertContigsToGenome.py
+../genomesTools/misc/convertContigsToGenome.py

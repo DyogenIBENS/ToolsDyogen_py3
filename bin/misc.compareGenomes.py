@@ -1,1 +1,1 @@
-../compareTools/misc.compareGenomes.py
+../compareTools/misc/compareGenomes.py
