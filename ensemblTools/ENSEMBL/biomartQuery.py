@@ -8,14 +8,16 @@
 		./ENSEMBL.biomartQuery.py XMLfiles/BIOMART.HumanProteinCodingGene.xml -outputFileName=HumanProteinCodingGene.txt
 """
 
+from __future__ import print_function
+
 import sys
 import urllib.request, urllib.parse, urllib.error
 
 from LibsDyogen import myFile, myTools
 
 # Arguments
-arguments = utils.myTools.checkArgs(
-    [("xmlRequest", file)],
+arguments = myTools.checkArgs(
+    [("xmlRequest", myTools.File)],
     [("biomartServer", str, "http://www.ensembl.org/biomart/martservice"),
      ("outputFileName", str, "output.txt")],
     __doc__)
@@ -26,5 +28,5 @@ with myFile.openFile(arguments["xmlRequest"], "r") as f:
 
 print("Downloading XML Query", end=' ', file=sys.stderr)
 urllib.request.urlretrieve(arguments["biomartServer"], filename=arguments["outputFileName"],
-                   data=urllib.parse.urlencode({"query": request}))
+                   data=urllib.parse.urlencode({"query": request}).encode())
 print("OK", file=sys.stderr)
