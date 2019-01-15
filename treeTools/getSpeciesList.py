@@ -3,7 +3,7 @@
 """
     Give all the descendant extant species for a given ancestor in a species tree
     
-    Usage: getSpeciesList.py PhylTree.conf Boreoeutheria
+    Usage: getSpeciesList.py PhylTree.conf [Boreoeutheria]
 """
 
 import LibsDyogen.myTools    as myTools
@@ -11,7 +11,7 @@ import LibsDyogen.myPhylTree as myPhylTree
 
 # Arguments
 arguments = myTools.checkArgs( \
-    [("phylTree.conf", myTools.File), ("anc", str)], [], \
+    [("phylTree.conf", myTools.File)], [("anc", str, 'root')], \
     __doc__ \
     )
 
@@ -19,6 +19,7 @@ arguments = myTools.checkArgs( \
 # L'arbre phylogenetique
 phylTree = myPhylTree.PhylogeneticTree(arguments["phylTree.conf"])
 
-for (x, _) in phylTree.items[arguments["anc"]]:
-    for y in phylTree.species[x]:
-        print(y)
+anc = phylTree.root if arguments["anc"] == 'root' else arguments["anc"]
+
+for sp in sorted(phylTree.species[anc]):
+    print(sp)
