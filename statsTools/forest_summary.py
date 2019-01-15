@@ -45,6 +45,7 @@ def main(forestfile):
         tree_n_intnodes.append(len(tree.data))
         tree_n_nodes.append(len(tree.info))
         
+        # Counter for this tree
         tree_n_leaves.append(0)
         tree_n_speciesleaves.append(0)
         tree_n_dup.append(0)
