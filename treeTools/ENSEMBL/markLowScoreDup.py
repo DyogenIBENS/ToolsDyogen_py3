@@ -50,6 +50,11 @@ def setupScoring(phylTree, scoreMethod=1, cutoff=-1):
     try:
         # Une limite pour tout le monde
         val = float(cutoff)
+
+        # Shortcut
+        if val < 0:
+            return alwaysFalse
+
         for anc in phylTree.listAncestr:
             minDuplicationScore[anc] = calc(anc, val)
     except ValueError:
@@ -141,6 +146,7 @@ def process(prottrees, phylTree, hasLowScore, defaultFamName="FAM%08d",
     nbFlattened = 0
     nbRebuilt = 0
     
+    nb = 0
     for tree in prottrees:
 
         assert max(tree.info) < myProteinTree.nextNodeID
@@ -173,6 +179,7 @@ def process(prottrees, phylTree, hasLowScore, defaultFamName="FAM%08d",
             if tree.backRoot != tree.root:
                 print("Rebuild changed root: %d -> %d" % (tree.backRoot, tree.root), file=sys.stderr)
         if "tree_name" not in tree.info[tree.root]:
+            nb += 1
             tree.info[tree.root]["tree_name"] = defaultFamName % nb
 
         yield tree
