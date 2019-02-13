@@ -20,6 +20,9 @@ if sys.version_info[0] == 3:
 else:
     from LibsDyogen.utils import myFile, myTools, myPhylTree, myProteinTree
 
+import logging
+logger = logging.getLogger(__name__)
+
 
 sys.setrecursionlimit(20000)
 
@@ -64,7 +67,7 @@ def setupScoring(phylTree, scoreMethod=1, cutoff=-1):
             anc = phylTree.officialName[t[0]]
             minDuplicationScore[anc] = calc(anc, float(t[1]))
         f.close()
-    print("minDuplicationScore:", minDuplicationScore, file=sys.stderr)
+    logger.debug("minDuplicationScore:\n%s", minDuplicationScore)
 
     # Les scores dans l'arbre pour les especes modernes valent toujours 1, on
     # doit toujours les accepter
@@ -77,13 +80,13 @@ def setupScoring(phylTree, scoreMethod=1, cutoff=-1):
 
     def hasLowScore(tree, rnode):
 
-        print("# hasLowScore is used.", file=sys.stderr)
+        logger.debug("# hasLowScore is used.")
         @myTools.memoize
         def getSpeciesSets(node):
             if node in tree.data:
                 return set().union(*(getSpeciesSets(x) for (x,_) in tree.data[node]))
             else:
-                print(tree.info[node]["taxon_name"], file=sys.stderr)
+                logger.debug('Node without data (leaf) at %r', tree.info[node]["taxon_name"])
                 assert tree.info[node]["taxon_name"] in phylTree.listSpecies
                 return set([tree.info[node]["taxon_name"]])
 
@@ -113,7 +116,7 @@ def markLowDup(tree, hasLowScore):
     # On trie les bonnes duplications des mauvaises
     ################################################
     for (node,inf) in tree.info.items():
-        print(node,inf, file=sys.stderr)
+        logger.debug('Processing %s: %s', node, inf)
         if inf['Duplication'] != 0:
 
             if 'dubious_duplication' in inf:
@@ -140,7 +143,7 @@ def markLowDup(tree, hasLowScore):
 
 
 def process(prottrees, phylTree, hasLowScore, defaultFamName="FAM%08d",
-            flatten=False, rebuild=False, recurs=True):
+            flatten=False, rebuild=False, recurs=True, indicator=False):
 
     nbEdit = {"dubious": 0, "toolow": 0, "good": 0}
     nbFlattened = 0
@@ -151,6 +154,13 @@ def process(prottrees, phylTree, hasLowScore, defaultFamName="FAM%08d",
 
         assert max(tree.info) < myProteinTree.nextNodeID
 
+        #TODO: only used by the extractGeneFamilies step. Should be ignored here.
+        try:
+            tree_name = tree.info[tree.root]["tree_name"]
+        except KeyError:
+            nb += 1
+            tree.info[tree.root]["tree_name"] = tree_name = defaultFamName % nb
+
         dubious, toolow, good = markLowDup(tree, hasLowScore)
         nbEdit["dubious"] += dubious
         nbEdit["toolow"] += toolow
@@ -159,62 +169,72 @@ def process(prottrees, phylTree, hasLowScore, defaultFamName="FAM%08d",
         tree.doBackup()
 
         if flatten:
-            print("### First call to flatten ###", file=sys.stderr)
-            flattened = tree.flattenTree(phylTree, True)
+            #logger.debug("### Tree %d: First call to flatten ###", tree.backRoot)
+            flattened = tree.flattenTree(phylTree, True, indicator=indicator)
+            if flattened:
+                logger.info("Flattened %5s nodes in tree %6d %r", '?',
+                            tree.backRoot, tree_name)
             nbFlattened += int(flattened)
 
             if tree.backRoot != tree.root:
-                print("Flatten changed root: %d -> %d" % (tree.backRoot, tree.root),
-                      file=sys.stderr)
+                logger.warning("Flatten changed root or %r: %d -> %d",
+                               tree_name, tree.backRoot, tree.root)
 
             tree.doBackup()
-            print("### Finished flatten ###", file=sys.stderr)
 
         if rebuild:
             #assert recurs is False
             
-            rebuilt = tree.rebuildTree(phylTree, hasLowScore if recurs else myProteinTree.alwaysTrue)
+            rebuilt = tree.rebuildTree(phylTree,
+                                       hasLowScore if recurs else myProteinTree.alwaysTrue,
+                                       indicator=indicator)
+            if rebuilt:
+                logger.info("Rebuilt   %5s nodes in tree %6d %r", '?',
+                            tree.backRoot, tree_name)
             nbRebuilt += int(rebuilt)
 
             if tree.backRoot != tree.root:
-                print("Rebuild changed root: %d -> %d" % (tree.backRoot, tree.root), file=sys.stderr)
-        if "tree_name" not in tree.info[tree.root]:
-            nb += 1
-            tree.info[tree.root]["tree_name"] = defaultFamName % nb
+                logger.warning("Rebuild changed root of %r: %d -> %d",
+                               tree_name, tree.backRoot, tree.root)
+        
+        assert "tree_name" in tree.info[tree.root]
 
         yield tree
 
-    print(nbEdit, 'flattened:', nbFlattened, 'rebuilt:', nbRebuilt, file=sys.stderr)
+    print('%s; %d flattened trees; %d rebuilt trees.' % (
+            nbEdit, nbFlattened, nbRebuilt), file=sys.stderr)
 
 
 if __name__ == '__main__':
-    arguments = myTools.checkArgs( \
-        [("phylTree.conf",myTools.File), ("ensemblTree",myTools.File)], \
+    logging.basicConfig()
+    logger.setLevel(logging.INFO)
+
+    arguments = myTools.checkArgs(
+        [("phylTree.conf",myTools.File), ("ensemblTree",myTools.File)],
         [("flatten",bool,False), ("rebuild",bool,False), ("fam",bool,False),
          ("cutoff",str,"-1"), ("defaultFamName",str,"FAM%08d"),
          ("scoreMethod",int,[1,2,3]), ("newNodeID",int,100000000),
-         ("recurs",bool,False)], \
-        __doc__ \
-    )
-
-    if arguments["fam"]:
-        # Will not work on previous versions of ToolsDyogen.
-        from ToolsDyogen.treeTools.ALL.extractGeneFamilies import extractGeneFamilies
+         ("recurs",bool,False), ("indicator",bool,False), ("debug",bool,False)],
+        __doc__)
+    if arguments['debug']: logger.setLevel(logging.DEBUG)
 
     myProteinTree.nextNodeID = arguments["newNodeID"]  # For the rebuild step.
     phylTree = myPhylTree.PhylogeneticTree(arguments["phylTree.conf"])
 
     hasLowScore = setupScoring(phylTree,
-                                arguments["scoreMethod"],
-                                arguments["cutoff"])
+                               arguments["scoreMethod"],
+                               arguments["cutoff"])
 
     prottrees = myProteinTree.loadTree(arguments["ensemblTree"])
 
     prottrees = process(prottrees, phylTree, hasLowScore,
                         arguments["defaultFamName"], arguments["flatten"],
-                        arguments["rebuild"], arguments["recurs"])
+                        arguments["rebuild"], arguments["recurs"],
+                        arguments["indicator"])
 
     if arguments["fam"]:
+        # Will not work on previous versions of ToolsDyogen.
+        from ToolsDyogen.treeTools.ALL.extractGeneFamilies import extractGeneFamilies
         count, dupCount, geneFamilies = extractGeneFamilies(phylTree, prottrees)
     else:
         for tree in prottrees:

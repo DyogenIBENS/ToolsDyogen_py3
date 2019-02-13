@@ -21,32 +21,38 @@ from LibsDyogen import myFile, myPhylTree, myProteinTree
 
 def main(proteinTree, family_name, field='family_name',
          toNewick=False, withAncSpeciesNames=False, withAncGenesNames=False,
-         withTags=False, phyltree=None, output='{genetree}.nwk', force=False,
-         mkdirs=False):
+         withTags=False, phyltree=None, output=None, force=False,
+         mkdirs=False, firstmatch=False):
     if phyltree:
         phyltree = myPhylTree.PhylogeneticTree(phyltree)
 
-    family_names = set(family_name)
+    family_names = dict.fromkeys(family_name, 0)
 
     for tree in myProteinTree.loadTree(proteinTree):
-        family = tree.info[tree.root][field]
+        family = tree.info[tree.root][field].split('.')[0]
         if family in family_names:
             print("Found", family, end=' ', file=sys.stderr)
-            outfile = output.format(genetree=family)
-            if os.path.isfile(outfile) and not force:
+            wasfound = family_names[family]
+            outfile = output.format(genetree=family) if output else '<stdout>'
+            if os.path.isfile(outfile) and not force: # and not wasfound:
+                #if family_names[family] == 0:
+                #FIXME so that you can omit the --force option but append to file
                 print("%s exists. Skipping. (use --force)" % outfile, file=sys.stderr)
+                family_names.pop(family)
             else:
                 if phyltree is not None:
                     #markLowScore(tree, hasLowScore)
                     #flattenTree
                     #
                     tree.rebuildTree(phyltree)
+                #TODO: start in new thread.
+                filemode = 'a' if wasfound else 'w'
                 try:
-                    out = open(outfile, 'w')
+                    out = open(outfile, filemode) if output else sys.stdout
                 except IOError:
                     if mkdirs:
                         os.makedirs(os.path.split(outfile)[0])
-                        out = open(outfile, 'w')
+                        out = open(outfile, filemode)
                     else:
                         raise
 
@@ -58,11 +64,19 @@ def main(proteinTree, family_name, field='family_name',
                                      withID=withTags)
                 else:
                     tree.printTree(out)
-                out.close()
-            family_names.remove(family)
-        if not family_names:
+                if output: out.close()
+                if firstmatch:
+                    family_names.pop(family)
+                else:
+                    family_names[family] += 1
+        if firstmatch and not family_names:
             break
-        
+
+    notfound = set((fam for fam,wasfound in family_names.items() if not wasfound))
+    if notfound:
+        print('WARNING: %d names were not found in field %r' % (
+              len(notfound), field), file=sys.stderr)
+
 
 if __name__=='__main__':
 
@@ -76,6 +90,8 @@ if __name__=='__main__':
     parser.add_argument("-field", default="family_name",
                         choices=("tree_name","family_name"), 
                         help="[%(default)s]")
+    parser.add_argument('-firstmatch', action='store_true',
+                        help='Output only the first tree matching a family name.')
     parser.add_argument("-toNewick", action="store_true",
                         help="output in newick format")
     parser.add_argument("-withAncSpeciesNames", action="store_true")
@@ -86,10 +102,10 @@ if __name__=='__main__':
     #                    help="rebuild tree to fit species tree. Requires -phyltree")
     parser.add_argument("-phyltree", help=("path to PhylTree.conf file. -> rebuild"
                         "the gene tree to fit the species tree"))
-    parser.add_argument("-output", "-o", default='{genetree}.nwk',
+    parser.add_argument("-output", "-o", #default='{genetree}.nwk',
                         help=("template for the filename. {genetree} will be "
                               "replaced by the name provided in the command line."
-                              " [%(default)s]"))
+                              " [stdout]"))
     parser.add_argument("-force", "-f", action="store_true",
                         help="overwrite existing file")
     parser.add_argument("-mkdirs", action="store_true",
@@ -98,11 +114,12 @@ if __name__=='__main__':
     # (need to add the option in LibsDyogen.MyProteinTree ...)
 
     arguments = parser.parse_args()
-    if arguments.pop('fromfile'):
+    if arguments.fromfile:
         fam_names = []
-        for filename in arguments['family_name']:
+        for filename in arguments.family_name:
             with open(filename) as f:
                 fam_names.extend(line.rstrip() for line in f if not line.startswith('#'))
         arguments.family_name = fam_names
+    delattr(arguments, 'fromfile')
 
     main(**vars(arguments))
