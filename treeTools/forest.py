@@ -18,7 +18,7 @@ from __future__ import print_function
 
 from sys import argv, stderr, stdout, stdin
 from collections import defaultdict
-from CLItools.autoCLI import build_cli_processor
+from UItools.autoCLI import build_cli_processor
 
 try:
     from LibsDyogen import myProteinTree, myPhylTree
@@ -49,7 +49,7 @@ def run(process, proteinTreeFile, converted_args):
         tree.printTree(stdout)
     
     print("Outputs counts:", count_outputs, file=stderr)
-        
+
 
 
 if __name__=='__main__':

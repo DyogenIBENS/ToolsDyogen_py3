@@ -152,7 +152,7 @@ def process(prottrees, phylTree, hasLowScore, defaultFamName="FAM%08d",
     nb = 0
     for tree in prottrees:
 
-        assert max(tree.info) < myProteinTree.nextNodeID
+        assert max(tree.info) < myProteinTree.nextNodeID, max(tree.info)
 
         #TODO: only used by the extractGeneFamilies step. Should be ignored here.
         try:

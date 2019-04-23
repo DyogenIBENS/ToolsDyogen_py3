@@ -34,7 +34,7 @@ def main(proteinTree, family_name, field='family_name',
             print("Found", family, end=' ', file=sys.stderr)
             wasfound = family_names[family]
             outfile = output.format(genetree=family) if output else '<stdout>'
-            if os.path.isfile(outfile) and not force: # and not wasfound:
+            if os.path.isfile(outfile) and not wasfound and not firstmatch and not force:
                 #if family_names[family] == 0:
                 #FIXME so that you can omit the --force option but append to file
                 print("%s exists. Skipping. (use --force)" % outfile, file=sys.stderr)
@@ -74,8 +74,8 @@ def main(proteinTree, family_name, field='family_name',
 
     notfound = set((fam for fam,wasfound in family_names.items() if not wasfound))
     if notfound:
-        print('WARNING: %d names were not found in field %r' % (
-              len(notfound), field), file=sys.stderr)
+        print('WARNING: %d names were not found in field %r: %s' % (
+              len(notfound), field, ' '.join(notfound)), file=sys.stderr)
 
 
 if __name__=='__main__':
