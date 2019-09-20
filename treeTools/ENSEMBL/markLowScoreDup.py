@@ -78,6 +78,7 @@ def setupScoring(phylTree, scoreMethod=1, cutoff=-1):
     def goodSpecies(anc):
         return phylTree.species[anc].difference(phylTree.lstEsp2X)
 
+    # This is a Jaccard Index of species on each side of the duplication.
     def hasLowScore(tree, rnode):
 
         logger.debug("# hasLowScore is used.")
@@ -104,8 +105,53 @@ def setupScoring(phylTree, scoreMethod=1, cutoff=-1):
             inters.intersection_update(goodSpecies(anc))
             all.intersection_update(goodSpecies(anc))
         return ((len(inters) == 0) and (minDuplicationScore[anc] == 0)) or (len(inters) < (minDuplicationScore[anc] * len(all)))
+    ###TODO: this should update the 'duplication_confidence_score' tag.
 
     return hasLowScore
+
+
+def countIndependentLosses(tree, rnode, phylTree):
+    @myTools.memoize
+    def getSpeciesSets(node):
+        if node in tree.data:
+            return set().union(*(getSpeciesSets(x) for (x,_) in tree.data[node]))
+        else:
+            logger.debug('Node without data (leaf) at %r', tree.info[node]["taxon_name"])
+            assert tree.info[node]["taxon_name"] in phylTree.listSpecies
+            return set([tree.info[node]["taxon_name"]])
+
+    #if rnode not in tree.data:
+    #    return False
+
+    speciessets = [getSpeciesSets(x) for (x,_) in tree.data[rnode]]
+    
+    root_taxon = tree.info[rnode]['taxon_name']
+    _, subtree = phylTree.getSubTree(phylTree.species[root_taxon])
+
+    all_events = 0
+    inde_losses = 0
+    queue = [root_taxon]
+    while queue:
+        taxon = queue.pop(0)
+        
+        # Determine if this ancestor lost one of the paralogs.
+        this_speciesset = phylTree.species[taxon]
+        paralog_presence = [spset & this_speciesset for spset in speciessets]
+        if not all(paralog_presence):
+            #if not any(paralog_presence):
+            #    logger.info('*All* paralogs were lost in this taxon (%s)', taxon)
+            all_events += 1
+            inde_losses += 1
+        else:
+            # Move on if there are still some loss events leafward:
+            #if any(p != paralog_presence[0] for p in paralog_presence[1:]):
+            if any(p != this_speciesset for p in paralog_presence):
+                queue.extend(child for child, _ in phylTree.items.get(taxon, []))
+            else:
+                all_events += 1
+
+    return float(inde_losses) / all_events
+
 
 
 def markLowDup(tree, hasLowScore):
@@ -213,12 +259,12 @@ if __name__ == '__main__':
         [("phylTree.conf",myTools.File), ("ensemblTree",myTools.File)],
         [("flatten",bool,False), ("rebuild",bool,False), ("fam",bool,False),
          ("cutoff",str,"-1"), ("defaultFamName",str,"FAM%08d"),
-         ("scoreMethod",int,[1,2,3]), ("newNodeID",int,100000000),
+         ("scoreMethod",int,[1,2,3]), ("newNodeID",float,1e8),
          ("recurs",bool,False), ("indicator",bool,False), ("debug",bool,False)],
         __doc__)
     if arguments['debug']: logger.setLevel(logging.DEBUG)
 
-    myProteinTree.nextNodeID = arguments["newNodeID"]  # For the rebuild step.
+    myProteinTree.nextNodeID = int(arguments["newNodeID"])  # For the rebuild step.
     phylTree = myPhylTree.PhylogeneticTree(arguments["phylTree.conf"])
 
     hasLowScore = setupScoring(phylTree,
