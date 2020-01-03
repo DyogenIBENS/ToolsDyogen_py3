@@ -1,1 +1,0 @@
-../genomesTools/ALL/statsKaryotype.py

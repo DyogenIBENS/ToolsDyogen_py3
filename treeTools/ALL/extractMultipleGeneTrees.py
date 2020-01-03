@@ -19,7 +19,7 @@ import argparse
 from LibsDyogen import myFile, myPhylTree, myProteinTree
 
 
-def main(proteinTree, family_name, field='family_name',
+def extractMultipleGeneTrees(proteinTree, family_name, field='family_name',
          toNewick=False, withAncSpeciesNames=False, withAncGenesNames=False,
          withTags=False, phyltree=None, output=None, force=False,
          mkdirs=False, firstmatch=False):
@@ -78,8 +78,7 @@ def main(proteinTree, family_name, field='family_name',
               len(notfound), field, ' '.join(notfound)), file=sys.stderr)
 
 
-if __name__=='__main__':
-
+def main():
     parser = argparse.ArgumentParser(description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
 
@@ -122,4 +121,8 @@ if __name__=='__main__':
         arguments.family_name = fam_names
     delattr(arguments, 'fromfile')
 
-    main(**vars(arguments))
+    extractMultipleGeneTrees(**vars(arguments))
+
+
+if __name__=='__main__':
+    main()

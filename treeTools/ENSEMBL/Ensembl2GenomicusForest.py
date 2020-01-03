@@ -11,10 +11,7 @@ if version_info[0] == 3:
 else:
     from LibsDyogen.utils import myTools, myProteinTree, myPhylTree
 
-from ToolsDyogen.treeTools.ALL.extractGeneFamilies import extractGeneFamilies
-
-
-setrecursionlimit(10000)
+from treeTools.ALL.extractGeneFamilies import extractGeneFamilies
 
 
 def alwaysFalse(tree, node):
@@ -38,7 +35,7 @@ def processTrees(ensemblTree, phylTree):
         yield tree
 
 
-if __name__ == '__main__':
+def main():
     arguments = myTools.checkArgs(
         [("phylTree.conf", myTools.File), ("ensemblTree", myTools.File)],
         [("newNodeID",int,int(1e9)), ("reuseNames", bool, False)],
@@ -55,3 +52,7 @@ if __name__ == '__main__':
                                             processTrees(arguments["ensemblTree"],
                                                          phylTree),
                                             arguments["reuseNames"])
+
+
+if __name__ == '__main__':
+    main()

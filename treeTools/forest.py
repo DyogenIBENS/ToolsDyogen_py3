@@ -18,7 +18,7 @@ from __future__ import print_function
 
 from sys import argv, stderr, stdout, stdin
 from collections import defaultdict
-from UItools.autoCLI import build_cli_processor
+from UItools.autoCLI import build_cli_processor  # TODO: drop this dependency.
 
 try:
     from LibsDyogen import myProteinTree, myPhylTree
@@ -27,7 +27,6 @@ except ImportError:
         from LibsDyogen.utils import myProteinTree, myPhylTree
     except ImportError:
         from utils import myProteinTree, myPhylTree
-
 
 
 def run(process, proteinTreeFile, converted_args):
@@ -47,17 +46,20 @@ def run(process, proteinTreeFile, converted_args):
             pass
 
         tree.printTree(stdout)
-    
+
     print("Outputs counts:", count_outputs, file=stderr)
 
 
-
-if __name__=='__main__':
-
+def main():
     # This is necessary for rebuildTree:
     myProteinTree.nextNodeID = int(1e8)
     process, converted_args = build_cli_processor(myProteinTree.ProteinTree,
-                                              {'phyltree': myPhylTree.PhylogeneticTree},
-                                              1,
-                                              *argv[1:])
+                                    {'phyltree': myPhylTree.PhylogeneticTree},
+                                    1,
+                                    *argv[1:])
     run(process, argv[2], converted_args)
+
+
+if __name__=='__main__':
+    main()
+

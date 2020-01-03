@@ -17,7 +17,7 @@ import numpy as np
 import LibsDyogen.myProteinTree as ProteinTree
 
 
-def main(forestfile):
+def forest_summary(forestfile):
 
     # Counts
     n_nodes = 0
@@ -97,7 +97,7 @@ def main(forestfile):
     tree_n_dup           = np.array(tree_n_dup)
     tree_n_dubious       = np.array(tree_n_dubious)
 
-    print("""
+    return """
 Nb of taxa    : {:d}
 Nb of species : {:d}
 Nb of trees   : {:d}
@@ -128,14 +128,17 @@ dup_bootstraps:  average= {:8.5f}   std= {:8.5f}   missing= {:d}
         dup_conf_scores.mean(), dup_conf_scores.std(), dup_conf_scores_nan.sum(),
         dup_bootstraps.mean(), dup_bootstraps.std(), dup_bootstraps_nan.sum()
         )
-    )
 
-if __name__ == '__main__':
+
+def main():
     if len(argv) != 2:
         print('Bad number of arguments!\n' + __doc__, file=stderr)
         exit(1)
     elif argv[1] == '-h':
         print(__doc__, file=stderr)
         exit(0)
-    
-    main(argv[1])
+    print(forest_summary(argv[1]))
+
+
+if __name__ == '__main__':
+    main()

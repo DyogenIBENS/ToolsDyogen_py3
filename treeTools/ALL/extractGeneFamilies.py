@@ -105,8 +105,7 @@ def extractGeneFamilies(phylTree, proteinTrees, reuseNames=False, outFile=sys.st
     return count, dupCount, geneFamilies
 
 
-if __name__ == '__main__':
-
+def main():
     # Arguments
     arguments = myTools.checkArgs([("phylTree.conf", myTools.File),
                                    ("proteinTree", myTools.File)],
@@ -130,3 +129,7 @@ if __name__ == '__main__':
                 print(" ".join(gg), file=f)
             f.close()
             print(len(lst), "OK", file=sys.stderr)
+
+
+if __name__ == '__main__':
+    main()

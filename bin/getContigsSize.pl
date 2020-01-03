@@ -1,1 +1,0 @@
-../ensemblTools/API_perl_scripts/getContigsSize.pl

@@ -7,7 +7,13 @@
 
 from LibsDyogen import myTools, myProteinTree
 
-arguments = myTools.checkArgs([("iniTree", myTools.File)], [], __doc__)
 
-for tree in myProteinTree.loadTree(arguments["iniTree"]):
-    next
+def main():
+    arguments = myTools.checkArgs([("iniTree", myTools.File)], [], __doc__)
+
+    for tree in myProteinTree.loadTree(arguments["iniTree"]):
+        next
+
+
+if __name__ == '__main__':
+    main()

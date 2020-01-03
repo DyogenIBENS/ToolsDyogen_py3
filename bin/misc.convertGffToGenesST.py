@@ -1,1 +1,0 @@
-../genomesTools/misc/convertGffToGenesST.py

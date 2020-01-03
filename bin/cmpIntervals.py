@@ -1,1 +1,0 @@
-../genomesTools/cmpIntervals.py
