@@ -11,7 +11,7 @@ from LibsDyogen import myFile, myMaths, myTools, myGenomes, myPhylTree
 
 # Argument:
 arguments = myTools.checkArgs(
-    [("phylTree.conf", file)],
+    [("phylTree.conf", myTools.File)],
     [("onlyOrthos", bool, False), ("in:genesFiles", str, ""), ("in:ancGenesFiles", str, ""), ("in:diagsFiles", str, ""),
      ("out:treeFile", str, "out.nwk"), ("out:statFile", str, "out.txt"), ("colNames", bool, True )],
     __doc__
@@ -154,3 +154,7 @@ outfileTxt.close()
 outfileTree = myFile.openFile(arguments["out:treeFile"], "w")
 print(convertToFlatFile(phylTree.root), ";", file=outfileTree)
 outfileTree.close()
+
+
+def main():  # setup.py console_scripts entry point.
+    pass

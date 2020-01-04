@@ -27,7 +27,7 @@ setuptools.setup(
     #optional dependencies (handled in try-except)
                       #'java.lang',
                       #'psyco',  # development stopped in 2011
-    scripts = [
+    scripts=[
     #    'ensemblTools/API_perl_scripts/align_cds.pl',
     #    'ensemblTools/API_perl_scripts/getChromosomeSizeForAllGenome.pl',
     #    'ensemblTools/API_perl_scripts/getChromosomeSize.pl',
@@ -46,7 +46,7 @@ setuptools.setup(
     'evolTools/calcGeneEvolution.py',
     'evolTools/calcGeneEvolutionOnEachBranch.py',
     'evolTools/extractGeneEvents.py',
-    'evolTools/getGeneTimeLine.py',
+    'evolTools/getGeneTimeline.py'
         ],
     entry_points = {
         'console_scripts': [
@@ -63,10 +63,11 @@ setuptools.setup(
     'ALL.getGeneHistory=treeTools.ALL.getGeneHistory:main',
     'ALL.infoProtTree=treeTools.ALL.infoProtTree:main',
     'ALL.statsKaryotype=genomesTools.ALL.statsKaryotype:main',
-    'ALL.calcRearrangRates=evolTools.ALL.calcRearrangRates:main', #TODO
-    'ALL.extractBranchLength=evolTools.ALL.extractBranchLength:main', #TODO
-    'ENSEMBL.buildProteinTrees:treeTools.ENSEMBL.buildProteinTrees:main', #TODO
-    'ENSEMBL.markLowScoreDup:treeTools.ENSEMBL.markLowScoreDup:main',  #TODO
+    'ALL.calcRearrangRates=evolTools.ALL.calcRearrangRates:main',
+    'ALL.extractBranchLength=evolTools.ALL.extractBranchLength:main',
+    'ENSEMBL.buildProteinTrees=treeTools.ENSEMBL.buildProteinTrees:main',
+    'ENSEMBL.buildProteinTreesV1=treeTools.ENSEMBL.buildProteinTreesV1:main',
+    'ENSEMBL.markLowScoreDup=treeTools.ENSEMBL.markLowScoreDup:main',
     'misc.compareGenomes=compareTools.misc.compareGenomes:main',
     'misc.convertContigsToGenome=genomesTools.misc.convertContigsToGenome:main',
     'misc.convertGffToGenesST=genomesTools.misc.convertGffToGenesST:main',
@@ -94,6 +95,7 @@ setuptools.setup(
         "Intended Audience :: Science/Research",
         "Topic :: Scientific/Engineering :: Bio-Informatics"
     ],
+    package_data={'ensemblTools': ['*.pl']},
     include_package_data=True,
     zip_safe=False
 )

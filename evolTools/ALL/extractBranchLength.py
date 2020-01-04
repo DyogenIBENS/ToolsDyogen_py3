@@ -64,3 +64,7 @@ def convertToFlatFile(anc):
 
 
 print(convertToFlatFile(phylTree.root), ";", file=sys.stdout)
+
+
+def main():  # for setup.py console_scripts entry point
+    pass

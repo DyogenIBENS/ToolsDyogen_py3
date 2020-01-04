@@ -136,3 +136,6 @@ for (nb,tree) in enumerate(myProteinTree.loadTree(arguments["ensemblTree"])):
 
 print(nbEdit, file=sys.stderr)
 
+
+def main():  # for setup.py console_scripts entry point
+    pass

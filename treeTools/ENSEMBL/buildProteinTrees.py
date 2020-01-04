@@ -704,3 +704,7 @@ for (nb, tree) in enumerate(ancutils.myProteinTree.loadTree(arguments["ensemblTr
 
 print('total edition', nbEdit, file=sys.stderr)
 print('total duplication', nbdup, file=sys.stderr)
+
+
+def main():  # for setup.py console_scripts entry point
+    pass

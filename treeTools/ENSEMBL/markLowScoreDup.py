@@ -251,7 +251,7 @@ def process(prottrees, phylTree, hasLowScore, defaultFamName="FAM%08d",
             nbEdit, nbFlattened, nbRebuilt), file=sys.stderr)
 
 
-if __name__ == '__main__':
+def main():
     logging.basicConfig()
     logger.setLevel(logging.INFO)
 
@@ -280,9 +280,12 @@ if __name__ == '__main__':
 
     if arguments["fam"]:
         # Will not work on previous versions of ToolsDyogen.
-        from ToolsDyogen.treeTools.ALL.extractGeneFamilies import extractGeneFamilies
+        from treeTools.ALL.extractGeneFamilies import extractGeneFamilies
         count, dupCount, geneFamilies = extractGeneFamilies(phylTree, prottrees)
     else:
         for tree in prottrees:
             tree.printTree(sys.stdout)
 
+
+if __name__ == '__main__':
+    main()
