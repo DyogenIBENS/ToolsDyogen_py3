@@ -108,7 +108,7 @@ def main():
 
     else:
         import odf.opendocument
-        from odfpy_examples import datatable
+        from odfpy_datatable import DataTable
 
         textdoc = odf.opendocument.OpenDocumentSpreadsheet()
 
@@ -120,7 +120,7 @@ def main():
             for e in lstEspeces:
                 val.append(alldata[cutoff][e])
 
-            table = datatable.DataTable(val)
+            table = DataTable(val)
             table.datasourcehaslabels = "both"
             t = table()
             t.setAttribute('name', valCutoff)
@@ -133,7 +133,7 @@ def main():
                 for e in lstEspeces:
                     val.append(alldiff[cutoff][e])
 
-                table = datatable.DataTable(val)
+                table = DataTable(val)
                 table.datasourcehaslabels = "both"
                 t = table()
                 t.setAttribute('name', "d" + valCutoff)
@@ -147,7 +147,7 @@ def main():
                 valCutoff = cutoff.split("/")[-1]
                 val.append([valCutoff] + alldata[cutoff][esp][2:])
 
-            table = datatable.DataTable(val)
+            table = DataTable(val)
             table.datasourcehaslabels = "both"
             t = table()
             t.setAttribute('name', esp)
@@ -165,7 +165,7 @@ def main():
                            alldata[cutoff][e][i - 1] - alldata[allCutoff[0]][e][i - 1]) / alldata[allCutoff[0]][e][i - 1]
                                                     for e in lstEspeces]) for i in [17, 12, 14, 6, 8]]
                        )
-        table = datatable.DataTable(val)
+        table = DataTable(val)
         table.datasourcehaslabels = "both"
         t = table()
         t.setAttribute('name', "cutoff")

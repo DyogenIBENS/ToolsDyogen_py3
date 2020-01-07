@@ -96,7 +96,7 @@ def main():
 
     else:
         import odf.opendocument
-        from odfpy_examples import datatable
+        from odfpy_datatable import DataTable
 
         textdoc = odf.opendocument.OpenDocumentSpreadsheet()
 
@@ -108,7 +108,7 @@ def main():
             for e in lstEspeces:
                 val.append(alldata[events][e])
 
-            table = datatable.DataTable(val)
+            table = DataTable(val)
             table.datasourcehaslabels = "both"
             t = table()
             t.setAttribute('name', valevents)
@@ -124,7 +124,7 @@ def main():
                 valevents = events
                 val.append([valevents] + alldata[events][esp][2:])
 
-            table = datatable.DataTable(val)
+            table = DataTable(val)
             table.datasourcehaslabels = "both"
             t = table()
             t.setAttribute('name', esp)
@@ -162,7 +162,7 @@ def main():
             valevents = events
             val.append([""] + [valevents] + [alldata[events][e][17] for e in lstEspeces])
 
-        table = datatable.DataTable(val)
+        table = DataTable(val)
         table.datasourcehaslabels = "both"
         t = table()
         t.setAttribute('name', "Summary")
