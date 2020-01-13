@@ -22,8 +22,7 @@ setuptools.setup(
     install_requires=['LibsDyogen_py3'], #['enum34;python_version<"3.4"'],
     extras_require={'GFF': ['gff3'],  # Only in genomesTools/misc/convertGffToGenesST.py
                     'ODF': ['odfpy'], # Only in bin/statsOnGenesInGenomes.py,
-                    'numpy': ['numpy'], # For forest_summary
-                    'autoCLI': ['UItools']}, # For forest. TODO: remove
+                    'numpy': ['numpy']}, # For forest_summary
     #optional dependencies (handled in try-except)
                       #'java.lang',
                       #'psyco',  # development stopped in 2011
@@ -80,7 +79,6 @@ setuptools.setup(
     'forest_summary=statsTools.forest_summary:main',
     'ALL.getAges=treeTools.getAges:main',
     'phyltree=treeTools.phyltree:main',
-    'forest=treeTools.forest'
         ]
     },
     classifiers=[
