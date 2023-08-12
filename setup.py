@@ -12,7 +12,7 @@ setuptools.setup(
     name="ToolsDyogen_py3",
     version="0.0.1",
     author="Matthieu MUFFATO, Alexandra LOUIS, Amélie PÉRÈS, Joseph LUCAS, Guillaume LOUVEL",
-    author_email="guillaume.louvel@normalesup.org",
+    author_email="dyogen_git@biologie.ens.fr",
     description="Python 3 version of the Dyogen team scripts for comparative genomics. http://www.ibens.ens.fr/?rubrique43&lang=en",
     long_description=long_description,
     long_description_content_type="text/markdown",

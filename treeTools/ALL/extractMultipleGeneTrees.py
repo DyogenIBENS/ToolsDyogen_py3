@@ -27,13 +27,21 @@ def extractMultipleGeneTrees(proteinTree, family_name, field='family_name',
         phyltree = myPhylTree.PhylogeneticTree(phyltree)
 
     family_names = dict.fromkeys(family_name, 0)
+    def get_tree_name(tree):
+        return tree.info[tree.root].get('tree_name',
+                tree.info[tree.root]['family_name'].split('.')[0])
+    if field=='tree_name':
+        get_field = get_tree_name
+    else:
+        def get_field(tree):
+            return tree.info[tree.root][field]
 
     for tree in myProteinTree.loadTree(proteinTree):
-        family = tree.info[tree.root][field].split('.')[0]
+        family = get_field(tree)
         if family in family_names:
             print("Found", family, end=' ', file=sys.stderr)
             wasfound = family_names[family]
-            outfile = output.format(genetree=family) if output else '<stdout>'
+            outfile = output.format(family=family, tree=get_tree_name(tree)) if output else '<stdout>'
             if os.path.isfile(outfile) and not wasfound and not firstmatch and not force:
                 #if family_names[family] == 0:
                 #FIXME so that you can omit the --force option but append to file
@@ -87,7 +95,7 @@ def main():
     parser.add_argument("-fromfile", action='store_true',
                         help='read `family_name` from a file, one per line.')
     parser.add_argument("-field", default="family_name",
-                        choices=("tree_name","family_name"), 
+                        choices=("tree_name", "family_name"),
                         help="[%(default)s]")
     parser.add_argument('-firstmatch', action='store_true',
                         help='Output only the first tree matching a family name.')
@@ -102,9 +110,10 @@ def main():
     parser.add_argument("-phyltree", help=("path to PhylTree.conf file. -> rebuild"
                         "the gene tree to fit the species tree"))
     parser.add_argument("-output", "-o", #default='{genetree}.nwk',
-                        help=("template for the filename. {genetree} will be "
-                              "replaced by the name provided in the command line."
-                              " [stdout]"))
+                        help=("template for the filename. {tree} will be "
+                              "replaced by the tree_name,"
+                              " up to the first dot. {family} will be replaced"
+                              " by the full family_name. [stdout]"))
     parser.add_argument("-force", "-f", action="store_true",
                         help="overwrite existing file")
     parser.add_argument("-mkdirs", action="store_true",
@@ -116,7 +125,7 @@ def main():
     if arguments.fromfile:
         fam_names = []
         for filename in arguments.family_name:
-            with open(filename) as f:
+            with (sys.stdin if filename=='-' else open(filename)) as f:
                 fam_names.extend(line.rstrip() for line in f if not line.startswith('#'))
         arguments.family_name = fam_names
     delattr(arguments, 'fromfile')
